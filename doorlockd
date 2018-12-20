@@ -1,0 +1,104 @@
+#!/usr/bin/env python
+
+CONF_AUTHDB='sqlite3'
+#CONF_AUTHDB='xml'
+
+import logging 
+import time
+
+# to catch ctrl-c
+import signal
+import sys
+
+
+#
+# doorlockd classes
+#
+import Solenoid
+import Mifare
+if CONF_AUTHDB == 'xml':
+	import XmlDB
+if CONF_AUTHDB == 'sqlite3':
+	import SqliteDB
+
+
+#
+# import USR LEDs and show we are at startup 
+#
+#import LedUI
+#usrled = LedUI.LedUI()
+#usrled.ui_startup()
+#usrled.ui_ready()   # should be at 'starting wait_for_key' but makes the rfidtag reading fail. (reason unkown)
+
+#
+# create logger with 'doorlockd'
+#
+logger = logging.getLogger('doorlockd')
+logger.setLevel(logging.DEBUG)
+# create file handler which logs even debug messages
+fh = logging.FileHandler('/var/log/doorlockd.log')
+fh.setLevel(logging.DEBUG)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+#ch.setLevel(logging.ERROR)
+ch.setLevel(logging.DEBUG)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
+logger.info('doorlockd starting up...')
+
+#
+# init our objects
+#
+if CONF_AUTHDB == 'xml':
+	keydb = XmlDB.KeyDB()
+if CONF_AUTHDB == 'sqlite3':
+	keydb = SqliteDB.KeyDB()
+solenoid = Solenoid.Solenoid("P9_14", "voordeur")
+rfid = Mifare.KeyReader()
+
+
+
+def openfunctie(hwid):
+    logger.debug("openfunctie key uid: " + str(hwid))
+    entry = keydb.getent_by_hwid(hwid)
+    
+    if (entry['access'] == "True"):
+        logger.critical( 'access granted: "{:s}" - "{:s}" - "{:s}" - "{:s}" '.format(entry.get('hwid', 'not found'), solenoid.name ,entry.get('name', 'not found'), '...' ))
+        solenoid.open()
+    else:
+        logger.critical('access denied:  "{:s}" - "{:s}" - "{:s}" - "{:s}" '.format(entry.get('hwid', 'not found'), solenoid.name, entry.get('name', 'not found'), entry.get('error', 'no error message avilable') ))
+        time.sleep(1)
+        
+    
+
+def signal_handler_stop(signal, frame):
+    #usrled.ui_shutdown()
+    logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
+    rfid.cleanup()
+    solenoid.cleanup()
+    logger.info('everything has stopped')
+    #usrled.cleanup()
+    sys.exit(0)
+
+
+def signal_handler_reload(signal, frame):
+    logger.info('SIG HUP received, reloading access db')
+    keydb.read_db()
+
+
+
+signal.signal(signal.SIGINT, signal_handler_stop)
+signal.signal(signal.SIGTERM, signal_handler_stop)
+signal.signal(signal.SIGHUP, signal_handler_reload)
+
+logger.info('starting wait_for_key... ')
+#usrled.ui_ready()
+
+while True:
+    rfid.wait_for_key(openfunctie)

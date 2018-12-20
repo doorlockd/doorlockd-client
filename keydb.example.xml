@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+    <!-- syntax idea: <key access="True" hwid="00:00:00:00:00" name='My blue keychain tag' /> -->
+    <!-- syntax idea: <key access="True" hwid="00:00:00:00:00" name='My rfid card' auth_method="2" sector="8" rfid_secret="00:00:00:00:00:00" /> -->
+<data>
+    <key access="False" hwid="aa:bb:cc:dd:ee" name='example 1' />
+    <key access="True" hwid="00:00:00:00:00" name='example 2' />
+</data>
