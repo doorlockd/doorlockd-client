@@ -45,7 +45,7 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 |       |   |                 |
 |       | --+--               |
 |       |  \ /  =>            |
-|       |   V	  LED1         |
+|       |   V  LED1           |
 |       |   +                 |
 |   GND +---+-----------------+
 |       |
