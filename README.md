@@ -38,14 +38,14 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 |       |      +----+   1 .--/   |  D1
 |  GPIO +---+--+ R1 +----(->| )	 |
 |       |   |  +----+     `--\   +-------->  Solenoid -
-|       |  +++               3+
+|       |  +++           T1  3+
 |       |  |R|                |
 |       |  |2|                |
 |       |  +++                |
-|       |   |  	              |
+|       |   |                 |
 |       | --+--               |
 |       |  \ /  =>            |
-|       |   V	  LED1	        |
+|       |   V	  LED1         |
 |       |   +                 |
 |   GND +---+-----------------+
 |       |
