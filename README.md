@@ -52,3 +52,6 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 +-------+
 
 ```
+
+## Config 
+Copy `config.example.ini` to `config.ini`.

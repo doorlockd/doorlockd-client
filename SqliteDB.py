@@ -2,13 +2,12 @@
 
 import sqlite3
 
-# path to sqlite file.
-CONF_SQLITE_DB = '/opt/doorlockweb-beta/db.sqlite3'
-# SELECT statement to retrieve these 3 values (hwid,access,name) in the same order.
-CONF_SQLITE_GET = 'SELECT hwid,access,name FROM doorlock_tag WHERE hwid=?'
-# INSERT statement to log unknown hwid 
-CONF_SQLITE_INS = "INSERT INTO doorlock_unkowntag (hwid, create_date) VALUES (?,  datetime('now', 'localtime'))"
-
+#
+# setup config
+# 
+import ConfigParser 
+config = ConfigParser.ConfigParser()
+config.read('config.ini')
 
 
 #
@@ -22,12 +21,23 @@ class KeyDB:
     '''interface to auth db in sqlitedb file'''
 
     def __init__(self):
+        # path to sqlite file.
+        self.db_file = config.get('auth_sqlite3', 'db_file')
+        # SELECT statement to retrieve these 3 values (hwid,access,name) in the same order.
+        self.sql_get = config.get('auth_sqlite3', 'sql_get')
+        # INSERT statement to log unknown hwid 
+        self.sql_insert = config.get('auth_sqlite3', 'sql_insert')
+        
+        logger.debug('{:s} auth_sqlite3 config: db_file {:s}.'.format(self.__class__.__name__, self.db_file ))
+        logger.debug('{:s} auth_sqlite3 config: sql_get {:s}.'.format(self.__class__.__name__, self.sql_get ))
+        logger.debug('{:s} auth_sqlite3 config: sql_insert {:s}.'.format(self.__class__.__name__, self.sql_insert ))
+        
         self.open_db()
         
     def open_db(self):
-        logger.debug('{:s} open_db sqlite3 using file {:s}.'.format(self.__class__.__name__, CONF_SQLITE_DB ))
-	self.conn = sqlite3.connect(CONF_SQLITE_DB)
-	self.cursor = self.conn.cursor()
+        logger.info('{:s} open_db auth_sqlite3 using.'.format(self.__class__.__name__ ))
+        self.conn = sqlite3.connect(self.db_file)
+        self.cursor = self.conn.cursor()
 
     def hwid2hexstr(self, uid):
         return(':'.join("{:02x}".format(p) for p in uid))
@@ -35,7 +45,7 @@ class KeyDB:
     
     def getent_by_hwid(self, hwid):
 	hwid_str = self.hwid2hexstr(hwid)
-	self.cursor.execute(CONF_SQLITE_GET, (hwid_str, ))
+	self.cursor.execute(self.sql_get, (hwid_str, ))
 	result = self.cursor.fetchone()
 
         if(result == None):
@@ -60,6 +70,6 @@ class KeyDB:
 
 
     def log_unknown_tag(self, hwid):
-        self.cursor.execute(CONF_SQLITE_INS, (hwid, ))
+        self.cursor.execute(self.sql_insert, (hwid, ))
         self.conn.commit()
 

@@ -10,7 +10,6 @@ import logging
 logger = logging.getLogger('doorlockd')
 
 
-
 #
 # example: somedoor = Solenoid("P9_14")
 #
@@ -23,12 +22,12 @@ class Solenoid:
 
         self.time = 1.8
         self.name = name # used in logfile
-        self.gpio_pin = gpio_pin
+        self.gpio_pin = str(gpio_pin)
         GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
 
     def open(self):
         '''open the door, turn Solenoid on for self.time seconds. '''
-        logger.debug('{:s} {:s} open .'.format(self.__class__.__name__, self.name))
+        logger.info('{:s} {:s} open .'.format(self.__class__.__name__, self.name))
         
         #
         # set GPIO_PIN high for x amount of time
