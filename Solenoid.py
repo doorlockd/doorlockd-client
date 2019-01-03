@@ -18,7 +18,7 @@ class Solenoid:
     
     def __init__(self, gpio_pin, name = 'door'):
         ''' Initiate Solenoid object: setup GPIO.OUT pin and make sure the output is LOW (== door closed).'''
-        logger.debug('init {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, name, gpio_pin))
+        logger.info('init {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, name, gpio_pin))
 
         self.time = 1.8
         self.name = name # used in logfile
@@ -27,7 +27,7 @@ class Solenoid:
 
     def open(self):
         '''open the door, turn Solenoid on for self.time seconds. '''
-        logger.info('{:s} {:s} open .'.format(self.__class__.__name__, self.name))
+        logger.debug('{:s} {:s} open .'.format(self.__class__.__name__, self.name))
         
         #
         # set GPIO_PIN high for x amount of time
