@@ -46,12 +46,19 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 |       | --+--               |
 |       |  \ /  =>            |
 |       |   V  LED1           |
-|       |   +                 |
+|       | --+--               |
 |   GND +---+-----------------+
-|       |
-+-------+
-
+|       |                     |
++-------+                     |
+                              |
+ 12V GND ---------------------+
 ```
+
+R1: 2k2 Ω
+R2: 10 Ω
+T1:   
+D1: 
+LED1: red LED
 
 ## Config 
 Copy `config.example.ini` to `config.ini`.
