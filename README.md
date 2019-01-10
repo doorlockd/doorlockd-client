@@ -53,12 +53,12 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
                               |
  12V GND ---------------------+
 ```
-
+```
 R1: 2k2 Ω
 R2: 10 Ω
-T1:   
-D1: 
+T1: generic n channel fet (example STU60N3LH5)   
+D1: generic diode (example. 1N4007)
 LED1: red LED
-
+```
 ## Config 
 Copy `config.example.ini` to `config.ini`.
