@@ -55,7 +55,7 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 ```
 ```
 R1: 2k2 Ω
-R2: 10 Ω
+R2: 100 Ω
 T1: generic n channel fet (example STU60N3LH5)   
 D1: generic diode (example. 1N4007)
 LED1: red LED
