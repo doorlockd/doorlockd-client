@@ -29,6 +29,12 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 | + | GPIO | P9_14 |
 | - | GND | P9_02 |
 
+| Button | mode | BBB |
+| --- | --- | --- |
+| + | GPIO | P8_12 |
+| - | GND | P8_02 |
+
+
 ## Circuit
 ```
 
