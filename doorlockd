@@ -17,16 +17,8 @@ config.read('config.ini')
 #
 import Solenoid
 import Mifare
+import Button
 
-
-
-#
-# import USR LEDs and show we are at startup 
-#
-#import LedUI
-#usrled = LedUI.LedUI()
-#usrled.ui_startup()
-#usrled.ui_ready()   # should be at 'starting wait_for_key' but makes the rfidtag reading fail. (reason unkown)
 
 #
 # create logger with 'doorlockd'
@@ -65,8 +57,11 @@ if keydb is None:
     
 solenoid = Solenoid.Solenoid(config.get('doorlockd', 'solenoid_pin'), config.get('doorlockd', 'solenoid_name'))
 rfid = Mifare.KeyReader()
-
-
+if config.getboolean('doorlockd', 'button_enabled'):
+	button = Button.Button(config.get('doorlockd', 'button_pin'), config.get('doorlockd', 'button_name'))
+	button.solenoid = solenoid
+else:
+	button = None
 
 def openfunctie(hwid):
     logger.debug("openfunctie key uid: " + str(hwid))
@@ -82,12 +77,14 @@ def openfunctie(hwid):
     
 
 def signal_handler_stop(signal, frame):
-    #usrled.ui_shutdown()
     logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
     rfid.cleanup()
     solenoid.cleanup()
+
+    if button is not None:
+    	button.cleanup()
+
     logger.info('everything has stopped')
-    #usrled.cleanup()
     sys.exit(0)
 
 
@@ -102,7 +99,6 @@ signal.signal(signal.SIGTERM, signal_handler_stop)
 signal.signal(signal.SIGHUP, signal_handler_reload)
 
 logger.info('starting wait_for_key... ')
-#usrled.ui_ready()
 
 while True:
     rfid.wait_for_key(openfunctie)
