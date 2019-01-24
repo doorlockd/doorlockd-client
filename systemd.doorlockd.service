@@ -6,8 +6,8 @@ After=network.target
 Type=simple
 # Another Type option: forking
 User=root
-WorkingDirectory=/opt/doorlock
-ExecStart=/opt/doorlock/doorlockd
+WorkingDirectory=/opt/doorlockd/
+ExecStart=/opt/doorlockd/doorlockd
 Restart=on-failure
 # Other Restart options: or always, on-abort, etc
 
