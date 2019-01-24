@@ -27,7 +27,7 @@ class Button:
 
         GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-	GPIO.add_event_detect(self.gpio_pin,GPIO.RISING,callback=self.my_callback,bouncetime=200) # Setup event on pin switch_pin rising edge
+	GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.my_callback,bouncetime=200) # Setup event on pin switch_pin rising edge
 
     def cleanup(self):
         '''cleanup GPIO pins'''
