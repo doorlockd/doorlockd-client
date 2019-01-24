@@ -1,6 +1,11 @@
 # Doorlockd
 
-### Connecting Mifare RC522 on first SPI.
+## install software
+Download and extract zip or checkout git into `/opt/doorlockd` 
+Copy `config.example.ini` to `config.ini` and edit.
+
+
+## Mifare RC522 on first SPI.
 First make sure SPIDEV is enabled on your Beaglebone black, add to `/boot/uEnv.txt` 
 ```
 # for Debian 9.3 or newer ,  
@@ -12,7 +17,7 @@ dtb_overlay=/lib/firmware/BB-SPIDEV0-00A0.dtbo
 I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/issues/38
 
 
-#### pinout 
+#### pinout RC522 on first SPI Beaglebone Black
 | RC522 | mode | BBB |
 | --- | --- | --- |
 | 1 | SDA | P9_17 |
@@ -24,18 +29,19 @@ I needed to use this workaround to install https://github.com/ondryaso/pi-rc522/
 | 7 | RST | P9_23 |
 | 8 | 3.3V | P9_03 |
 
+
+## Solenoid
+
+Use the GPIO ports as set in your config.ini
+
 | Solenoid | mode | BBB |
 | --- | --- | --- |
 | + | GPIO | P9_14 |
 | - | GND | P9_02 |
 
-| Button | mode | BBB |
-| --- | --- | --- |
-| + | GPIO | P8_12 |
-| - | GND | P8_02 |
 
-
-## Circuit
+### Circuit
+I've used this circuit to gain enough power to work the solenoid.
 ```
 
    12 V +------------------------------+-->  Solenoid +
@@ -66,5 +72,11 @@ T1: generic n channel fet (example STU60N3LH5)
 D1: generic diode (example. 1N4007)
 LED1: red LED
 ```
-## Config 
-Copy `config.example.ini` to `config.ini`.
+
+## Button
+
+| Button | mode | BBB |
+| --- | --- | --- |
+| + | GPIO | P8_12 |
+| - | GND | P8_02 |
+
