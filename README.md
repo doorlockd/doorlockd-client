@@ -82,7 +82,7 @@ LED1: red LED
 
 ### circuit
 It's advisable to add an extra resistor to GPIO port, this is to prevent any damage on software failure when this gpio port would accidently be used as output and set to high.
-
+```
 +------+
 |      |  +----+
 | GPIO +--+ R1 +---+
@@ -93,6 +93,7 @@ It's advisable to add an extra resistor to GPIO port, this is to prevent any dam
 | GND  +-----------+
 |      |
 +------+
+```
 ```
 R1:  not more than internal PUD_UP resistor and not to low short circuit when this output is set to high.
 ```
