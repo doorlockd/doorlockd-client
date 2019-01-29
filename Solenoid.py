@@ -38,8 +38,11 @@ class Solenoid:
 
         logger.debug('{:s} {:s} close .'.format(self.__class__.__name__, self.name))
 
-    def cleanup(self):
-        '''cleanup GPIO pins'''
-        logger.debug('cleanup ' + self.__class__.__name__+ ': calling GPIO.cleanup() ')
-        GPIO.cleanup()
         
+    def cleanup(self):
+        '''cleanup single GPIO pin: remove event detect and set to GPIO.IN with GPIO.PUD_OFF'''
+
+        logger.debug('cleanup ' + self.__class__.__name__+ ': cleanup single GPIO pin ' + self.gpio_pin)
+	GPIO.remove_event_detect(self.gpio_pin)
+        GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_OFF)
+
