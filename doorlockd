@@ -7,9 +7,13 @@ import time
 import signal
 import sys
 
-# read config file
+#
+# Config, set defaults and read config file
+#
 import ConfigParser 
 config = ConfigParser.ConfigParser()
+config.add_section('doorlockd')
+config.set('doorlockd', 'allowed_button_prefixes', 'button button_1 button_2 button_3')
 config.read('config.ini')
 
 #
@@ -57,12 +61,29 @@ if keydb is None:
     
 solenoid = Solenoid.Solenoid(config.get('doorlockd', 'solenoid_pin'), config.get('doorlockd', 'solenoid_name'))
 rfid = Mifare.KeyReader()
-if config.getboolean('doorlockd', 'button_enabled'):
-	button = Button.Button(config.get('doorlockd', 'button_pin'), config.get('doorlockd', 'button_name'))
-	button.solenoid = solenoid
-else:
-	button = None
 
+#
+# init our Buttons, use the allowed_button_prefixes to collect all configured buttons
+#
+buttons = []
+for prefix in config.get('doorlockd', 'allowed_button_prefixes').split():
+	if config.has_option('doorlockd', prefix + '_pin'):
+		b_pin = config.get('doorlockd', prefix + '_pin')
+
+		if config.has_option('doorlockd', prefix + '_name'):
+			b_name = config.get('doorlockd', prefix + '_name')
+		else: 
+			b_name = 'button on ' + b_pin
+
+		# init our button object and connect the solenoid
+		button = Button.Button(b_pin, b_name)
+		button.solenoid = solenoid
+		buttons.append(button)
+
+
+#
+# callback function for our Mifare reader
+#
 def openfunctie(hwid):
     logger.debug("openfunctie key uid: " + str(hwid))
     entry = keydb.getent_by_hwid(hwid)
@@ -75,14 +96,16 @@ def openfunctie(hwid):
         time.sleep(1)
         
     
-
+#
+# handle CTRL-C / stop signal
+#
 def signal_handler_stop(signal, frame):
     logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
     rfid.cleanup()
     solenoid.cleanup()
 
-    if button is not None:
-    	button.cleanup()
+    for b in buttons:
+	b.cleanup()
 
     logger.info('everything has stopped')
     sys.exit(0)
@@ -97,6 +120,10 @@ def signal_handler_reload(signal, frame):
 signal.signal(signal.SIGINT, signal_handler_stop)
 signal.signal(signal.SIGTERM, signal_handler_stop)
 signal.signal(signal.SIGHUP, signal_handler_reload)
+
+#
+# Start our rfid loop
+#
 
 logger.info('starting wait_for_key... ')
 
