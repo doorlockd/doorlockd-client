@@ -1,7 +1,14 @@
 # Doorlockd
 
-## install software
-Download and extract zip or checkout git into `/opt/doorlockd` 
+## install software 
+### Download
+Choose your favorite option to download:
+1. Download and extract zip into `/opt/doorlockd`
+2. Use git `cd /opt/ && git clone https://github.com/wie-niet/doorlockd.git`
+
+The software and configuration files are now located in `/opt/doorlockd`
+
+### Configure
 Copy `config.example.ini` to `config.ini` and edit.
 
 
