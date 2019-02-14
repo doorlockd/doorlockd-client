@@ -105,4 +105,6 @@ It's advisable to add an extra resistor to GPIO port, this is to prevent any dam
 R1:  not more than internal PUD_UP resistor and not to low short circuit when this output is set to high.
 ```
 
+## Start at boot
+use `sudo make install-systemd` to install and enable the systemd service.  After that you can use `sudo service doorlockd [start|stop|status]` to start or stop the proces.
 
