@@ -88,12 +88,12 @@ class UiLed2:
         '''show access denied (will wait for 1.5 seconds).'''
 	time.sleep(0.2)
 	GPIO.output(self.gpio_pin_red, GPIO.HIGH)
-	time.sleep(1.5)
+	time.sleep(1.8)
 	GPIO.output(self.gpio_pin_red, GPIO.LOW)
 	time.sleep(0.3)
 
     def ui_show_comm_error(self):
-        '''show access denied (will wait for 1.5 seconds).'''
+        '''show access denied (will wait for 2.4 seconds).'''
 	time.sleep(0.2)
 	GPIO.output(self.gpio_pin_red, GPIO.HIGH)
 	time.sleep(0.3)
