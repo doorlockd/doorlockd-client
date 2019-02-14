@@ -79,8 +79,8 @@ class UiLed2:
     def ui_show_access_false(self):
         '''show access denied (will wait for 1.5 seconds).'''
 	self.logger.debug(self.__class__.__name__+ ': UI Access Denied')
-	self.green_blink_once()
 	GPIO.output(self.gpio_pin_red, GPIO.HIGH)
+	self.green_blink_once()
 	time.sleep(1.8)
 	GPIO.output(self.gpio_pin_red, GPIO.LOW)
 	time.sleep(0.3)
