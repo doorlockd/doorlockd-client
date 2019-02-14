@@ -7,15 +7,25 @@ logger = logging.getLogger('doorlockd')
 from pirc522.rfid import RFID
 
 class KeyReader:
+    ui = None
     def __init__(self):
         # init RFID reader
         self.rdr = RFID(bus=1, device=0)
         logger.info('Myfare rfid KeyReader starting up...')
 
+    def ui_pulse_comm(self):
+        if self.ui is not None:
+	    self.ui.ui_pulse_comm()
+
+    def ui_show_comm_error(self):
+        if self.ui is not None:
+	    self.ui.ui_show_comm_error()
+
     def wait_for_key(self, callback):
         rdr = self.rdr
         rdr.wait_for_tag()
         (error, tag_type) = rdr.request()
+	self.ui_pulse_comm()
 
         ## commmented out , to verbose...., perhaps no error here?.
 	#if error:
@@ -26,6 +36,7 @@ class KeyReader:
             logger.debug("Tag detected")
 
             (error, uid) = rdr.anticoll()
+	    self.ui_pulse_comm()
             if not error:
                 logger.debug("UID: " + str(uid))
                 # Select Tag is required before Auth
@@ -37,6 +48,11 @@ class KeyReader:
 
                 # Always stop crypto1 when done working
                 #rdr.stop_crypto()
+            if error:
+		self.ui_show_comm_error()
+                logger.debug('Error ' + self.__class__.__name__+ ': error return by rdr.anticoll :')
+
+
 
     def cleanup(self):
         '''calling rdr.stop_crypto() and rdr.cleanup() '''

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import logging 
 import time
 
@@ -63,6 +64,18 @@ solenoid = Solenoid.Solenoid(config.get('doorlockd', 'solenoid_pin'), config.get
 rfid = Mifare.KeyReader()
 
 #
+# config User feedback Interface
+#
+if config.has_option('doorlockd', 'ui_led_green') and config.has_option('doorlockd', 'ui_led_red'):
+    import UiLed2
+    ui = UiLed2.UiLed2(config.get('doorlockd', 'ui_led_green'),config.get('doorlockd', 'ui_led_red'), logger=logger)
+    solenoid.ui = ui
+    rfid.ui = ui
+else:
+    logger.info('No User feedback interface (no ui_led_green and ui_led_red).')
+
+
+#
 # init our Buttons, use the allowed_button_prefixes to collect all configured buttons
 #
 buttons = []
@@ -93,7 +106,8 @@ def openfunctie(hwid):
         solenoid.open()
     else:
         logger.critical('access denied:  "{:s}" - "{:s}" - "{:s}" - "{:s}" '.format(entry.get('hwid', 'not found'), solenoid.name, entry.get('name', 'not found'), entry.get('error', 'no error message avilable') ))
-        time.sleep(1)
+	ui.ui_show_access_false()
+        #time.sleep(1)
         
     
 #
@@ -129,3 +143,4 @@ logger.info('starting wait_for_key... ')
 
 while True:
     rfid.wait_for_key(openfunctie)
+

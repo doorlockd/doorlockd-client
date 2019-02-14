@@ -16,8 +16,12 @@ logger = logging.getLogger('doorlockd')
 class Solenoid:
     '''Control a Solenoid / Door unlocker.'''
     
-    def __init__(self, gpio_pin, name = 'door'):
+    def __init__(self, gpio_pin, name = 'door', ui=None):
         ''' Initiate Solenoid object: setup GPIO.OUT pin and make sure the output is LOW (== door closed).'''
+
+	# dress up with the User feedback interface
+	self.ui = ui
+
         logger.info('init {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, name, gpio_pin))
 
         self.time = 1.8
@@ -33,8 +37,12 @@ class Solenoid:
         # set GPIO_PIN high for x amount of time
         #
         GPIO.output(self.gpio_pin, GPIO.HIGH)
+	if self.ui is not None:
+		self.ui.ui_on_door_open() 
         time.sleep(self.time)
         GPIO.output(self.gpio_pin, GPIO.LOW)
+	if self.ui is not None:
+		self.ui.ui_off_door_open()
 
         logger.debug('{:s} {:s} close .'.format(self.__class__.__name__, self.name))
 
