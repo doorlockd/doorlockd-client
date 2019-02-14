@@ -3,7 +3,6 @@
 import Adafruit_BBIO.GPIO as GPIO
 import time
 
-
 #
 # example: ui_leds = UiLed2("P9_13", "P9_12")
 #
