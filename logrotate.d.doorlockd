@@ -1,0 +1,13 @@
+/var/log/doorlockd.log {
+	monthly
+	missingok
+	rotate 12
+	notifempty
+	create 640 root adm
+	sharedscripts
+	postrotate
+                if systemctl is-active --quiet doorlockd.service ; then \
+                    systemctl restart --quiet doorlockd.service; \
+                fi;
+	endscript
+}
