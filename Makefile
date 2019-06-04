@@ -6,4 +6,4 @@ install-systemd:
 	systemctl enable doorlockd
 	
 install-logrotate:
-	install -m logrotate.d.doorlockd /etc/logrotate.d/doorlockd
+	install -m 644 logrotate.d.doorlockd /etc/logrotate.d/doorlockd

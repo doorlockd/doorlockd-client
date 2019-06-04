@@ -1,6 +1,7 @@
 /var/log/doorlockd.log {
 	monthly
 	missingok
+	#compress
 	rotate 12
 	notifempty
 	create 640 root adm
