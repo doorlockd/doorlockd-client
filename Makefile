@@ -1,7 +1,7 @@
 install: install-systemd install-logrotate
 
 install-systemd:
-	install -m +x systemd.doorlockd.service /etc/systemd/system/doorlockd.service
+	install -m 644 systemd.doorlockd.service /etc/systemd/system/doorlockd.service
 	systemctl daemon-reload
 	systemctl enable doorlockd
 	
