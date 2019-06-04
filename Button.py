@@ -29,8 +29,9 @@ class Button:
 
 		GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.my_callback,bouncetime=200) 
 	
-	except:
+	except Exception as e:
         	logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, name, gpio_pin))
+        	logger.info('error: {:s}.'.format(str(e)))
 		raise SystemExit('Unable to setup button using GPIO pin: %s' % gpio_pin)
 
     def cleanup(self):
