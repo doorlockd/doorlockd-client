@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://wie-niet.nl/doorlockd/schema.users.json",
+  "title": "Doorlockd users",
+  "description": "Users",
+  "type": "object",
+  "properties": {
+      "id": {
+          "description": "user id",
+		  "readOnly": true,
+          "type": "integer"
+      },
+      "email": {
+		  "description": "e-mail address, also used as unique username",
+		  "format": "email",
+          "type": ["string"]
+      },
+      "password_hash": {
+          "description": "password hash.",
+          "type": ["string"]
+      },
+      "password_plain": {
+          "description": "write plain password, will hashed and stored into password_hash.",
+  		  "writeOnly": true,
+	      "pattern": "^.{3}.*$",
+          "type": ["string", "null"]
+      },
+      "is_disabled": {
+          "description": "True if this user is disabled",
+		  "default" : false, 
+          "type": ["boolean"]
+      },
+      "created_at": {
+          "description": "Create timestamp",
+		  "readOnly": true,
+          "type": ["string", "null"]
+      },
+      "updated_at": {
+          "description": "Update timestamp",
+		  "readOnly": true,
+          "type": ["string", "null"]
+      }
+  }, 
+  "required": [ "email" ],
+  "additionalProperties": false
+}

@@ -1,0 +1,73 @@
+minimal doorlockd + web api:
+
+/*
+ * Layout
+ */
+
+- db :
+  tabel tags:
+   ((int)id, (string)hwid, (string)description, (bool)access, *_dates)
+   
+  table unkowntags:
+    ((int)id, (string)hwid, *_dates)
+
+
+   table users:
+	 (id, email, password, *_dates)
+
+
+	db *history:
+	  (changes by users)
+	
+- container: (singleton)
+  * config
+  * hw
+  * db
+  * log
+  
+- HW:
+  out12v Solenoid, 
+  out12v BuzzerOut, 
+  
+  button IntercomButton
+  button BuzzerButton
+  
+  rfid	rc522
+  
+  'output leds' ??
+  
+- API:
+  /tags/				[*]
+  /unknowntags/			[*]
+  /users/				[*]
+  /changelog/*/ 		[*]
+
+#
+# /output/solenoid		{ open = false|true }
+# /output/buzzer 		{ open = false|true }
+# /input/button/:id		{ pressed = false|true } (read-only)
+
+
+/*
+ * stappen plan
+ */
+ 
+[x] orator, migratie, models
+[x] flask api 
+[x] api auth / + json web tokens ??
+[x] api token uid -> changelogs.user_id 
+[x] change: user.password -> user.password_hash [GET/PUT], user.password [PUT] (getter:Null?||WriteOnly) [only: plain writeonly ]
+[x] fix: password_hash (read/write) instead of WriteOnly/ReadOnly; password WrieOnly 
+[x] validatie: jsonschema : regexp ???
+[x] refresh token with token.
+[ ] "Restinator" remake (FlaskRequestClass/)
+[ ] [web interface?]
+[ ] HW, out12v
+[ ] HW, Solenoid
+[ ] HW, BuzzerOut
+[ ] HW, button, ..
+[x] data_container Singleton
+[x] config,
+[x] logging,
+[ ] ...
+ 
