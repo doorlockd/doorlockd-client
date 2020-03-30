@@ -37,8 +37,19 @@ class JsonSchemaForRestApi(object):
 		self.read_only_attributes = self.__get_read_only_attrib_form_schema(json_schema_dict)
 		# set our write-only attributes
 		self.write_only_attributes = self.__get_write_only_attrib_form_schema(json_schema_dict)
+		# set all attributes
+		self.all_attributes = self.__get_attrib_from_schema(json_schema_dict)
 		
-	
+	def __get_attrib_from_schema(self, schema_dict=None):
+		'''get all attributes from json_schema  '''
+		if schema_dict is None:
+			schema_dict = self.json_schema
+			
+		attributes = []
+		for key, propertie in schema_dict['properties'].items():
+			attributes.append(key)
+		return(attributes)
+		
 		
 	def __get_read_only_attrib_form_schema(self, schema_dict=None):
 		'''get all attributes from json_schema marked as readeOnly '''

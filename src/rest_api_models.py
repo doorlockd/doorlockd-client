@@ -76,6 +76,38 @@ class ChangelogRestApi(JwtForRestApi, JsonSchemaForRestApi, RestApiOrator):
 
 
 #
+# Api singleobject:
+#
+from rest_api_lib.rest_api_singleobject import RestApiSingleObject
+# schema.dummy.json
+
+# define dummy object 
+class dummyObject():
+	some_name = "bla bla"
+	_some_number = 42
+	
+	@property
+	def some_number(self):
+		self._some_number = 1 + self._some_number
+		return(self._some_number)
+	
+	@some_number.setter
+	def some_number(self, number):
+		self._some_number = number
+
+	
+# init dummy object
+dummy_obj = dummyObject()
+
+# create rest api wrapper for dummy obj
+class DummyRestApi(RestApiSingleObject):
+	def __init__(self):
+		self._object = dummy_obj
+		self._read_json_schema('schema/schema.dummy.json')
+
+
+
+#
 # Add all above Api classes with routes to Flask
 #
 def add_to_flask(app):
@@ -88,4 +120,6 @@ def add_to_flask(app):
 	app.add_url_rule('/api/login/', view_func=rest_api_login.login_endpoint , methods=['POST'])
 	app.add_url_rule('/api/refresh_token/', view_func=rest_api_login.token_refresh_endpoint , methods=['POST'])
 	
+	# dummy object
+	DummyRestApi.flask_add_rules('/api/dummy', app, methods=['LIST', 'PUT'])
 	

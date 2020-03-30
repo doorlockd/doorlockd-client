@@ -6,6 +6,8 @@ import sys
 # flask webserver
 from flask import Flask, jsonify, make_response
 from flask_orator import Orator
+from waitress import serve
+
 
 # db models
 from models import *
@@ -62,7 +64,7 @@ data_container.logger.info('doorlockd starting up...')
 #
 # Creating Flask application
 #
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='', static_folder='static_html')
 app.debug = True
 app.config['ORATOR_DATABASES'] = data_container.config['ORATOR_DATABASES']
 
@@ -85,6 +87,10 @@ if __name__ == '__main__':
 	import rest_api_models
 	rest_api_models.add_to_flask(app)
 	
-	app.run(host='0.0.0.0', port=80)
-
+	# Flask built in webserver , with DEBUG options
+	app.run(host='0.0.0.0', port=8000) ##Replaced with below code to run it using waitress
+	
+	# Waitress webserver:
+	# serve(app, host='0.0.0.0', port=8000) # listen="*:8000"
+	# fix waitress logging...
 	

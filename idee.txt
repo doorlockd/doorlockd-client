@@ -60,14 +60,18 @@ minimal doorlockd + web api:
 [x] fix: password_hash (read/write) instead of WriteOnly/ReadOnly; password WrieOnly 
 [x] validatie: jsonschema : regexp ???
 [x] refresh token with token.
+[ ] move Token settings into config file [secret,expire,audience]
 [ ] "Restinator" remake (FlaskRequestClass/)
 [ ] [web interface?]
 [ ] HW, out12v
 [ ] HW, Solenoid
 [ ] HW, BuzzerOut
 [ ] HW, button, ..
+[ ] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
 [x] data_container Singleton
 [x] config,
 [x] logging,
 [ ] ...
  
+[x] install on beaglbone , pyjwt/jwt issues ?? (https://github.com/jpadilla/pyjwt/issues/374) : install pyjwt
+[ ] python requirements.txt? or pipenv (https://medium.com/@boscacci/why-and-how-to-make-a-requirements-txt-f329c685181e)
