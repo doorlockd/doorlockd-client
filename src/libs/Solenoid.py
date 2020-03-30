@@ -27,12 +27,12 @@ class Solenoid(hw12vOut):
 		#
 		# set GPIO_PIN high for x amount of time
 		#
-		# GPIO.output(self.gpio_pin, GPIO.HIGH)
+		GPIO.output(self.gpio_pin, GPIO.HIGH)
 		# # if self.ui is not None:
 		# 	# self.ui.ui_on_door_open()
 		#
 		time.sleep(self.time_wait)
-		# GPIO.output(self.gpio_pin, GPIO.LOW)
+		GPIO.output(self.gpio_pin, GPIO.LOW)
 		#
 		# if self.ui is not None:
 		# 	self.ui.ui_off_door_open()
