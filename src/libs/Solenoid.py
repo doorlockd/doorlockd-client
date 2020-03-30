@@ -1,5 +1,5 @@
 # from .data_container import data_container as dc
-from .base import hw12vOut
+from .base import hw12vOut, GPIO
 import time
 
 class Solenoid(hw12vOut):
