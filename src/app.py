@@ -85,6 +85,6 @@ if __name__ == '__main__':
 	import rest_api_models
 	rest_api_models.add_to_flask(app)
 	
-	app.run()
+	app.run(host='0.0.0.0', port=80)
 
 	
