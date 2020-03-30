@@ -55,7 +55,7 @@ class ApiList(object):
 class RestApi(MethodView):
 	read_only_attributes = []
 	write_only_attributes = []
-	
+
 	need_auth = bool(False)
 	need_validation = bool(False)
 	need_defaults = bool(False)
@@ -166,6 +166,7 @@ class RestApi(MethodView):
 		'''implement an set_defaults to add defaults to the model, don't forget to set need_defaults'''
 		pass
 		
+
 	def enforce_write_only(self, obj):
 		'''remove write-only attributes from data, and return new object'''
 		if not self.need_enforce_write_only:
@@ -197,7 +198,7 @@ class RestApi(MethodView):
 				# read-only attribute is changed	
 				print ("DEBUG: {} != {}".format(self.x_getattr(old, key), self.x_getattr(new, key) ))
 				print ("DEBUG: {} != {}".format(type(self.x_getattr(old, key)), type(self.x_getattr(new, key)) ))
-				error = {'error': 'read-only violation', 'message': "Cannot change read-only attribute: path '{}'.".format(key)}
+				error = {'error': 'read-only violation', 'message': "Cannot change read-only attribute: path '{}'.".format(key)}				
 				self.response(error, 409)
 			
 
@@ -301,7 +302,7 @@ class RestApi(MethodView):
 	def response(self, obj, code=200, location=None):
 		'''make json HTTP response of "object" with status "code" (default: 200) '''
 
-		# response(True) -> HTTP 204 
+		# response(True) -> HTTP 204 No Content; Location: ...
 		if obj is True:
 			self.response(None, 204, location)
 	
@@ -311,6 +312,11 @@ class RestApi(MethodView):
 
 		if location:
 			resp.headers['Location'] = location
+
+		# DEBUG:
+		if code != 200:
+			print ("DEBUG: json response:", code, obj)
+			
 
 		abort(resp)
 		
@@ -425,7 +431,7 @@ class RestApi(MethodView):
 		self._call_has_access(auth, 'GET')
 		
 		# get POST data from HTTP request
-		new_item = request.get_json()
+		new_item = request.get_json()		
 		
 		# add defaults if needed
 		self._call_set_defaults(new_item)

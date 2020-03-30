@@ -18,7 +18,60 @@ from flask import jsonify
 class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 	_object = None
 
+	@classmethod
+	def flask_add_rules(cls, uri_path, flask_app,  uri_path_id='<int:id>', pk='id', methods=['LIST','POST','GET', 'PUT', 'DELETE', 'PATCH']):
+		'''add HTTP end_points for this RestApi SingleObject class:
+			class MyUsersRestApi(...,RestApi):
+				...
+		
+			MySettingsObject.flask_add_rules('/api/settings', app)
+							
+			# will add:
+			# GET, PUT, PATCH (read, update, ...)
+			app.route('/api/settings', methods= [....]):
+		
+			!!! this is a SingleObject:
+			 methods LIST POST DELETE are ignored.
+			 uri_path_id is ignored
+			 pk is ignored
+		
+			# # we use method 'LIST' to define the GET method to list all entries:
+			# app.route('/users/', methods=['GET']):
+			#
+			# # POST / create
+			# app.route('/users/', methods=['POST']):
+		
+		'''
+		# view class name 'as_view' => api_rest_ + uri_path (translate special chars?).
+		view_class_name = 'api_rest_view_' + uri_path
+		
+		view_instance = cls.as_view(view_class_name)
 
+		print('DEBUG: flask_add_rules: ', methods, uri_path)
+
+		# copy methods to prevent updating the static value of this method
+		my_methods = methods.copy()
+		#
+		# if 'LIST' in my_methods:
+		# 	flask_app.add_url_rule(uri_path, defaults={pk: None}, view_func=view_instance, methods=['GET',])
+		# 	my_methods.remove('LIST')
+		# 	# print('DEBUG: add_url_rule LIST:', uri_path)
+		#
+		# if 'POST' in methods:
+		# 	flask_app.add_url_rule(uri_path, view_func=view_instance, methods=['POST',])
+		# 	my_methods.remove('POST')
+		# 	# print('DEBUG: add_url_rule POST:', uri_path)
+
+		# the rest of the methods ['GET', 'PUT', 'DELETE', 'PATCH']]
+		# ignore DELETE
+		# my_methods.remove('DELETE')
+		
+		# for SingleObject we use a dummy value of 1
+		if len(my_methods) != 0:
+			flask_app.add_url_rule(uri_path,defaults={pk: 1}, view_func=view_instance, methods=my_methods)
+			# print('DEBUG: add_url_rule ', my_methods , uri_path)
+		
+		
 	# overwrite get to always return get_item
 	def get(self, id, **kwargs):
 		self.magic_parse_route(**kwargs)
@@ -26,6 +79,10 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 
 	# overwrite make_dict
 	def make_dict(self, obj):
+		#if obj is already dict , return it , it might be an error message:
+		if type(obj) is dict:
+			return(obj)
+		
 		#make dict from object
 		d = {}
 		for attr in self.all_attributes:
@@ -54,7 +111,7 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 		# TODO: get attributes from json_schema ...
 		for attr in self.all_attributes:
 			# set/update attribute:
-			self._object.attr = new_item[attr]
+			setattr(self._object, attr, new_item[attr])
 		# catch errror?
 		return(self._object)	
 	

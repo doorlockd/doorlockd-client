@@ -20,6 +20,8 @@ from libs.data_container import data_container
 import toml
 import logging
 
+# hardware:
+from libs.Solenoid import Solenoid
 
 
 # Read Config settings 
@@ -73,9 +75,6 @@ app.config['ORATOR_DATABASES'] = data_container.config['ORATOR_DATABASES']
 #
 db = Orator(app)
 
-#
-# ...
-#
 
 
 
@@ -87,6 +86,16 @@ if __name__ == '__main__':
 	import rest_api_models
 	rest_api_models.add_to_flask(app)
 	
+
+	# 
+	# Hardware: Solenoid
+	#
+	hw_solenoid = Solenoid()
+	# # any_object, json_schema, urlpath=None, app=None, methods=['GET', 'PUT']):
+	# api_solenoid = rest_api_models.AnySingleObjectRestApi(hw_solenoid, 'schema/schema.hw.solenoid.json')
+	# api_solenoid.flask_add_rules('/api/hw/solenoid', app, methods=['GET', 'PUT'])
+	rest_api_models.create_api_for_object(hw_solenoid, 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
+
 	# Flask built in webserver , with DEBUG options
 	app.run(host='0.0.0.0', port=8000) ##Replaced with below code to run it using waitress
 	
@@ -94,3 +103,4 @@ if __name__ == '__main__':
 	# serve(app, host='0.0.0.0', port=8000) # listen="*:8000"
 	# fix waitress logging...
 	
+

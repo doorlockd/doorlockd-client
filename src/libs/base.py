@@ -1,4 +1,5 @@
 from .data_container import data_container as dc
+import Adafruit_BBIO.GPIO as GPIO
 
 
 class DoorlockdBaseClass():
@@ -51,15 +52,16 @@ class hw12vOut(DoorlockdBaseClass):
 		'''initialize gpio port.'''
 		self.logger.info('initializing on gpio pin {:s}.'.format(str(self.gpio_pin)))
 
-		# GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
 		
 	@property
 	def log_name(self):
 		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
 	
+	# status can be exposed to api
 	@property
 	def status(self):
-		return(False)
+		# return(False)
 		return(bool(GPIO.input(self.gpio_pin)))
 
 	@status.setter

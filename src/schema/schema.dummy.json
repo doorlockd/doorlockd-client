@@ -7,14 +7,18 @@
   "properties": {
       "some_name": {
           "description": "some name",
-		  "readOnly": true,
           "type": ["string"]
+      },
+      "iii": {
+          "description": "some name",
+          "type": ["string","null"]
       },
       "some_number": {
           "description": "Some number ",
           "type": ["integer"]
+
 	  }
   }, 
-  "required": [ "some_name", "some_nummber" ],
+  "required": [ "some_name", "some_number"],
   "additionalProperties": false
 }
