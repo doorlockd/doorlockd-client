@@ -7,14 +7,17 @@
   "properties": {
       "config_name": {
           "description": "config_name name",
+		  "readOnly": true,
           "type": ["string"]
       },
       "gpio_pin": {
           "description": "gpio_pin name",
+		  "readOnly": true,
           "type": ["string"]
       },
       "time_wait": {
           "description": "time in seconds",
+		  "readOnly": true,
           "type": ["number"]
       },
       "status": {
@@ -23,6 +26,6 @@
 
 	  }
   }, 
-  "required": [ "config_name"],
+  "required": [ "status"],
   "additionalProperties": false
 }
