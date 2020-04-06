@@ -99,8 +99,8 @@ class hwButtonInput(DoorlockdBaseClass):
 			GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
 	
 		except Exception as e:
-			logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
-			logger.info('error: {:s}.'.format(str(e)))
+			self.logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
+			self.logger.info('error: {:s}.'.format(str(e)))
 			raise SystemExit('Unable to setup button using GPIO pin: %s' % gpio_pin)
 		
 	def __event_callback(self, channel):
@@ -108,14 +108,14 @@ class hwButtonInput(DoorlockdBaseClass):
 
 		if GPIO.input(channel) == 0:
 			# prevent acting on glitches in the GPIO or cabling, proceed if the input is still low
-			logger.info('{:s} {:s} pressed .'.format(self.__class__.__name__, self.gpio_pin))
+			self.logger.info('{:s} {:s} pressed .'.format(self.__class__.__name__, self.gpio_pin))
 
 			# do the action:
 			self.trigger()
 
 		else:
 			# for those who are curious we will log false positives in our debug log
-			logger.debug('{:s} {:s} False positive detected (input High).'.format(self.__class__.__name__, self.gpio_pin))
+			self.logger.debug('{:s} {:s} False positive detected (input High).'.format(self.__class__.__name__, self.gpio_pin))
 
 		
 	@property
