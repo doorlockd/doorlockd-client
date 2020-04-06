@@ -75,3 +75,6 @@ minimal doorlockd + web api:
  
 [x] install on beaglbone , pyjwt/jwt issues ?? (https://github.com/jpadilla/pyjwt/issues/374) : install pyjwt
 [ ] python requirements.txt? or pipenv (https://medium.com/@boscacci/why-and-how-to-make-a-requirements-txt-f329c685181e)
+
+[ ] hw io default io value (low / high) -> true . false : swithc trigger , change , set high , set low.
+[ ] fix status intercom...

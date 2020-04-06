@@ -120,6 +120,7 @@ class hwButtonInput(baseHardwareIO):
 		# invert the status for the input connected to GND
 		@property
 		def status(self):
+			print("DEBUG: bool(GPIO.input(self.gpio_pin)) :", bool(GPIO.input(self.gpio_pin)) )
 			return(bool(GPIO.input(self.gpio_pin)))
 
 		@status.setter
