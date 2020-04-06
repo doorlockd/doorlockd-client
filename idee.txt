@@ -60,7 +60,7 @@ minimal doorlockd + web api:
 [x] fix: password_hash (read/write) instead of WriteOnly/ReadOnly; password WrieOnly 
 [x] validatie: jsonschema : regexp ???
 [x] refresh token with token.
-[ ] move Token settings into config file [secret,expire,audience]
+[x] move Token settings into config file [secret,expire], added logger
 [ ] "Restinator" remake (FlaskRequestClass/)
 [ ] [web interface?]
 [x] HW, out12v
