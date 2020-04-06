@@ -55,7 +55,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	# status can be exposed to api
 	@property
 	def status(self):
-		if self.invert:
+		if self.invert_state:
 			return(not bool(GPIO.input(self.gpio_pin)))
 		else:
 			return(bool(GPIO.input(self.gpio_pin)))
