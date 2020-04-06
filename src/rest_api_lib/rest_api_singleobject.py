@@ -112,7 +112,10 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 			# set/update attribute:
 			try:
 				setattr(self._object, attr, new_item[attr])
-				
+			except Exception as e:
+				# TODO
+				print ("ERROR: db_update on object:", self._object, attr, new_item[attr])
+				raise(e)	
 		# catch errror?
 		return(self._object)	
 	
