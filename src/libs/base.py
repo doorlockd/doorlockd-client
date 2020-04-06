@@ -29,10 +29,8 @@ class DoorlockdBaseClass():
 		self.logger.log(level,'{:s} :{:s}'.format(self.log_name, message))
 	
 	
-
-class hw12vOut(DoorlockdBaseClass):
-	'''hardware: 12Volt output GPIO control.'''
-	
+class baseHardwareIO(DoorlockdBaseClass):
+	'''Base class for all gpio i/o hardware objects'''
 	__gpio_pin = None
 	# config_name = 'hw_test'
 	
@@ -48,13 +46,7 @@ class hw12vOut(DoorlockdBaseClass):
 	def gpio_pin(self, gpio_pin):
 		'''only set gpio if not initiated.'''
 		self.__gpio_pin = str(gpio_pin) # make sure it's a string.	
-	
-	def hw_init(self):
-		'''initialize gpio port.'''
-		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
-		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
-		
 	@property
 	def log_name(self):
 		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
@@ -69,27 +61,22 @@ class hw12vOut(DoorlockdBaseClass):
 	def status(self, state):
 		if state is not self.status:
 			self.trigger()
-			
 
-class hwButtonInput(DoorlockdBaseClass):
+
+class hw12vOut(baseHardwareIO):
+	'''hardware: 12Volt output GPIO control.'''
+	
+	
+	def hw_init(self):
+		'''initialize gpio port.'''
+		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+
+		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+		
+
+class hwButtonInput(baseHardwareIO):
 	'''hardware: input button between GPIO and GND.'''
-	
-	__gpio_pin = None
-	# config_name = 'hw_test'
-	
-	def __init__(self):
-		pass
-		# self.config_name = 'hw_test'
-	
-	@property
-	def gpio_pin(self):
-		return(self.__gpio_pin)
-	
-	@gpio_pin.setter
-	def gpio_pin(self, gpio_pin):
-		'''only set gpio if not initiated.'''
-		self.__gpio_pin = str(gpio_pin) # make sure it's a string.	
-	
+
 	def hw_init(self):
 		'''initialize gpio port.'''
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
@@ -118,18 +105,4 @@ class hwButtonInput(DoorlockdBaseClass):
 			self.logger.debug('input {:s} False positive detected (input High).'.format(self.log_name))
 
 		
-	@property
-	def log_name(self):
-		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
-	
-	# status can be exposed to api
-	@property
-	def status(self):
-		# return(False)
-		return(bool(GPIO.input(self.gpio_pin)))
-
-	@status.setter
-	def status(self, state):
-		if state is not self.status:
-			self.trigger()
 			
