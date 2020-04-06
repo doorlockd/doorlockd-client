@@ -1,5 +1,4 @@
-from .data_container import data_container as dc
-from .base import hw12vOut, GPIO
+from .base import hwButtonInput, GPIO, dc
 import time
 
 class Button(hwButtonInput):
