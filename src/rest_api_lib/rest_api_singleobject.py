@@ -102,6 +102,7 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 	# def db_list(self):
 
 	# def db_create(self, item):
+
 			
 	def db_update(self, id, new_item, old_item=None):
 		
@@ -109,13 +110,14 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 		# 	old_item = self.db_find_one(id)
 			
 		for attr in self.all_attributes:
-			# set/update attribute:
-			try:
-				setattr(self._object, attr, new_item[attr])
-			except Exception as e:
-				# TODO
-				print ("ERROR: db_update on object:", self._object, attr, new_item[attr])
-				raise(e)	
+			if attr in self.read_only_attributes
+				# set/update attribute:
+				try:
+					setattr(self._object, attr, new_item[attr])
+				except Exception as e:
+					# TODO
+					print ("ERROR: db_update on object:", self._object, attr, new_item[attr])
+					raise(e)	
 		# catch errror?
 		return(self._object)	
 	
