@@ -84,6 +84,9 @@ class Token(object):
 			cls.secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
 		
 		print("implement logger: Token initialized ..")
+		print("DEBUG Token.expire   :", Token.expire)
+		print("DEBUG Token.audience :", Token.audience)
+		print("DEBUG Token.secret   :", Token.secret)
 		
 	
 	@staticmethod
