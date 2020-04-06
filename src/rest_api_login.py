@@ -63,7 +63,6 @@ class Token(object):
 
 	# expire = 3600 * 12 # 12 hours
 	expire = 3600
-	audience = 'doorlockd-api'
 
 	#
 	# dress up Token :
@@ -74,25 +73,23 @@ class Token(object):
 
 		# expire time, default 3600 seconds
 		cls.expire = dc.config.get('jwt_token',{}).get('expire', 3600)
-		# audience , default 'doorlockd-api'
-		cls.audience = dc.config.get('jwt_token',{}).get('audience', 'doorlockd-api')
 		# secret , default None
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
 		if cls.secret is None:
 			print("implement logger auto generate runtime secret: auto generating secret")
-			import secrets
+			import secrets 
+			#only python > 3.6 , sorry config secret in your config.ini
 			cls.secret = secrets.token_urlsafe(64)
-			# cls.secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
+
 		
 		print("implement logger: Token initialized ..")
 		print("DEBUG Token.expire   :", Token.expire)
-		print("DEBUG Token.audience :", Token.audience)
 		print("DEBUG Token.secret   :", Token.secret)
 		
 	
 	@staticmethod
-	def create(user, admin=True, refresh=True):
+	def create(user, admin=True, refresh=True, aud='default'):
 		# payload
 		p = {}
 		#
@@ -105,7 +102,9 @@ class Token(object):
 		p['iat'] = timegm(datetime.utcnow().utctimetuple())
 		p['nbf'] = p['iat'] - 1
 		p['exp'] = p['iat'] + Token.expire
-		p['aud'] = Token.audience
+		
+		# audience , single string, or array of strings
+		p['aud'] = aud
 	
 		# user id
 		p['uid'] = user.id
@@ -120,9 +119,9 @@ class Token(object):
 		return(token)
 		
 	@staticmethod
-	def verify(token):
-		
-		decoded = jwt.decode(token, Token.secret, audience=Token.audience, algorithms=['HS256'])			
+	def verify(token, aud='default'):
+		# audience , single string, or array of strings
+		decoded = jwt.decode(token, Token.secret, audience=aud, algorithms=['HS256'])			
 		
 		# todo ... handle exception ?
 		return(decoded)
