@@ -22,6 +22,7 @@ import logging
 
 # hardware:
 from libs.Solenoid import Solenoid
+from libs.Solenoid import Button
 
 
 # Read Config settings 
@@ -95,6 +96,7 @@ if __name__ == '__main__':
 	# Hardware: Solenoid
 	#
 	hw_solenoid = Solenoid()
+	# hw_solenoid.trigger()
 	dc.hw['solenoid'] = hw_solenoid
 	# # any_object, json_schema, urlpath=None, app=None, methods=['GET', 'PUT']):
 	# api_solenoid = rest_api_models.AnySingleObjectRestApi(hw_solenoid, 'schema/schema.hw.solenoid.json')
