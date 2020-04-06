@@ -106,11 +106,10 @@ class hwButtonInput(baseHardwareIO):
 			# for those who are curious we will log false positives in our debug log
 			self.logger.debug('input {:s} False positive detected (input High).'.format(self.log_name))
 
-		# status can be exposed to api
+
 		# invert the status for the input connected to GND
 		@property
 		def status(self):
-			# return(False)
 			return(not bool(GPIO.input(self.gpio_pin)))
 
 		
