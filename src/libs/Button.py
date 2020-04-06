@@ -6,6 +6,8 @@ class Button(hwButtonInput):
 	trigger_action = 'not set' # solenoid|buzzer|whatever
 	
 	def __init__(self, config_name, trigger_action='not set'):
+		self.config_name = config_name
+		
 		# read gpio_pin from config
 		self.gpio_pin = self.config.get('pin')
 
