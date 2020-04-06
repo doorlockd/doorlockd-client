@@ -18,7 +18,7 @@
       "counter": {
           "description": "trigger counter",
 		  "readOnly": true,
-          "type": ["number"]
+          "type": ["integer"]
       },
       "gpio_pin": {
           "description": "gpio_pin name",
