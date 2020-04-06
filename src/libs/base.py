@@ -32,6 +32,7 @@ class DoorlockdBaseClass():
 class baseHardwareIO(DoorlockdBaseClass):
 	'''Base class for all gpio i/o hardware objects'''
 	__gpio_pin = None
+	invert_state = False 
 	# config_name = 'hw_test'
 	
 	def __init__(self):
@@ -51,56 +52,58 @@ class baseHardwareIO(DoorlockdBaseClass):
 	def log_name(self):
 		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
 
-	# # status can be exposed to api
-	# @property
-	# def status(self):
-	# 	# return(False)
-	# 	return(bool(GPIO.input(self.gpio_pin)))
-	#
-	# @status.setter
-	# def status(self, state):
-	# 	if state is not self.status:
-	# 		self.trigger()
-	
-
-
-class hw12vOut(baseHardwareIO):
-	'''hardware: 12Volt output GPIO control.'''
-	
-	
-	def hw_init(self):
-		'''initialize gpio port.'''
-		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
-
-		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
-	
 	# status can be exposed to api
 	@property
 	def status(self):
-		# return(False)
-		return(bool(GPIO.input(self.gpio_pin)))
+		if self.invert:
+			return(not bool(GPIO.input(self.gpio_pin)))
+		else:
+			return(bool(GPIO.input(self.gpio_pin)))
 
 	@status.setter
 	def status(self, state):
 		if state is not self.status:
 			self.trigger()
+	
+
+
+class hw12vOut(baseHardwareIO):
+	'''hardware: 12Volt output GPIO control.'''
+	invert_state = False
+	
+	
+	def hw_init(self):
+		'''initialize gpio port.'''
+		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+
+		try:
+			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+	
+		except Exception as e:
+			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
+			self.logger.info('Error: {:s}.'.format(str(e)))
+			raise SystemExit('Unable to setup {:s} on {:s}'.format(self.config_name, self.log_name))
+		
+		
+	
 		
 
 class hwButtonInput(baseHardwareIO):
 	'''hardware: input button between GPIO and GND.'''
+	invert_state = True
 
 	def hw_init(self):
 		'''initialize gpio port.'''
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
-		# try:
-		GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-		GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
+		try:
+			GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+			GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
 	
-		# except Exception as e:
-		# 	self.logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
-		# 	self.logger.info('error: {:s}.'.format(str(e)))
-		# 	raise SystemExit('Unable to setup button using GPIO pin: %s' % gpio_pin)
+		except Exception as e:
+			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
+			self.logger.info('Error: {:s}.'.format(str(e)))
+			raise SystemExit('Unable to setup {:s} on {:s}'.format(self.config_name, self.log_name))
 		
 	def __event_callback(self, channel):
 		'''callback function for event_detect, called when button is pressed.'''
@@ -117,15 +120,4 @@ class hwButtonInput(baseHardwareIO):
 			self.logger.debug('input {:s} False positive detected (input High).'.format(self.log_name))
 
 
-		# invert the status for the input connected to GND
-		@property
-		def status(self):
-			print("DEBUG: bool(GPIO.input(self.gpio_pin)) :", bool(GPIO.input(self.gpio_pin)) )
-			return(bool(GPIO.input(self.gpio_pin)))
-
-		@status.setter
-		def status(self, state):
-			if state is not self.status:
-				self.trigger()
-		
 			
