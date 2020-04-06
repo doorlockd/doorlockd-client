@@ -5,6 +5,9 @@ import jwt
 from datetime import datetime
 from calendar import timegm
 
+# access conig and logger using our data container
+from libs.data_container import data_container as dc
+
 
 class JwtForRestApi(object):
 	'''implement JWT token checks for my Flask REST API.'''
@@ -56,10 +59,32 @@ class JwtForRestApi(object):
 class Token(object):
 	'''create and verify jwt tokens.'''
 	
-	secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
+	secret = None
+
 	# expire = 3600 * 12 # 12 hours
-	expire = 3600 
+	expire = 3600
 	audience = 'doorlockd-api'
+
+	#
+	# dress up Token :
+	#		
+	@classmethod
+	def _init_read_conig(cls):
+		# read config settings from our config file, via our data_container singleton:
+
+		# expire time, default 3600 seconds
+		cls.expire = dc.config.get('jwt_token',{}).get('expire', 3600)
+		# audience , default 'doorlockd-api'
+		cls.audience = dc.config.get('jwt_token',{}).get('audience', 'doorlockd-api')
+		# secret , default None
+		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
+
+		if cls.secret is None:
+			print("implement logger auto generate runtime secret: auto generating secret")
+			cls.secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
+		
+		print("implement logger: Token initialized ..")
+		
 	
 	@staticmethod
 	def create(user, admin=True, refresh=True):
@@ -97,7 +122,11 @@ class Token(object):
 		# todo ... handle exception ?
 		return(decoded)
 	
-		
+
+# initialize token:
+Token._init_read_conig()
+
+
 
 #
 # login and JWT 
