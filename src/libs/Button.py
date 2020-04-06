@@ -19,7 +19,7 @@ class Button(hwButtonInput):
 
 	def trigger(self):
 		# call trigger on destination hw
-		if dc.hw.get(self.trigger_action, None) not None:
+		if dc.hw.get(self.trigger_action, None) is not None:
 			dc.hw[ self.trigger_action ].trigger()
 		else:
 			self.logger.error('Trigger action {:s} not for button {:s}.'.format(self.trigger_action, self.config_name))
