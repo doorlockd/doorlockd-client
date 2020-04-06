@@ -13,9 +13,9 @@ from waitress import serve
 from models import *
 
 # global data_container
-from libs.data_container import data_container
-# data_container.config: config dict
-# data_container.logging: logging object
+from libs.data_container import data_container as dc
+# dc.config: config dict
+# dc.logging: logging object
 
 import toml
 import logging
@@ -26,7 +26,7 @@ from libs.Solenoid import Solenoid
 
 # Read Config settings 
 try:
-	data_container.config = toml.load('config.ini')
+	dc.config = toml.load('config.ini')
 except FileNotFoundError:
 	sys.exit("Config file 'config.ini' is missing.")
 
@@ -36,31 +36,31 @@ except FileNotFoundError:
 # create logger with 'doorlockd'
 #
 logger = logging.getLogger('doorlockd')
-logger.setLevel(data_container.config.get('doorlockd',{}).get('log_level', 'NOTSET'))
+logger.setLevel(dc.config.get('doorlockd',{}).get('log_level', 'NOTSET'))
 # create formatter and add it to the handlers
 # formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 formatter = logging.Formatter('%(asctime)s - %(module)s - %(levelname)s - %(message)s')
 
 # console output on stderr
 ch = logging.StreamHandler()
-ch.setLevel(data_container.config.get('doorlockd',{}).get('stderr_level', 'INFO'))
+ch.setLevel(dc.config.get('doorlockd',{}).get('stderr_level', 'INFO'))
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 # file output
-if data_container.config.get('doorlockd',{}).get('logfile_name'):
+if dc.config.get('doorlockd',{}).get('logfile_name'):
 	logger.info('logging to filename: {}, level: {}'.format(
-		data_container.config.get('doorlockd',{}).get('logfile_name'),
-		data_container.config.get('doorlockd',{}).get('logfile_level', 'INFO') ))
+		dc.config.get('doorlockd',{}).get('logfile_name'),
+		dc.config.get('doorlockd',{}).get('logfile_level', 'INFO') ))
 
-	fh = logging.FileHandler(data_container.config.get('doorlockd',{}).get('logfile_name'))
-	fh.setLevel(data_container.config.get('doorlockd',{}).get('logfile_level', 'INFO'))
+	fh = logging.FileHandler(dc.config.get('doorlockd',{}).get('logfile_name'))
+	fh.setLevel(dc.config.get('doorlockd',{}).get('logfile_level', 'INFO'))
 	fh.setFormatter(formatter)
 	logger.addHandler(fh)
 
 	
-data_container.logger = logger
-data_container.logger.info('doorlockd starting up...')
+dc.logger = logger
+dc.logger.info('doorlockd starting up...')
 
 
 #
@@ -68,7 +68,7 @@ data_container.logger.info('doorlockd starting up...')
 #
 app = Flask(__name__, static_url_path='', static_folder='static_html')
 app.debug = True
-app.config['ORATOR_DATABASES'] = data_container.config['ORATOR_DATABASES']
+app.config['ORATOR_DATABASES'] = dc.config['ORATOR_DATABASES']
 
 #
 # Initializing Orator, using flask app.config['ORATOR_DATABASES'] 
