@@ -10,6 +10,7 @@ class DoorlockdBaseClass():
 	#
 	@property
 	def config(self):
+		'''returns conig dict. Use self.cofig.get('key name' [, 'default value']) '''
 		return(dc.config.get(self.config_name,{}))
 	
 	
