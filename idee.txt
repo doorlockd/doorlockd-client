@@ -63,8 +63,8 @@ minimal doorlockd + web api:
 [ ] move Token settings into config file [secret,expire,audience]
 [ ] "Restinator" remake (FlaskRequestClass/)
 [ ] [web interface?]
-[ ] HW, out12v
-[ ] HW, Solenoid
+[x] HW, out12v
+[x] HW, Solenoid
 [ ] HW, BuzzerOut
 [ ] HW, button, ..
 [ ] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
