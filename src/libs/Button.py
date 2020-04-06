@@ -28,4 +28,15 @@ class Button(hwButtonInput):
 		else:
 			self.logger.error('Trigger action {:s} not for button {:s}.'.format(self.trigger_action, self.config_name))
 			
+	# invert the status for the input connected to GND
+	@property
+	def status(self):
+		print("DEBUG: bool(GPIO.input(self.gpio_pin)) :", bool(GPIO.input(self.gpio_pin)) )
+		return(not bool(GPIO.input(self.gpio_pin)))
+
+	@status.setter
+	def status(self, state):
+		if state is not self.status:
+			self.trigger()
+	
 		
