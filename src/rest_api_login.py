@@ -7,7 +7,7 @@ from calendar import timegm
 
 # access conig and logger using our data container
 from libs.data_container import data_container as dc
-# logger.info('JWT...')
+# dc.logger.info('JWT...')
 
 class JwtForRestApi(object):
 	'''implement JWT token checks for my Flask REST API.'''
@@ -77,15 +77,15 @@ class Token(object):
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
 		if cls.secret is None:
-			logger.info('JWT Token: auto-generating secret')
+			dc.logger.info('JWT Token: auto-generating secret')
 			import secrets 
 			#only python > 3.6 , sorry config secret in your config.ini
 			cls.secret = secrets.token_urlsafe(64)
 
 		
-		logger.debug("Token initialized ...")
-		logger.debug("DEBUG Token.expire   :", Token.expire)
-		logger.debug("DEBUG Token.secret   :", Token.secret)
+		dc.logger.debug("Token initialized ...")
+		dc.logger.debug("DEBUG Token.expire   :", Token.expire)
+		dc.logger.debug("DEBUG Token.secret   :", Token.secret)
 		
 	
 	@staticmethod
@@ -185,7 +185,7 @@ def login_endpoint():
 	
 	result = {'status': True, 'message':'User logged on.', 'token': token }
 	# print ("DEBUG: json:", result)
-	logger.debug ("JWT login: user logged on: id {}, email {}".format( u.id, u.email))
+	dc.logger.debug ("JWT login: user logged on: id {}, email {}".format( u.id, u.email))
 	return(json.dumps(result, indent=4))
 	
 #
@@ -244,6 +244,6 @@ def token_refresh_endpoint():
 	
 	result = {'status': True, 'message':'User logged on.', 'token': token }
 	# print ("DEBUG: json:", result)
-	logger.debug ("JWT refresh: user logged on: id {}, email {}".format( u.id, u.email))
+	dc.logger.debug ("JWT refresh: user logged on: id {}, email {}".format( u.id, u.email))
 	return(json.dumps(result, indent=4))
 	
