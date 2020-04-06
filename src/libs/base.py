@@ -98,10 +98,10 @@ class hwButtonInput(DoorlockdBaseClass):
 			GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 			GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
 	
-		except Exception as e:
-			self.logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
-			self.logger.info('error: {:s}.'.format(str(e)))
-			raise SystemExit('Unable to setup button using GPIO pin: %s' % gpio_pin)
+		# except Exception as e:
+		# 	self.logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
+		# 	self.logger.info('error: {:s}.'.format(str(e)))
+		# 	raise SystemExit('Unable to setup button using GPIO pin: %s' % gpio_pin)
 		
 	def __event_callback(self, channel):
 		'''callback function for event_detect, called when button is pressed.'''
