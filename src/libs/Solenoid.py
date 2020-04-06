@@ -5,6 +5,7 @@ import time
 class Solenoid(hw12vOut):
 	config_name = 'solenoid'
 	time_wait = 1.8
+	counter = 0
 	
 	def __init__(self):
 		# read gpio_pin from config
@@ -18,9 +19,6 @@ class Solenoid(hw12vOut):
 
 
 	def trigger(self):
-		self.open()
-		
-	def open(self):
 		'''open the door, turn Solenoid on for self.time seconds. '''
 		self.logger.debug('{:s} open.'.format(self.log_name))
 
@@ -36,6 +34,8 @@ class Solenoid(hw12vOut):
 		#
 		# if self.ui is not None:
 		# 	self.ui.ui_off_door_open()
+
+		self.counter = self.counter + 1
 
 		self.logger.debug('{:s} close.'.format(self.log_name))
 

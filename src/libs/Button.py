@@ -5,6 +5,8 @@ class Button(hwButtonInput):
 	config_name = 'not set'
 	trigger_action = 'not set' # solenoid|buzzer|whatever
 	
+	counter = 0
+	
 	def __init__(self, config_name, trigger_action='not set'):
 		self.config_name = config_name
 		
@@ -22,6 +24,7 @@ class Button(hwButtonInput):
 		# call trigger on destination hw
 		if dc.hw.get(self.trigger_action, None) is not None:
 			dc.hw[ self.trigger_action ].trigger()
+			self.counter = self.counter + 1
 		else:
 			self.logger.error('Trigger action {:s} not for button {:s}.'.format(self.trigger_action, self.config_name))
 			
