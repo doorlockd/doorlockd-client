@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://wie-niet.nl/doorlockd/schema.dummy.json",
+  "title": "Hardware Button input object",
+  "description": "bla bah dummy",
+  "type": "object",
+  "properties": {
+      "config_name": {
+          "description": "config_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "gpio_pin": {
+          "description": "gpio_pin name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "trigger_action": {
+          "description": "action taken when button is triggered",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "status": {
+          "description": "True or False ",
+          "type": ["boolean"]
+
+	  }
+  }, 
+  "required": [ "status"],
+  "additionalProperties": false
+}

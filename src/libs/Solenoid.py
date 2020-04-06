@@ -40,17 +40,17 @@ class Solenoid(hw12vOut):
 		self.logger.debug('{:s} close.'.format(self.log_name))
 
 
-	def my_callback(self, channel):
-		'''callback function for event_detect, called when button is pressed.'''
-
-		if GPIO.input(channel) == 0:
-			# prevent acting on glitches in the GPIO or cabling, proceed if the input is still low
-			self.logger.info('{:s} pressed .'.format(self.log_name))
-
-			if self.solenoid is not None:
-				self.solenoid.open()
-
-		else:
-			# for those who are curious we will log false positives in our debug log
-			self.logger.debug('{:s} False positive detected (input High).'.format(self.log_name))
+	# def my_callback(self, channel):
+	# 	'''callback function for event_detect, called when button is pressed.'''
+	#
+	# 	if GPIO.input(channel) == 0:
+	# 		# prevent acting on glitches in the GPIO or cabling, proceed if the input is still low
+	# 		self.logger.info('{:s} pressed .'.format(self.log_name))
+	#
+	# 		if self.solenoid is not None:
+	# 			self.solenoid.open()
+	#
+	# 	else:
+	# 		# for those who are curious we will log false positives in our debug log
+	# 		self.logger.debug('{:s} False positive detected (input High).'.format(self.log_name))
 
