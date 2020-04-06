@@ -22,7 +22,7 @@ import logging
 
 # hardware:
 from libs.Solenoid import Solenoid
-from libs.Solenoid import Button
+from libs.Button import Button
 
 
 # Read Config settings 
