@@ -94,9 +94,9 @@ class hwButtonInput(DoorlockdBaseClass):
 		'''initialize gpio port.'''
 		self.logger.info('initializing on gpio pin {:s}.'.format(str(self.gpio_pin)))
 
-		try:
-			GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-			GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
+		# try:
+		GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+		GPIO.add_event_detect(self.gpio_pin,GPIO.FALLING,callback=self.__event_callback,bouncetime=200) 
 	
 		# except Exception as e:
 		# 	self.logger.info('failed to setup {:s} using name {:s} on gpio pin {:s}.'.format(self.__class__.__name__, self.config_name, self.gpio_pin))
