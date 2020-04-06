@@ -10,6 +10,11 @@
 		  "readOnly": true,
           "type": ["string"]
       },
+      "log_name": {
+          "description": "log_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
       "gpio_pin": {
           "description": "gpio_pin name",
 		  "readOnly": true,
