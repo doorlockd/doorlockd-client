@@ -62,6 +62,8 @@ class RestApi(MethodView):
 	need_enforce_read_only = bool(False)
 	need_enforce_write_only = bool(False)
 	
+	
+	debug_mode = True
 	# type casts = {'key': int}
     # type_casts = {}
 	
@@ -453,6 +455,9 @@ class RestApi(MethodView):
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
 			print(error)
+			if self.debug_mode:
+				raise(e)
+				
 			self.response(error, 500)
 
 		# enforce write-only permisions for response
@@ -516,6 +521,10 @@ class RestApi(MethodView):
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
 			print(error)
+			if self.debug_mode:
+				raise(e)
+				
+			
 			# display error / debug : raise(e)
 			# raise(e)
 			self.response(error, 500)
@@ -545,6 +554,9 @@ class RestApi(MethodView):
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
 			print(error)
+			if self.debug_mode:
+				raise(e)
+			
 			self.response(error, 500)
 
 		# not found:
