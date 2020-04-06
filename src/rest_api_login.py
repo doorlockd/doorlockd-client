@@ -84,8 +84,8 @@ class Token(object):
 
 		
 		dc.logger.debug("Token initialized ...")
-		dc.logger.debug("DEBUG Token.expire: {}".format(Token.expire))
-		dc.logger.debug("DEBUG Token.secret: {}".format(Token.secret))
+		dc.logger.debug("Token.expire: {}".format(Token.expire))
+		dc.logger.debug("Token.secret: {}".format(Token.secret))
 		
 	
 	@staticmethod
