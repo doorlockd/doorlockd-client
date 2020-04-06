@@ -51,16 +51,16 @@ class baseHardwareIO(DoorlockdBaseClass):
 	def log_name(self):
 		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
 
-	# status can be exposed to api
-	@property
-	def status(self):
-		# return(False)
-		return(bool(GPIO.input(self.gpio_pin)))
-
-	@status.setter
-	def status(self, state):
-		if state is not self.status:
-			self.trigger()
+	# # status can be exposed to api
+	# @property
+	# def status(self):
+	# 	# return(False)
+	# 	return(bool(GPIO.input(self.gpio_pin)))
+	#
+	# @status.setter
+	# def status(self, state):
+	# 	if state is not self.status:
+	# 		self.trigger()
 	
 
 
@@ -74,6 +74,16 @@ class hw12vOut(baseHardwareIO):
 
 		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
 	
+	# status can be exposed to api
+	@property
+	def status(self):
+		# return(False)
+		return(bool(GPIO.input(self.gpio_pin)))
+
+	@status.setter
+	def status(self, state):
+		if state is not self.status:
+			self.trigger()
 		
 
 class hwButtonInput(baseHardwareIO):
@@ -112,5 +122,9 @@ class hwButtonInput(baseHardwareIO):
 		def status(self):
 			return(not bool(GPIO.input(self.gpio_pin)))
 
+		@status.setter
+		def status(self, state):
+			if state is not self.status:
+				self.trigger()
 		
 			
