@@ -51,7 +51,7 @@ class hw12vOut(DoorlockdBaseClass):
 	
 	def hw_init(self):
 		'''initialize gpio port.'''
-		self.logger.info('initializing on gpio pin {:s}.'.format(str(self.gpio_pin)))
+		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
 		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
 		
@@ -92,7 +92,7 @@ class hwButtonInput(DoorlockdBaseClass):
 	
 	def hw_init(self):
 		'''initialize gpio port.'''
-		self.logger.info('initializing on gpio pin {:s}.'.format(str(self.gpio_pin)))
+		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
 		# try:
 		GPIO.setup(self.gpio_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -108,14 +108,14 @@ class hwButtonInput(DoorlockdBaseClass):
 
 		if GPIO.input(channel) == 0:
 			# prevent acting on glitches in the GPIO or cabling, proceed if the input is still low
-			self.logger.info('{:s} {:s} pressed .'.format(self.__class__.__name__, self.gpio_pin))
+			self.logger.info('event: {:s} pressed .'.format(self.log_name))
 
 			# do the action:
 			self.trigger()
 
 		else:
 			# for those who are curious we will log false positives in our debug log
-			self.logger.debug('{:s} {:s} False positive detected (input High).'.format(self.__class__.__name__, self.gpio_pin))
+			self.logger.debug('input {:s} False positive detected (input High).'.format(self.log_name))
 
 		
 	@property
