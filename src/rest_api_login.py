@@ -81,7 +81,9 @@ class Token(object):
 
 		if cls.secret is None:
 			print("implement logger auto generate runtime secret: auto generating secret")
-			cls.secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
+			import secrets
+			cls.secret = secrets.token_urlsafe(64)
+			# cls.secret = 'Qkjhsdf<932lhwefm,SD;foiKSDu3ub3h|08few3f2o8ewoihd\3j90d;3ilhseiu7c873igo^c3io!'
 		
 		print("implement logger: Token initialized ..")
 		print("DEBUG Token.expire   :", Token.expire)
