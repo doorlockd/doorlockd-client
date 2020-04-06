@@ -110,7 +110,7 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 		# 	old_item = self.db_find_one(id)
 			
 		for attr in self.all_attributes:
-			if attr in self.read_only_attributes
+			if attr in self.read_only_attributes:
 				# set/update attribute:
 				try:
 					setattr(self._object, attr, new_item[attr])
