@@ -50,7 +50,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	@property
 	def log_name(self):
 		return('{:s}:{:s}'.format(self.__class__.__name__, str(self.gpio_pin)))
-	
+
 	# status can be exposed to api
 	@property
 	def status(self):
@@ -61,6 +61,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	def status(self, state):
 		if state is not self.status:
 			self.trigger()
+	
 
 
 class hw12vOut(baseHardwareIO):
@@ -72,6 +73,7 @@ class hw12vOut(baseHardwareIO):
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
 		GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+	
 		
 
 class hwButtonInput(baseHardwareIO):
@@ -103,6 +105,13 @@ class hwButtonInput(baseHardwareIO):
 		else:
 			# for those who are curious we will log false positives in our debug log
 			self.logger.debug('input {:s} False positive detected (input High).'.format(self.log_name))
+
+		# status can be exposed to api
+		# invert the status for the input connected to GND
+		@property
+		def status(self):
+			# return(False)
+			return(not bool(GPIO.input(self.gpio_pin)))
 
 		
 			
