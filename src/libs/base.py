@@ -131,3 +131,10 @@ class hwButtonInput(baseHardwareIO):
 
 
 			
+class baseTriggerAction(DoorlockdBaseClass):
+	'''base interface for object who function as 'trigger_action' on Button objects. 
+	This class must implement an trigger() method.''' 	
+	
+	def trigger(self):
+		raise NotImplementedError('trigger() method is missing.')
+		

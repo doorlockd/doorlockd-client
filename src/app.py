@@ -24,6 +24,7 @@ import logging
 from libs.Solenoid import Solenoid
 from libs.Buzzer import Buzzer
 from libs.Button import Button
+from libs.Dummy import Dummy
 
 
 # Read Config settings 
@@ -92,6 +93,11 @@ if __name__ == '__main__':
 	# setup hardware
 	#
 	dc.hw = {}
+
+	# 
+	# our dummy hardware, can be used as placeholder for trigger_action.
+	#
+	dc.hw['dummy'] = Dummy()
 
 	# 
 	# Hardware: Solenoid

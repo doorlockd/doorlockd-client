@@ -22,15 +22,23 @@ class Button(hwButtonInput):
 
 	def trigger(self):
 		# call trigger on destination hw
+		
 		if dc.hw.get(self.trigger_action, None) is not None:
-			if dc.hw[ self.trigger_action ] is not self:
-				dc.hw[ self.trigger_action ].trigger()
-				self.counter = self.counter + 1
-			else:
-				self.logger.error('Trigger error on {:s}: action is looping back to self !!!{:s}.'.format(self.config_name, self.trigger_action))
-				raise   Exception('Trigger error on {:s}: action is looping back to self !!!{:s}.'.format(self.config_name, self.trigger_action))
+			# # loops back to self
+			# if dc.hw[ self.trigger_action ] is  self:
+			# 	self.logger.error('Trigger error on {:s}: action is looping back to self {:s}.'.format(self.config_name, self.trigger_action))
+			# 	raise   Exception('Trigger error on {:s}: action is looping back to self {:s}.'.format(self.config_name, self.trigger_action))
+				
+			# valid issubclass baseTriggerAction
+			if not issubclass(baseTriggerAction, dc.hw[ self.trigger_action ]):
+				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
+				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
+
+			dc.hw[ self.trigger_action ].trigger()
+			self.counter = self.counter + 1
+
 		else:
-			self.logger.error('Trigger error on {:s}: action {:s} has no trigger() method.'.format(self.config_name, self.trigger_action))
-			raise   Exception('Trigger error on {:s}: action {:s} has no trigger() method.'.format(self.config_name, self.trigger_action))
+			self.logger.error('Trigger error on {:s}: action not found.'.format(self.config_name))
+			raise   Exception('Trigger error on {:s}: action not found.'.format(self.config_name))
 			
 		

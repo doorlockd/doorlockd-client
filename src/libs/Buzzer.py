@@ -3,7 +3,7 @@ from .base import hw12vOut, GPIO
 import time
 import threading
 
-class Buzzer(hw12vOut):
+class Buzzer(hw12vOut, baseTriggerAction):
 	config_name = 'buzzer'
 	time_wait = 0.4
 	counter = 0

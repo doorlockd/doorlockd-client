@@ -3,7 +3,7 @@ from .base import hw12vOut, GPIO
 import time
 import threading
 
-class Solenoid(hw12vOut):
+class Solenoid(hw12vOut, baseTriggerAction):
 	config_name = 'solenoid'
 	time_wait = 1.8
 	counter = 0
