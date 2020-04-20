@@ -5,6 +5,7 @@ from .base import baseTriggerAction
 #	
 class Dummy(baseTriggerAction):
 	"""this dummy trigger really does nothing."""
+	config_name = 'Dummy'
 	
 	def trigger(self):
 		self.logger.debug('{:s} trigger()'.format(self.log_name))
