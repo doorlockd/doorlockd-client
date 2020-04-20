@@ -140,8 +140,8 @@ if __name__ == '__main__':
 				   port=dc.config.get('webserver',{}).get('port', 8000)) 
 		# fix waitress logging...
 	else:
-		dc.logger.error("Werbserver '{}' is not implemented, aborting.")
-		sys.exit("Werbserver '{}' is not implemented.")
+		dc.logger.error("Werbserver '{}' is not implemented, aborting.".format(dc.config.get('webserver',{}).get('type', 'Flask').lower()))
+		sys.exit("Werbserver '{}' is not implemented, aborting.".format(dc.config.get('webserver',{}).get('type', 'Flask').lower()))
 		
 		
 
