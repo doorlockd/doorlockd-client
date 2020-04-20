@@ -139,5 +139,9 @@ if __name__ == '__main__':
 		serve(app, host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
 				   port=dc.config.get('webserver',{}).get('host', 8000)) 
 		# fix waitress logging...
-	
+	else:
+		dc.logger.error("Werbserver '{}' is not implemented, aborting.")
+		sys.exit("Werbserver '{}' is not implemented.")
+		
+		
 
