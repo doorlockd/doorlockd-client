@@ -69,7 +69,7 @@ dc.logger.info('doorlockd starting up...')
 # Creating Flask application
 #
 app = Flask(__name__, static_url_path='', static_folder='static_html')
-app.debug = True
+app.debug = dc.config.get('webserver',{}).get('debug', False)
 app.config['ORATOR_DATABASES'] = dc.config['ORATOR_DATABASES']
 
 #
@@ -96,13 +96,11 @@ if __name__ == '__main__':
 	# 
 	# Hardware: Solenoid
 	#
-	hw_solenoid = Solenoid()
-	# hw_solenoid.trigger()
-	dc.hw['solenoid'] = hw_solenoid
+	dc.hw['solenoid'] = Solenoid()
 	# # any_object, json_schema, urlpath=None, app=None, methods=['GET', 'PUT']):
 	# api_solenoid = rest_api_models.AnySingleObjectRestApi(hw_solenoid, 'schema/schema.hw.solenoid.json')
 	# api_solenoid.flask_add_rules('/api/hw/solenoid', app, methods=['GET', 'PUT'])
-	rest_api_models.create_api_for_object(hw_solenoid, 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
+	rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
 
 	# 
 	# Hardware: Buzzer
@@ -123,12 +121,21 @@ if __name__ == '__main__':
 	dc.hw['button2'] = Button('button2', trigger_action='buzzer')
 	rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
 
-
-	# Flask built in webserver , with DEBUG options
-	app.run(host='0.0.0.0', port=8000) ##Replaced with below code to run it using waitress
-	
-	# Waitress webserver:
-	# serve(app, host='0.0.0.0', port=8000) # listen="*:8000"
-	# fix waitress logging...
+	# 
+	# Start Webserver 
+	#
+	if dc.config.get('webserver',{}).get('type', 'Flask').lower() == 'flask':
+		#
+		# Flask built in webserver , with DEBUG options
+		#
+		app.run(host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
+				port=dc.config.get('webserver',{}).get('host', 8000)) 
+	elif dc.config.get('webserver',{}).get('type', 'Flask').lower() == 'waitress':
+		#
+		# Waitress webserver:
+		#
+		serve(app, host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
+				   port=dc.config.get('webserver',{}).get('host', 8000)) 
+		# fix waitress logging...
 	
 
