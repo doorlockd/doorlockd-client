@@ -104,10 +104,23 @@ if __name__ == '__main__':
 	rest_api_models.create_api_for_object(hw_solenoid, 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
 
 	# 
-	# Hardware: Intercom Button 
+	# Hardware: Buzzer
 	#
-	dc.hw['intercom'] = Button('intercom', trigger_action='solenoid')
-	rest_api_models.create_api_for_object(dc.hw['intercom'], 'schema/schema.hw.button.json', '/api/hw/intercom', app)
+	#TODO
+	# dc.hw['buzzer'] 
+
+
+	# 
+	# Hardware:  Button1, default functionality is intercom: trigger_action = solenoid 
+	#
+	dc.hw['button1'] = Button('button1', trigger_action='solenoid')
+	rest_api_models.create_api_for_object(dc.hw['button1'], 'schema/schema.hw.button.json', '/api/hw/button1', app)
+
+	# 
+	# Hardware:  Button2, default functionality is doorbell: trigger_action = buzzer 
+	#
+	dc.hw['button2'] = Button('button2', trigger_action='buzzer')
+	rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
 
 
 	# Flask built in webserver , with DEBUG options
