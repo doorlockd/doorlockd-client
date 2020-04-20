@@ -22,6 +22,7 @@ import logging
 
 # hardware:
 from libs.Solenoid import Solenoid
+from libs.Buzzer import Buzzer
 from libs.Button import Button
 
 
@@ -106,8 +107,8 @@ if __name__ == '__main__':
 	# 
 	# Hardware: Buzzer
 	#
-	#TODO
-	# dc.hw['buzzer'] 
+	dc.hw['buzzer'] = Buzzer()
+	rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
 
 
 	# 

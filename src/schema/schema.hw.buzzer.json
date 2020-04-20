@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://wie-niet.nl/doorlockd/schema.hw.buzzer.json",
+  "title": "Hardware Buzzer object",
+  "description": "12V output for doorbell",
+  "type": "object",
+  "properties": {
+      "config_name": {
+          "description": "config_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "log_name": {
+          "description": "log_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "counter": {
+          "description": "trigger counter",
+		  "readOnly": true,
+          "type": ["integer"]
+      },
+      "gpio_pin": {
+          "description": "gpio_pin name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "time_wait": {
+          "description": "time in seconds",
+		  "readOnly": true,
+          "type": ["number"]
+      },
+      "status": {
+          "description": "current status, change to trigger",
+          "type": ["boolean"]
+      },
+      "default_status": {
+          "description": "default status",
+          "type": ["boolean"]
+
+	  }
+  }, 
+  "required": [ "status"],
+  "additionalProperties": false
+}
