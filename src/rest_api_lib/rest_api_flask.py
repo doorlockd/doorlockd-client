@@ -63,7 +63,7 @@ class RestApi(MethodView):
 	need_enforce_write_only = bool(False)
 	
 	
-	debug_mode = True
+	debug_mode = False
 	# type casts = {'key': int}
     # type_casts = {}
 	
