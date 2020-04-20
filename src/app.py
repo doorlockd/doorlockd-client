@@ -129,7 +129,7 @@ if __name__ == '__main__':
 		# Flask built in webserver , with DEBUG options
 		#
 		app.run(host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
-				port=dc.config.get('webserver',{}).get('host', 8000)) 
+				port=dc.config.get('webserver',{}).get('port', 8000)) 
 	elif dc.config.get('webserver',{}).get('type', 'Flask').lower() == 'waitress':
 		#
 		# Waitress webserver:
@@ -137,7 +137,7 @@ if __name__ == '__main__':
 		from waitress import serve
 		
 		serve(app, host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
-				   port=dc.config.get('webserver',{}).get('host', 8000)) 
+				   port=dc.config.get('webserver',{}).get('port', 8000)) 
 		# fix waitress logging...
 	else:
 		dc.logger.error("Werbserver '{}' is not implemented, aborting.")
