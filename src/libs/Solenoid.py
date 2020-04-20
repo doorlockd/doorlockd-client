@@ -1,13 +1,17 @@
 # from .data_container import data_container as dc
 from .base import hw12vOut, GPIO
 import time
+import threading
 
-class Solenoid(hw12vOut):
+class Solenoid(hw12vOut, threading.Thread):
 	config_name = 'solenoid'
 	time_wait = 1.8
 	counter = 0
 	
 	def __init__(self):
+		# turn myself into a thread
+		threading.Thread.__init__(self)
+		
 		# read gpio_pin from config
 		self.gpio_pin = self.config.get('pin')
 
@@ -17,8 +21,15 @@ class Solenoid(hw12vOut):
 		# hw_init
 		self.hw_init()
 
+		
 
 	def trigger(self):
+		'''open the door, turn Solenoid on for self.time seconds in background'''
+		# self.deamon = True
+		# run is called by threading.start  
+		self.start()
+
+	def run(self):
 		'''open the door, turn Solenoid on for self.time seconds. '''
 		self.logger.debug('{:s} open.'.format(self.log_name))
 
