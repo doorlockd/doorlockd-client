@@ -26,17 +26,20 @@ class Solenoid(hw12vOut, threading.Thread):
 	def trigger(self):
 		'''open the door, turn Solenoid on for self.time seconds in background'''
 		# self.deamon = True
-		# run is called by threading.start  
-		self.start()
-
-	def run(self):
-		'''open the door, turn Solenoid on for self.time seconds. '''
 		self.logger.debug('{:s} open.'.format(self.log_name))
+		self.counter = self.counter + 1
 
 		#
 		# set GPIO_PIN high for x amount of time
 		#
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
+
+		# wait and turn solenoid off is done in background thread:
+		# run is called by threading.start  		
+		self.start()
+
+	def run(self):
+		'''open the door, turn Solenoid on for self.time seconds. '''
 		# # if self.ui is not None:
 		# 	# self.ui.ui_on_door_open()
 		#
@@ -46,7 +49,6 @@ class Solenoid(hw12vOut, threading.Thread):
 		# if self.ui is not None:
 		# 	self.ui.ui_off_door_open()
 
-		self.counter = self.counter + 1
 
 		self.logger.debug('{:s} close.'.format(self.log_name))
 
