@@ -1,4 +1,4 @@
-from .base import hwButtonInput, GPIO, dc
+from .base import hwButtonInput, GPIO, dc, baseTriggerAction
 import time
 
 class Button(hwButtonInput):

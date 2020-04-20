@@ -1,5 +1,5 @@
 # from .data_container import data_container as dc
-from .base import hw12vOut, GPIO
+from .base import hw12vOut, GPIO, baseTriggerAction
 import time
 import threading
 
