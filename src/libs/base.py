@@ -64,7 +64,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	@status.setter
 	def status(self, state):
 		# call trigger if new status != default_status or != current status
-		if state is not self.default_status
+		if state is not self.default_status:
 			if state is not self.status:
 				self.trigger()
 			else:
