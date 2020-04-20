@@ -6,7 +6,7 @@ import sys
 # flask webserver
 from flask import Flask, jsonify, make_response
 from flask_orator import Orator
-from waitress import serve
+#from waitress import serve -> moved into conditional statement to start waitress
 
 
 # db models
@@ -134,6 +134,8 @@ if __name__ == '__main__':
 		#
 		# Waitress webserver:
 		#
+		from waitress import serve
+		
 		serve(app, host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
 				   port=dc.config.get('webserver',{}).get('host', 8000)) 
 		# fix waitress logging...
