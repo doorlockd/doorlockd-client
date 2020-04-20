@@ -32,7 +32,7 @@ class DoorlockdBaseClass():
 class baseHardwareIO(DoorlockdBaseClass):
 	'''Base class for all gpio i/o hardware objects'''
 	__gpio_pin = None
-	invert_state = False 
+	default_status = False 
 	# config_name = 'hw_test'
 	
 	def __init__(self):
@@ -55,7 +55,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	# status can be exposed to api
 	@property
 	def status(self):
-		if self.invert_state:
+		if self.default_status:
 			return(not bool(GPIO.input(self.gpio_pin)))
 		else:
 			return(bool(GPIO.input(self.gpio_pin)))
@@ -69,7 +69,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 
 class hw12vOut(baseHardwareIO):
 	'''hardware: 12Volt output GPIO control.'''
-	invert_state = False
+	default_status = False
 	
 	
 	def hw_init(self):
@@ -90,7 +90,7 @@ class hw12vOut(baseHardwareIO):
 
 class hwButtonInput(baseHardwareIO):
 	'''hardware: input button between GPIO and GND.'''
-	invert_state = True
+	default_status = True
 
 	def hw_init(self):
 		'''initialize gpio port.'''

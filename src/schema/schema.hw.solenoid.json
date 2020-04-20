@@ -31,7 +31,11 @@
           "type": ["number"]
       },
       "status": {
-          "description": "Some number ",
+          "description": "current status, change to trigger",
+          "type": ["boolean"]
+      },
+      "default_status": {
+          "description": "default status",
           "type": ["boolean"]
 
 	  }
