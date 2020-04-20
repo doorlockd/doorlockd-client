@@ -33,6 +33,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 	'''Base class for all gpio i/o hardware objects'''
 	__gpio_pin = None
 	default_status = False 
+	invert_status = False
 	# config_name = 'hw_test'
 	
 	def __init__(self):
@@ -55,15 +56,23 @@ class baseHardwareIO(DoorlockdBaseClass):
 	# status can be exposed to api
 	@property
 	def status(self):
-		if self.default_status:
+		if self.invert_status:
 			return(not bool(GPIO.input(self.gpio_pin)))
 		else:
 			return(bool(GPIO.input(self.gpio_pin)))
 
 	@status.setter
 	def status(self, state):
-		if state is not self.status:
-			self.trigger()
+		# call trigger if new status != default_status or != current status
+		if state is not self.default_status
+			if state is not self.status:
+				self.trigger()
+			else:
+				self.logger.info('notice: {:s}: status update ignored ( status is already {:s})'.format(self.log_name, str(state)))
+		else:
+			self.logger.info('notice: {:s}: status update ignored ( just wait for status to change to default {:s})'.format(self.log_name, str(self.default_status)))
+				
+				
 	
 
 
@@ -90,8 +99,9 @@ class hw12vOut(baseHardwareIO):
 
 class hwButtonInput(baseHardwareIO):
 	'''hardware: input button between GPIO and GND.'''
-	default_status = True
-
+	default_status = False
+	invert_status = True
+	
 	def hw_init(self):
 		'''initialize gpio port.'''
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
