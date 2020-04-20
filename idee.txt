@@ -66,15 +66,14 @@ minimal doorlockd + web api:
 [x] HW, out12v
 [x] HW, Solenoid
 [ ] HW, BuzzerOut
-[ ] HW, button, ..
-[ ] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
+[x] HW, button, ..
+[x] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
 [x] data_container Singleton
 [x] config,
 [x] logging,
+[ ] threading.
 [ ] ...
+
  
 [x] install on beaglbone , pyjwt/jwt issues ?? (https://github.com/jpadilla/pyjwt/issues/374) : install pyjwt
 [ ] python requirements.txt? or pipenv (https://medium.com/@boscacci/why-and-how-to-make-a-requirements-txt-f329c685181e)
-
-[ ] hw io default io value (low / high) -> true . false : swithc trigger , change , set high , set low.
-[ ] fix status intercom...
