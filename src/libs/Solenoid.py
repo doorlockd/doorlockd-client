@@ -3,15 +3,12 @@ from .base import hw12vOut, GPIO
 import time
 import threading
 
-class Solenoid(hw12vOut, threading.Thread):
+class Solenoid(hw12vOut):
 	config_name = 'solenoid'
 	time_wait = 1.8
 	counter = 0
 	
 	def __init__(self):
-		# turn myself into a thread
-		threading.Thread.__init__(self)
-		
 		# read gpio_pin from config
 		self.gpio_pin = self.config.get('pin')
 
@@ -22,9 +19,18 @@ class Solenoid(hw12vOut, threading.Thread):
 		self.hw_init()
 
 		
-
 	def trigger(self):
-		'''open the door, turn Solenoid on for self.time seconds in background'''
+		'''open the door, turn Solenoid on for self.time seconds. '''
+		self.trigger_begin()
+
+		# do the waiting
+		t = Timer(self.time_wait, self.trigger_end)
+		t.start()  # after self.time_wait seconds, trigger_end() will be executed
+
+		# self.trigger_end()
+
+	def trigger_begin(self):
+		'''open the door, turn Solenoid on for start'''
 		# self.deamon = True
 		self.logger.debug('{:s} open.'.format(self.log_name))
 		self.counter = self.counter + 1
@@ -34,16 +40,14 @@ class Solenoid(hw12vOut, threading.Thread):
 		#
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
 
-		# wait and turn solenoid off is done in background thread:
-		# run is called by threading.start  		
-		self.start()
 
-	def run(self):
-		'''open the door, turn Solenoid on for self.time seconds. '''
+
+	def trigger_end(self):
+		'''open the door, turn Solenoid on for end. '''
 		# # if self.ui is not None:
 		# 	# self.ui.ui_on_door_open()
 		#
-		time.sleep(self.time_wait)
+		# time.sleep(self.time_wait)
 		GPIO.output(self.gpio_pin, GPIO.LOW)
 		#
 		# if self.ui is not None:
