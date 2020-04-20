@@ -27,7 +27,6 @@
       },
       "trigger_action": {
           "description": "action taken when button is triggered",
-		  "readOnly": true,
           "type": ["string"]
       },
       "status": {
