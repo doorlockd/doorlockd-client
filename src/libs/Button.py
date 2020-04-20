@@ -27,8 +27,10 @@ class Button(hwButtonInput):
 				dc.hw[ self.trigger_action ].trigger()
 				self.counter = self.counter + 1
 			else:
-				self.logger.warn('Trigger error on {:s}: action is looping back to self !!!{:s}.'.format(self.config_name, self.trigger_action))
+				self.logger.error('Trigger error on {:s}: action is looping back to self !!!{:s}.'.format(self.config_name, self.trigger_action))
+				raise   Exception('Trigger error on {:s}: action is looping back to self !!!{:s}.'.format(self.config_name, self.trigger_action))
 		else:
 			self.logger.error('Trigger error on {:s}: action {:s} has no trigger() method.'.format(self.config_name, self.trigger_action))
-
+			raise   Exception('Trigger error on {:s}: action {:s} has no trigger() method.'.format(self.config_name, self.trigger_action))
+			
 		
