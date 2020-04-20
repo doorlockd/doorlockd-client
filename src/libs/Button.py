@@ -30,7 +30,7 @@ class Button(hwButtonInput):
 			# 	raise   Exception('Trigger error on {:s}: action is looping back to self {:s}.'.format(self.config_name, self.trigger_action))
 				
 			# valid issubclass baseTriggerAction
-			if not issubclass(baseTriggerAction, dc.hw[ self.trigger_action ]):
+			if not isinstance(dc.hw[ self.trigger_action ], baseTriggerAction):
 				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
