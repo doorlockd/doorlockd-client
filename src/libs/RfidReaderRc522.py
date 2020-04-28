@@ -3,7 +3,7 @@ import threading
 
 from pirc522.rfid import RFID
 
-class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
+class RfidReaderRc522(DoorlockdBaseClass):
 	# config_name required for DoorlockdBaseClass
 	config_name = 'rfid_rc522'
 		
@@ -26,6 +26,11 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 		
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 		
+	def start_thread(self):	
+		thread = threading.Thread(target=self.run, args=())
+        thread.daemon = True	# Daemonize thread
+        thread.start()			# Start the execution
+		
 		
 	def callback_tag_detected(self, hwid, rdr):
 		'''Overwrite this callback method with your own.
@@ -45,6 +50,8 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 
 	def run(self):
 		'''threading run()'''
+		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
+		
 		while True:
 		    self.wait_for_key()
 			

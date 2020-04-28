@@ -161,9 +161,8 @@ if __name__ == '__main__':
 	# Hardware:  Mifare RFID Reader  
 	#
 	dc.hw['rfidreader'] = RfidReaderRc522()
-	# dc.hw['rfidreader'].start()
-	# dc.hw['rfidreader'].join()
-	dc.hw['rfidreader'].wait_for_key()
+	dc.hw['rfidreader'].start_thread()
+	# dc.hw['rfidreader'].wait_for_key()
 
 	# 
 	# Start Webserver 
