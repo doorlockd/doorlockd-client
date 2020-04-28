@@ -89,11 +89,11 @@ def signal_handler_stop(signal, frame):
 
 	while dc.hw:
 		# get item of hw list
-		item = dc.hw.pop()
+		(hw_name, hw_obj) = dc.hw.popitem()
 		
 		# delete item from hw list, this will also call .__del__() 
-		dc.logger.debug('exiting {}...'.format(item))
-		del dc.hw[item]
+		dc.logger.debug('exiting {}...'.format(hw_name))
+		del hw_obj
 
 	dc.logger.info.info('raedy to exit')
 	sys.exit(0)
