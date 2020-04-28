@@ -1,4 +1,4 @@
-from .base import DoorlockdBaseClass, dc
+from .base import DoorlockdBaseClass, dc, baseTriggerAction
 import threading
 
 from pirc522.rfid import RFID
