@@ -87,7 +87,10 @@ db = Orator(app)
 def signal_handler_stop(signal, frame):
 	dc.logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
 
-	for item in dc.hw:
+	while dc.hw:
+		# get item of hw list
+		item = dc.hw.pop()
+		
 		# delete item from hw list, this will also call .__del__() 
 		dc.logger.debug('exiting {}...'.format(item))
 		del dc.hw[item]
