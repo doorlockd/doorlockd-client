@@ -31,7 +31,10 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		thread.daemon = True	# Daemonize thread
 		thread.start()			# Start the execution
 		
-		
+	
+	def stop_thread(self):
+		self.rdr.irq_callback(self, 'pin')
+		 
 	def callback_tag_detected(self, hwid, rfid_dev):
 		'''Overwrite this callback method with your own.
 			
@@ -53,6 +56,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		
 		while True:
+			self.logger.debug("...(re)starting io_wait_for_tag_detected()")
 			self.io_wait_for_tag_detected()
 			
 

@@ -75,6 +75,10 @@ class baseHardwareIO(DoorlockdBaseClass):
 	def hw_exit(self):
 		'''exit/de-initialize gpio port.'''
 		self.logger.info('exitting {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+		
+		# remove event detect if any..
+		GPIO.remove_event_detect(self.gpio_pin)
+		# reset state by setting to GPIO.IN  and GPIO.LOW
 		GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)
 		
 	def __exit__(self, exc_type, exc_val, exc_tb):
