@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://wie-niet.nl/doorlockd/schema.dummy.json",
+  "title": "Hardware RFID Reader object",
+  "description": "bla bah dummy",
+  "type": "object",
+  "properties": {
+      "config_name": {
+          "description": "config_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "log_name": {
+          "description": "log_name name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "counter": {
+          "description": "trigger counter",
+		  "readOnly": true,
+          "type": ["integer"]
+      },
+      "spi_bus": {
+          "description": "spi_bus number",
+		  "readOnly": true,
+          "type": ["number"]
+      },
+      "spi_device": {
+          "description": "spi_device number",
+		  "readOnly": true,
+          "type": ["number"]
+      },
+      "status": {
+          "description": "current status, change to trigger",
+          "type": ["boolean"]
+      },
+      "default_status": {
+          "description": "default status",
+          "type": ["boolean"]
+
+	  }
+  }, 
+  "required": [ "status"],
+  "additionalProperties": false
+}

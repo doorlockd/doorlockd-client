@@ -158,8 +158,8 @@ if __name__ == '__main__':
 	# Hardware:  Mifare RFID Reader  
 	#
 	dc.hw['rfidreader'] = RfidReaderRc522()
+	rest_api_models.create_api_for_object(dc.hw['rfidreader'], 'schema/schema.hw.rfidreader.json', '/api/hw/rfidreader', app)
 	dc.hw['rfidreader'].start_thread()
-	# dc.hw['rfidreader'].wait_for_key()
 
 	# 
 	# Start Webserver 

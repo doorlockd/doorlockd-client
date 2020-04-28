@@ -6,6 +6,7 @@ from pirc522.rfid import RFID
 class RfidReaderRc522(DoorlockdBaseClass):
 	# config_name required for DoorlockdBaseClass
 	config_name = 'rfid_rc522'
+	default_status = True
 		
 	# SPI dev (bus , device)
 	spi_bus = 1
@@ -13,6 +14,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 
 	
 	# internals
+	counter = 0				# nice for statistics
 	rdr = None				# RFID interface object
 	stop_loop = True		# tag_detect loop
 	thread = None			# thread object
@@ -23,12 +25,14 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		# get config or defaults
 		self.spi_bus = self.config.get('spi_bus', 1)
 		self.spi_device = self.config.get('spi_device', 0)
+		self.default_status = self.config.get('default_status', True)
 		
 		# hw_init RFID reader
 		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
 		
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
-		
+	
+	# is the thread loop running?
 	@property
 	def status(self):
 		if isinstance(self.thread, threading.Thread):
@@ -37,6 +41,18 @@ class RfidReaderRc522(DoorlockdBaseClass):
 				
 		# in all other cases: 
 		return(False)
+		
+	# start/stop the thread loop.
+	@status.setter
+	def status(self, state):
+		if state is self.status:
+			self.logger.info('notice: {:s}: status update ignored ( status is already {:s})'.format(self.log_name, str(state)))
+		else:	
+			if state:
+				self.start_thread()
+			else:
+				self.stop_thread()
+	
 			
 	def start_thread(self):	
 		if not self.status:
@@ -101,6 +117,10 @@ class RfidReaderRc522(DoorlockdBaseClass):
 				# Select Tag is required before Auth
 				
 				self.callback_tag_detected(hwid, rdr)
+				
+				# track statistics
+				self.counter = self.counter + 1
+				
 				# if not rdr.select_tag(uid):
 				# for sector in range(0, 63):
 				#	 rdr_dump_sector(rdr, sector, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], uid)
