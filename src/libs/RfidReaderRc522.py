@@ -68,6 +68,8 @@ class RfidReaderRc522(DoorlockdBaseClass):
 			self.thread = threading.Thread(target=self.run, args=())
 			self.thread.daemon = True	# Daemonize thread
 			self.thread.start()			# Start the execution
+			self.logger.info('start_thread {:s}'.format(self.log_name))
+			
 		else:
 			self.logger.info('notice: {:s}: start_thread, thread is already running '.format(self.log_name))
 			
@@ -78,6 +80,8 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		self.stop_loop = True
 		# call interupt on rdr
 		self.rdr.irq_callback('pin')
+		self.logger.info('stop_thread {:s}'.format(self.log_name))
+		
 		
 		 
 	def callback_tag_detected(self, hwid, rfid_dev):
