@@ -93,7 +93,10 @@ def signal_handler_stop(signal, frame):
 		
 		# delete item from hw list, this will also call .__del__() 
 		dc.logger.debug('exiting {}...'.format(hw_name))
-		del hw_obj
+		try:
+			hw_obj.hw_exit()
+		except AttributeError:
+			pass
 
 	dc.logger.info('exit after proper shutdown..')
 	sys.exit(0)
