@@ -22,8 +22,7 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 		self.spi_device = self.config.get('spi_device', 0)
 		
 		# hw_init RFID reader
-		# self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
-		self.rdr = RFID(bus=1, device=0)
+		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
 		
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 		
@@ -70,7 +69,7 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 				self.logger.debug("HWID: " + str(hwid))
 				# Select Tag is required before Auth
 				
-				self.callback_tag_detected(hwid)
+				self.callback_tag_detected(hwid, rdr)
 				# if not rdr.select_tag(uid):
 				# for sector in range(0, 63):
 				#	 rdr_dump_sector(rdr, sector, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF], uid)
