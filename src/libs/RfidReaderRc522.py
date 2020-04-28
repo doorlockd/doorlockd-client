@@ -32,12 +32,12 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		thread.start()			# Start the execution
 		
 		
-	def callback_tag_detected(self, hwid, rdr):
+	def callback_tag_detected(self, hwid, rfid_dev):
 		'''Overwrite this callback method with your own.
 			
 		def callback_tag_detected(hwid, rdr):
 			# hwid = [255,255,255,255,255,255]
-			# rdr = RFID Object 
+			# rfid_dev = the calling RfidReaderRc522 Object 
 		
 			# lookup hwid in db
 			# if has_access:
@@ -53,18 +53,21 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		
 		while True:
-			self.wait_for_key()
+			self.io_wait_for_tag_detected()
 			
 
-	def wait_for_key(self):
+	def io_wait_for_tag_detected(self):
+		'''start RFID reader and wait , callback_tag_detected() is run when a tag is detected. 
+		'''
+		
 		rdr = self.rdr
 		rdr.wait_for_tag()
 		(error, tag_type) = rdr.request()
 		# self.ui_pulse_comm()
 
 		## commmented out , to verbose...., perhaps no error here?.
-		#if error:
-		#   self.logger.debug("Can't detect RFID tag, rdr.request error")
+		if error:
+		  self.logger.debug("Can't detect RFID tag, rdr.request error")
 			
 
 		if not error:

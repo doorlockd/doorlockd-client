@@ -134,9 +134,6 @@ if __name__ == '__main__':
 	# Hardware: Solenoid
 	#
 	dc.hw['solenoid'] = Solenoid()
-	# # any_object, json_schema, urlpath=None, app=None, methods=['GET', 'PUT']):
-	# api_solenoid = rest_api_models.AnySingleObjectRestApi(hw_solenoid, 'schema/schema.hw.solenoid.json')
-	# api_solenoid.flask_add_rules('/api/hw/solenoid', app, methods=['GET', 'PUT'])
 	rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
 
 	# 
