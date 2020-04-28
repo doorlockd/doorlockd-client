@@ -68,6 +68,9 @@ class RfidReaderRc522(DoorlockdBaseClass):
 			self.thread = threading.Thread(target=self.run, args=())
 			self.thread.daemon = True	# Daemonize thread
 			self.thread.start()			# Start the execution
+		else:
+			self.logger.info('notice: {:s}: start_thread, thread is already running '.format(self.log_name))
+			
 		
 	
 	def stop_thread(self):
