@@ -27,7 +27,7 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 		
 		
-	def callback_tag_detected(self, hwid=None, rdr):
+	def callback_tag_detected(self, hwid, rdr):
 		'''Overwrite this callback method with your own.
 			
 		def callback_tag_detected(hwid, rdr):
