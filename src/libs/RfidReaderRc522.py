@@ -153,8 +153,12 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		'''calling rdr.stop_crypto() and rdr.cleanup() '''
 		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling rdr.stop_crypto() and rdr.cleanup()')
 		
+		# stop internal thread
+		self.stop_thread()
+		
 		# Calls GPIO cleanup
 		self.rdr.cleanup()
+		
 
 		
 	def io_read_data_block(self, hwid, tag_secret, sector ):
