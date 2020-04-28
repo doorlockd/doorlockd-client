@@ -49,7 +49,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		# stop the loop
 		self.stop_loop = True
 		# call interupt on rdr
-		self.rdr.irq_callback(self, 'pin')
+		self.rdr.irq_callback('pin')
 		
 		 
 	def callback_tag_detected(self, hwid, rfid_dev):
