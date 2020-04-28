@@ -95,9 +95,6 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	def hw_exit(self):
 		'''calling rdr.stop_crypto() and rdr.cleanup() '''
 		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling rdr.stop_crypto() and rdr.cleanup()')
-
-		# Always stop crypto1 when done working
-		self.rdr.stop_crypto()
 		
 		# Calls GPIO cleanup
 		self.rdr.cleanup()

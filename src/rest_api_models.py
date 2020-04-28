@@ -74,6 +74,8 @@ class ChangelogRestApi(JwtForRestApi, JsonSchemaForRestApi, RestApiOrator):
 		self._orator_model = Changelog.where('changelogger_type', model_type).where('changelogger_id', model_id)
 
 
+
+from rest_api_lib.rest_api_singleobject import RestApiSingleObject
 #
 # create rest api wrapper for dummy obj, as used for hardware objects
 #
