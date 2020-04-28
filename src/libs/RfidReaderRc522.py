@@ -12,8 +12,11 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	spi_device = 0
 
 	
-	# RFID interface object
-	rdr = None
+	# internals
+	rdr = None				# RFID interface object
+	stop_loop = True		# tag_detect loop
+	thread = None			# thread object
+	
 	
 	def __init__(self):
 		
@@ -26,14 +29,28 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 		
+	@property
+	def status(self):
+		if isinstance(self.thread, threading.Thread):
+			if self.thread.isAlive():
+				return(True)
+				
+		# in all other cases: 
+		return(False)
+			
 	def start_thread(self):	
-		thread = threading.Thread(target=self.run, args=())
-		thread.daemon = True	# Daemonize thread
-		thread.start()			# Start the execution
+		if not self.status:
+			self.thread = threading.Thread(target=self.run, args=())
+			self.thread.daemon = True	# Daemonize thread
+			self.thread.start()			# Start the execution
 		
 	
 	def stop_thread(self):
+		# stop the loop
+		self.stop_loop = True
+		# call interupt on rdr
 		self.rdr.irq_callback(self, 'pin')
+		
 		 
 	def callback_tag_detected(self, hwid, rfid_dev):
 		'''Overwrite this callback method with your own.
@@ -54,9 +71,9 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	def run(self):
 		'''threading run()'''
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
-		
-		while True:
-			self.logger.debug("...(re)starting io_wait_for_tag_detected()")
+		self.stop_loop = False
+		while not self.stop_loop:
+			# self.logger.debug("...(re)starting io_wait_for_tag_detected()")
 			self.io_wait_for_tag_detected()
 			
 
