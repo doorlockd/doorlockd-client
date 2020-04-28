@@ -159,7 +159,12 @@ if __name__ == '__main__':
 	#
 	dc.hw['rfidreader'] = RfidReaderRc522()
 	rest_api_models.create_api_for_object(dc.hw['rfidreader'], 'schema/schema.hw.rfidreader.json', '/api/hw/rfidreader', app)
-	dc.hw['rfidreader'].start_thread()
+	# dc.hw['rfidreader'].start_thread()
+
+	# register callback methods:
+	dc.hw['rfidactions'] = RfidActions()
+	dc.hw['rfidreader'].callback_tag_detected = dc.hw['rfidactions'].callback_tag_detected
+
 
 	# 
 	# Start Webserver 

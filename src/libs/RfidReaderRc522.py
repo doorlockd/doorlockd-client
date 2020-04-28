@@ -181,5 +181,35 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		
 
 		
+class RfidActions(object):
+	trigger_action = 'solenoid'
+	config_name = 'rfid_action'
 
+
+	def __init__(self):
+		# get config or defaults
+		self.trigger_action = self.config.get('trigger_action', 'solenoid')
+
+	
+	def callback_tag_detected(self, hwid, rfid_dev):
+		self.logger.debug('{:s} callback_tag_detected({:s}).'.format(self.log_name, str(hwid)))
+		self.trigger()
+	
+	def trigger(self):
+		# call trigger on destination hw
+		
+		if dc.hw.get(self.trigger_action, None) is not None:
+				
+			# valid issubclass baseTriggerAction
+			if not isinstance(dc.hw[ self.trigger_action ], baseTriggerAction):
+				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
+				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
+
+			dc.hw[ self.trigger_action ].trigger()
+			self.counter = self.counter + 1
+
+		else:
+			self.logger.error('Trigger error on {:s}: action not found.'.format(self.config_name))
+			raise   Exception('Trigger error on {:s}: action not found.'.format(self.config_name))
+	
 
