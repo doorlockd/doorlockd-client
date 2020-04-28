@@ -80,7 +80,8 @@ class baseHardwareIO(DoorlockdBaseClass):
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.hw_exit()
 				
-
+	def __del__(self):
+		self.hw_exit()
 		
 
 
