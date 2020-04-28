@@ -69,6 +69,7 @@ minimal doorlockd + web api:
 [x] HW, BuzzerOut
 [x] HW, button, ..
 [x] HW, Mifare RFID reader....
+[ ] HW, irq and rst pin config.
 [ ] workaround to stop/restart RFID reader (maybe reset GPIO pins?)
 [ ] HW, Led
 [ ] HW, UI Leds setup (2/bicoler led)
