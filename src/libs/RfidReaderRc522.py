@@ -22,7 +22,8 @@ class RfidReaderRc522(threading.Thread, DoorlockdBaseClass):
 		self.spi_device = self.config.get('spi_device', 0)
 		
 		# hw_init RFID reader
-		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
+		# self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
+		self.rdr = RFID(bus=1, device=0)
 		
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 		
