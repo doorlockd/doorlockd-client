@@ -26,7 +26,7 @@ from libs.Solenoid import Solenoid
 from libs.Buzzer import Buzzer
 from libs.Button import Button
 from libs.Dummy import Dummy
-from libs.RfidReaderRc522 import RfidReaderRc522
+from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
 
 
 # Read Config settings 
