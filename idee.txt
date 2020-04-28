@@ -80,7 +80,7 @@ minimal doorlockd + web api:
 [ ] waitress access_log
 [_] threading.
 [ ] Mifare 
-[ ] python requirements.txt
+[-] python requirements.txt
 [ ] SSL (https://...) [ Flask ssl_context='adhoc'/ OpenSSL?/stunel?/ ]
 [ ] ...
 
