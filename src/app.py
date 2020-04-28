@@ -84,19 +84,19 @@ db = Orator(app)
 # handle CTRL-C / stop signal
 #
 def signal_handler_stop(signal, frame):
-    dc.logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
+	dc.logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
 
-    for item in dc.hw:
+	for item in dc.hw:
 		# delete item from hw list, this will also call .__del__() 
 		dc.logger.debug('exiting {}...'.format(item))
 		del dc.hw[item]
 
-    dc.logger.info.info('raedy to exit')
-    sys.exit(0)
+	dc.logger.info.info('raedy to exit')
+	sys.exit(0)
 
 
 def signal_handler_reload(signal, frame):
-    dc.logger.info('SIG HUP received, nothing programmed to happen. ;-) ')
+	dc.logger.info('SIG HUP received, nothing programmed to happen. ;-) ')
 
 
 signal.signal(signal.SIGINT, signal_handler_stop)
