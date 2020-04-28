@@ -28,8 +28,8 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		
 	def start_thread(self):	
 		thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True	# Daemonize thread
-        thread.start()			# Start the execution
+		thread.daemon = True	# Daemonize thread
+		thread.start()			# Start the execution
 		
 		
 	def callback_tag_detected(self, hwid, rdr):
@@ -53,7 +53,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		
 		while True:
-		    self.wait_for_key()
+			self.wait_for_key()
 			
 
 	def wait_for_key(self):
