@@ -77,7 +77,7 @@ class baseHardwareIO(DoorlockdBaseClass):
 		self.logger.info('exitting {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 		GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)
 		
-	def __exit__(self, self, exc_type, exc_val, exc_tb):
+	def __exit__(self, exc_type, exc_val, exc_tb):
 		self.hw_exit()
 				
 
