@@ -95,7 +95,7 @@ def signal_handler_stop(signal, frame):
 		dc.logger.debug('exiting {}...'.format(hw_name))
 		del hw_obj
 
-	dc.logger.info.info('raedy to exit')
+	dc.logger.info('exit after proper shutdown..')
 	sys.exit(0)
 
 
