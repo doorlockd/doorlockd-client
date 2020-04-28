@@ -86,9 +86,9 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		(error, tag_type) = rdr.request()
 		# self.ui_pulse_comm()
 
-		## commmented out , to verbose...., perhaps no error here?.
-		if error:
-		  self.logger.debug("Can't detect RFID tag, rdr.request error")
+		# ## commmented out , to verbose...., perhaps no error here?.
+		# if error:
+		#   self.logger.debug("Can't detect RFID tag, rdr.request error")
 			
 
 		if not error:
