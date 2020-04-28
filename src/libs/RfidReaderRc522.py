@@ -20,13 +20,22 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	thread = None			# thread object
 	
 	
-	def __init__(self):
+	def __init__(self, start_thread=True):
 		
 		# get config or defaults
 		self.spi_bus = self.config.get('spi_bus', 1)
 		self.spi_device = self.config.get('spi_device', 0)
 		self.default_status = self.config.get('default_status', True)
 		
+		self.hw_init()
+
+		# start thread if self.default_status = True
+		if start_thread:
+			if self.default_status:
+				self.start_thread()
+	
+	
+	def hw_init(self):
 		# hw_init RFID reader
 		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
 		
