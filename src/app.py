@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
-
+# support ctrl-c 
+import signal
 
 # flask webserver
 from flask import Flask, jsonify, make_response
