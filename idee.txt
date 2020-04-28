@@ -82,6 +82,7 @@ minimal doorlockd + web api:
 [ ] Mifare 
 [-] python requirements.txt
 [ ] SSL (https://...) [ Flask ssl_context='adhoc'/ OpenSSL?/stunel?/ ]
+[x] Ctrl-C + object.hw_exit()
 [ ] ...
 
  
