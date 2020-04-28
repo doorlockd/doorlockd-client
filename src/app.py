@@ -26,6 +26,7 @@ from libs.Solenoid import Solenoid
 from libs.Buzzer import Buzzer
 from libs.Button import Button
 from libs.Dummy import Dummy
+from libs.RfidReaderRc522 import RfidReaderRc522
 
 
 # Read Config settings 
@@ -156,6 +157,12 @@ if __name__ == '__main__':
 	#
 	dc.hw['button2'] = Button('button2', trigger_action='buzzer')
 	rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
+
+	# Hardware:  Mifare RFID Reader  
+	#
+	dc.hw['rfidreader'] = RfidReaderRc522()
+	dc.hw['rfidreader'].start()
+	dc.hw['rfidreader'].join()
 
 	# 
 	# Start Webserver 
