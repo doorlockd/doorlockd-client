@@ -27,7 +27,7 @@ class DoorlockdBaseClass():
 
 	def log(self, level, message):
 		self.logger.log(level,'{:s} :{:s}'.format(self.log_name, message))
-	
+			
 	
 class baseHardwareIO(DoorlockdBaseClass):
 	'''Base class for all gpio i/o hardware objects'''
@@ -72,8 +72,16 @@ class baseHardwareIO(DoorlockdBaseClass):
 		else:
 			self.logger.info('notice: {:s}: status update ignored ( just wait for status to change to default {:s})'.format(self.log_name, str(self.default_status)))
 				
+	def hw_exit(self):
+		'''exit/de-initialize gpio port.'''
+		self.logger.info('exitting {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+		GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)
+		
+	def __exit__(self):
+		self.hw_exit(self)
 				
-	
+
+		
 
 
 class hw12vOut(baseHardwareIO):
@@ -94,7 +102,6 @@ class hw12vOut(baseHardwareIO):
 			raise SystemExit('Unable to setup {:s} on {:s}'.format(self.config_name, self.log_name))
 		
 		
-	
 		
 
 class hwButtonInput(baseHardwareIO):
