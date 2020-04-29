@@ -184,7 +184,6 @@ class RfidReaderRc522(DoorlockdBaseClass):
 class RfidActions(DoorlockdBaseClass):
 	trigger_action = 'solenoid'
 	config_name = 'rfid_action'
-	counter = 0
 
 
 	def __init__(self):
