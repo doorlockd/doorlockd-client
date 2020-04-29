@@ -63,18 +63,18 @@ class baseHardwareIO(DoorlockdBaseClass):
 
 	@status.setter
 	def status(self, state):
-		# call trigger if new status != current status
-		if state is not self.status:
-			self.call_trigger()
+		# call trigger if new status != default_status
+		if state is not self.default_status:
+			self.rigger()
 		else:
-			self.logger.info('notice: {:s}: status update ignored ( status is already {:s})'.format(self.log_name, str(state)))
+			self.logger.info('notice: {:s}: status update ignored ( just wait for status to change to default {:s})'.format(self.log_name, str(self.default_status)))
 				
 	def call_trigger(self):
 		'''call the trigger function, unless the status is already 'not default_status'. '''
-		if state is not self.default_status:
+		if not self.status:
 			self.call_trigger()
 		else:
-			self.logger.info('notice: {:s}: status update ignored ( just wait for status to change to default {:s})'.format(self.log_name, str(self.default_status)))
+			self.logger.info('notice: {:s}: status update ignored ( status is already {:s})'.format(self.log_name, str(True)))
 		
 		
 		
