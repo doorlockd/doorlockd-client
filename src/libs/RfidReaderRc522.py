@@ -184,7 +184,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 class RfidActions(DoorlockdBaseClass):
 	trigger_action = 'solenoid'
 	config_name = 'rfid_action'
-
+	counter = 0
 
 	def __init__(self):
 		# get config or defaults
@@ -205,7 +205,7 @@ class RfidActions(DoorlockdBaseClass):
 				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
-			dc.hw[ self.trigger_action ].trigger()
+			dc.hw[ self.trigger_action ].trigger(wait=True)
 			self.counter = self.counter + 1
 
 		else:
