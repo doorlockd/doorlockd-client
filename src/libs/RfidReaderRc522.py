@@ -193,7 +193,7 @@ class RfidActions(DoorlockdBaseClass):
 		
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
-		hwid_str = hwid2hexstr # make hwid in hex string format
+		hwid_str = hwid2hexstr(hwid) # make hwid in hex string format
 
 		# # lookup hwid in db
 		# item = Tag.where('hwid', hwid_str).first()
