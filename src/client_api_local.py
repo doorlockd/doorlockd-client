@@ -13,7 +13,9 @@ class ClientApiDoorlockd(DoorlockdBaseClass):
 			# hwid not found
 			self.logger.debug('{:s} hwid ({:s}) not found, adding to UnkownTag.'.format(self.log_name, hwid_str))
 			# UnknownTag.create(hwid=hwid_str)
-			UnknownTag.first_or_new(hwid=hwid_str).save() # get or instantiate and save() with new timestamp 
+			ut = UnknownTag.first_or_new(hwid=hwid_str)
+			ut.touch()
+			ut.save()
 			return(False)
 		else:
 			if not item.is_disabled:
