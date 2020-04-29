@@ -1,6 +1,6 @@
 
 
-def hwid2hexstr(self, hwid):
+def hwid2hexstr(hwid):
 	'''	Convert array of integers into a collon seperated hex string.
 
 	hwid as suplied by rdr. 
