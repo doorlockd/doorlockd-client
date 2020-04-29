@@ -19,15 +19,17 @@ class Buzzer(hw12vOut, baseTriggerAction):
 		self.hw_init()
 
 		
-	def trigger(self):
+	def trigger(self, wait):
 		'''turn Buzzer on for self.time seconds. '''
 		self.trigger_begin()
 
-		# do the waiting
-		t = threading.Timer(self.time_wait, self.trigger_end)
-		t.start()  # after self.time_wait seconds, trigger_end() will be executed
-
-		# self.trigger_end()
+		# do we block ot wait in a new thread
+		if wait:
+			t = threading.Timer(self.time_wait, self.trigger_end)
+			t.start()  # after self.time_wait seconds, trigger_end() will be executed
+		else:
+			time.sleep(self.time_wait)
+			self.trigger_end()
 
 	def trigger_begin(self):
 		'''turn Buzzer on for start'''
