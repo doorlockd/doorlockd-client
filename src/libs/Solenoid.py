@@ -28,6 +28,8 @@ class Solenoid(hw12vOut, baseTriggerAction):
 			t = threading.Timer(self.time_wait, self.trigger_end)
 			t.start()  # after self.time_wait seconds, trigger_end() will be executed
 		else:
+			self.logger.debug('{:s} blocking wait'.format(self.log_name))
+			
 			time.sleep(self.time_wait)
 			self.trigger_end()
 
