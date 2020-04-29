@@ -3,7 +3,7 @@ from libs.base import DoorlockdBaseClass
 
 class ClientApiDoorlockd(DoorlockdBaseClass):
 	
-	def lookup_detected_hwid(hwid_str):
+	def lookup_detected_hwid(self, hwid_str):
 		''' lookup detected hwid, 
 			
 		'''
