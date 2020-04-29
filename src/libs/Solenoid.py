@@ -25,13 +25,11 @@ class Solenoid(hw12vOut, baseTriggerAction):
 
 		# do we block ot wait in a new thread
 		if wait:
-			t = threading.Timer(self.time_wait, self.trigger_end)
-			t.start()  # after self.time_wait seconds, trigger_end() will be executed
-		else:
-			self.logger.debug('{:s} blocking wait'.format(self.log_name))
-			
 			time.sleep(self.time_wait)
 			self.trigger_end()
+		else:
+			t = threading.Timer(self.time_wait, self.trigger_end)
+			t.start()  # after self.time_wait seconds, trigger_end() will be executed
 
 	def trigger_begin(self):
 		'''open the door, turn Solenoid on for start'''
