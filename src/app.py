@@ -21,6 +21,9 @@ from libs.data_container import data_container as dc
 import toml
 import logging
 
+import client_api_local # client_api_local.ClientApiDoorlockd
+dc.api = client_api_local.ClientApiDoorlockd()
+
 # hardware:
 from libs.Solenoid import Solenoid
 from libs.Buzzer import Buzzer
