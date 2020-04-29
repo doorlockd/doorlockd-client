@@ -1,5 +1,5 @@
 from model import Tag, UnknownTag
-from base
+from base import DoorlockdBaseClass
 
 class ClientApiDoorlockd(DoorlockdBaseClass):
 	
