@@ -194,7 +194,7 @@ class RfidActions(DoorlockdBaseClass):
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
 		self.logger.debug('{:s} callback_tag_detected({:s}).'.format(self.log_name, str(hwid)))
-		self.call_trigger()
+		self.trigger()
 	
 	def trigger(self):
 		# call trigger on destination hw
@@ -206,7 +206,7 @@ class RfidActions(DoorlockdBaseClass):
 				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
-			dc.hw[ self.trigger_action ].trigger()
+			dc.hw[ self.trigger_action ].call_trigger()
 			self.counter = self.counter + 1
 
 		else:
