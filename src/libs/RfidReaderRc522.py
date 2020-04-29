@@ -1,4 +1,7 @@
 from .base import DoorlockdBaseClass, dc, baseTriggerAction
+from .tools import hwid2hexstr
+from ..model import Tag, UnknownTag
+import time
 import threading
 
 from pirc522.rfid import RFID
@@ -189,11 +192,30 @@ class RfidActions(DoorlockdBaseClass):
 	def __init__(self):
 		# get config or defaults
 		self.trigger_action = self.config.get('trigger_action', 'solenoid')
-
+		
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
-		self.logger.debug('{:s} callback_tag_detected({:s}).'.format(self.log_name, str(hwid)))
-		self.trigger()
+		hwid_str = hwid2hexstr # make hwid in hex string format
+
+		# lookup hwid in db
+		item = Tag.where('hwid', hwid_str).first()
+		if not item: 
+			# hwid not found
+			self.logger.info('{:s} hwid ({:s}) not found.'.format(self.log_name, hwid_str))
+			# UnknownTag.create(hwid=hwid_str)
+			UnknownTag.first_or_new(hwid=hwid_str).save() # get or instantiate and save() with new timestamp 
+			time.sleep(1)
+		else:
+			if not item.is_disabled:
+				self.logger.info('{:s} hwid ({:s}) access alowed.'.format(self.log_name, hwid_str))
+				self.trigger()
+			else:	
+				self.logger.info('{:s} hwid ({:s}) access denied.'.format(self.log_name, hwid_str))
+				time.sleep(1)
+		
+		
+	
+
 	
 	def trigger(self):
 		# call trigger on destination hw
