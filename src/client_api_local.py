@@ -1,4 +1,4 @@
-from model import Tag, UnknownTag
+from models import Tag, UnknownTag
 from base import DoorlockdBaseClass
 
 class ClientApiDoorlockd(DoorlockdBaseClass):
