@@ -193,7 +193,7 @@ class RfidActions(DoorlockdBaseClass):
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
 		self.logger.debug('{:s} callback_tag_detected({:s}).'.format(self.log_name, str(hwid)))
-		self.call_trigger()
+		self.trigger()
 	
 	def trigger(self):
 		# call trigger on destination hw

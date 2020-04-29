@@ -34,7 +34,7 @@ class Button(hwButtonInput):
 				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
-			dc.hw[ self.trigger_action ].call_trigger()
+			dc.hw[ self.trigger_action ].trigger()
 			self.counter = self.counter + 1
 
 		else:
