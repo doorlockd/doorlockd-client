@@ -17,7 +17,7 @@ class AutomatedActions(baseTriggerAction):
 		# read trigger_action from config or use the hardcoded default from the init argument.
 		self.trigger_actions = self.config.get('trigger_actions', self.trigger_actions)
 	
-	def trigger(self):
+	def trigger(self, wait=None):
 		self.status = True				# update status
 		
 		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(self.trigger_actions)))
@@ -53,7 +53,7 @@ class Delay1sec(baseTriggerAction):
 	"""delays 1 seconds."""
 	config_name = 'delay1sec'
 	
-	def trigger(self):
+	def trigger(self, wait=None):
 		self.logger.debug('{:s} trigger()'.format(self.log_name))
 		time.sleep(1)
 	
