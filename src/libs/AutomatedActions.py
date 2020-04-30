@@ -1,4 +1,4 @@
-from .base import baseTriggerAction, dc
+from .base import baseTriggerAction, dc, softStatus
 import time
 import threading
 
