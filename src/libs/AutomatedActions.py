@@ -5,13 +5,13 @@ import threading
 #
 # AutomatedAction trigger action, can be assigned as trigger_action on Buttons/Solenoid 
 #	
-class AutomatedActions(baseTriggerAction):
+class AutomatedActions(baseTriggerAction, softStatus):
 	"""this dummy trigger really does nothing."""
 	config_name = 'automated_action'
 	trigger_actions = ['delay1sec', 'solenoid'] # solenoid|buzzer|whatever
 	counter= 0
 	default_status = False
-	status = False
+	_status = False
 	
 	
 	def __init__(self):
@@ -19,12 +19,12 @@ class AutomatedActions(baseTriggerAction):
 		self.trigger_actions = self.config.get('trigger_actions', self.trigger_actions)
 	
 	def trigger(self, wait=False):
-		if self.status:
+		if self._status:
 			# self.status = True we are already active
 			self.logger.info('notice: {:s}: trigger ignored ( status is True )'.format(self.log_name))
 			return
 		else:
-			self.status = True				# update status
+			self._status = True				# update status
 			self.counter = self.counter + 1 # statistics
 
 			# do we block or run triggers in this thread
@@ -42,7 +42,7 @@ class AutomatedActions(baseTriggerAction):
 		for trigger_action in self.trigger_actions:
 			self.call_trigger_on_object(trigger_action)
 		
-		self.status = False				# update status
+		self._status = False				# update status
 	
 	
 	def call_trigger_on_object(self, trigger_action):

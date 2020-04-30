@@ -150,3 +150,24 @@ class baseTriggerAction(DoorlockdBaseClass):
 	def trigger(self):
 		raise NotImplementedError('trigger() method is missing.')
 		
+
+class softStatus(DoolockdBaseClass):
+	_status = False
+	default_status = False
+	
+	# status can be exposed to api
+	@property
+	def status(self):
+		return(self._status)
+
+	@status.setter
+	def status(self, state):
+		# call trigger if new status != default_status or != current status
+		if state is not self.default_status:
+			if state is not self.status:
+				self.trigger()
+			else:
+				self.logger.info('notice: {:s}: status update ignored ( status is already {:s})'.format(self.log_name, str(state)))
+		else:
+			self.logger.info('notice: {:s}: status update ignored ( just wait for status to change to default {:s})'.format(self.log_name, str(self.default_status)))
+	
