@@ -23,7 +23,15 @@ class AutomatedActions(baseTriggerAction):
 			self.logger.info('notice: {:s}: trigger ignored ( status is True )'.format(self.log_name))
 			return
 		else:
-			
+			# do we block or run triggers in this thread
+			if wait:
+				self.run_triggers()
+			else:
+				t = threading.Thread(target=self.run_triggers, args=())
+				t.start()  # 
+
+
+	def run_triggers()
 		self.status = True				# update status
 		
 		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(self.trigger_actions)))
