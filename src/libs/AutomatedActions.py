@@ -1,5 +1,6 @@
 from .base import baseTriggerAction, dc
 import time
+import threading
 
 #
 # AutomatedAction trigger action, can be assigned as trigger_action on Buttons/Solenoid 
