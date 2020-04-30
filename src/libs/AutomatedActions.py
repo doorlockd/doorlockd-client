@@ -17,7 +17,13 @@ class AutomatedActions(baseTriggerAction):
 		# read trigger_action from config or use the hardcoded default from the init argument.
 		self.trigger_actions = self.config.get('trigger_actions', self.trigger_actions)
 	
-	def trigger(self, wait=None):
+	def trigger(self, wait=False):
+		if self.status:
+			# self.status = True we are already active
+			self.logger.info('notice: {:s}: trigger ignored ( status is True )'.format(self.log_name))
+			return
+		else:
+			
 		self.status = True				# update status
 		
 		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(self.trigger_actions)))
