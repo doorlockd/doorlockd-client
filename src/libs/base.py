@@ -151,7 +151,7 @@ class baseTriggerAction(DoorlockdBaseClass):
 		raise NotImplementedError('trigger() method is missing.')
 		
 
-class softStatus(DoolockdBaseClass):
+class softStatus(DoorlockdBaseClass):
 	_status = False
 	default_status = False
 	
