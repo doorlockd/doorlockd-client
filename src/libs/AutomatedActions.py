@@ -31,7 +31,7 @@ class AutomatedActions(baseTriggerAction):
 				t.start()  # 
 
 
-	def run_triggers()
+	def run_triggers():
 		self.status = True				# update status
 		
 		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(self.trigger_actions)))
