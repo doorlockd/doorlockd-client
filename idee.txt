@@ -91,3 +91,8 @@ minimal doorlockd + web api:
  
 [x] install on beaglbone , pyjwt/jwt issues ?? (https://github.com/jpadilla/pyjwt/issues/374) : install pyjwt
 [ ] python requirements.txt? or pipenv (https://medium.com/@boscacci/why-and-how-to-make-a-requirements-txt-f329c685181e)
+
+#
+# client|server features
+#
+[ ] API make /api/tags/<int:id> && /api/tags/<str:hwid> (magic_route? , db_find_one? )

@@ -34,6 +34,10 @@
           "description": "current status, change to trigger",
           "type": ["boolean"]
       },
+      "trigger_action": {
+          "description": "action taken when button is triggered",
+          "type": ["string"]
+      },
       "default_status": {
           "description": "default status",
           "type": ["boolean"]
