@@ -55,7 +55,7 @@ class AutomatedActions(baseTriggerAction, softStatus):
 				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
-			dc.hw[ trigger_action ].trigger()
+			dc.hw[ trigger_action ].trigger(wait=True)
 
 		else:
 			self.logger.error('Trigger error on {:s}: action not found.'.format(self.config_name))
