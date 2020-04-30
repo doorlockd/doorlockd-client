@@ -19,7 +19,7 @@ class Buzzer(hw12vOut, baseTriggerAction):
 		self.hw_init()
 
 		
-	def trigger(self, wait):
+	def trigger(self, wait=False):
 		'''turn Buzzer on for self.time seconds. '''
 		self.trigger_begin()
 
