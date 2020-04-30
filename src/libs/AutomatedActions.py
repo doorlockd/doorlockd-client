@@ -20,10 +20,10 @@ class AutomatedActions(baseTriggerAction):
 	def trigger(self):
 		self.status = True				# update status
 		
-		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(trigger_actions)))
+		self.logger.debug('{:s} trigger() [ {:s}]'.format(self.log_name, str(self.trigger_actions)))
 
 		for trigger_action in self.trigger_actions:
-			self.call_trigger_on_object(trigger_actions)
+			self.call_trigger_on_object(trigger_action)
 		
 		self.counter = self.counter + 1 # statistics
 		self.status = False				# update status
