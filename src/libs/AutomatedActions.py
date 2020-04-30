@@ -4,7 +4,7 @@ import time
 #
 # AutomatedAction trigger action, can be assigned as trigger_action on Buttons/Solenoid 
 #	
-class AutomatedAction(baseTriggerAction):
+class AutomatedActions(baseTriggerAction):
 	"""this dummy trigger really does nothing."""
 	config_name = 'automated_action'
 	trigger_actions = ['delay1sec', 'solenoid'] # solenoid|buzzer|whatever
