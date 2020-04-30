@@ -11,3 +11,5 @@ class Dummy(baseTriggerAction):
 		self.logger.debug('{:s} trigger()'.format(self.log_name))
 		pass
 	
+	
+	

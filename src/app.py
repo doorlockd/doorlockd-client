@@ -30,6 +30,7 @@ from libs.Buzzer import Buzzer
 from libs.Button import Button
 from libs.Dummy import Dummy
 from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
+from libs.AutomatedActions import AutomatedActions, Delay1sec
 
 
 # Read Config settings 
@@ -168,6 +169,11 @@ if __name__ == '__main__':
 	dc.hw['rfidactions'] = RfidActions()
 	dc.hw['rfidreader'].callback_tag_detected = dc.hw['rfidactions'].callback_tag_detected
 
+	# Automated Actions:
+	dc.hw['automated_actions'] = AutomatedActions()
+	dc.hw['delay1sec'] = Delay1sec()
+	rest_api_models.create_api_for_object(dc.hw['automated_actions'], 'schema/schema.hw.automated_actions.json', '/api/hw/automated_actions', app)
+	
 
 	# 
 	# Start Webserver 

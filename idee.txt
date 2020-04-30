@@ -43,10 +43,11 @@ minimal doorlockd + web api:
   /changelog/*/ 		[*]
 
 #
-# /hw/solenoid		{ open = false|true }
-# /hw/buzzer 		{ open = false|true }
-# /hw/button1		{ pressed = false|true } (read-only)
-# /hw/button2		{ pressed = false|true } (read-only)
+# /hw/solenoid		{ status = false|true }
+# /hw/buzzer 		{ status = false|true }
+# /hw/button1		{ status = false|true } (read-only ?)
+# /hw/button2		{ status = false|true } (read-only ?)
+
 
 
 /*
