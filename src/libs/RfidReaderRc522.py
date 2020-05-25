@@ -46,6 +46,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device, pin_irq=self.pin_irq, pin_rst=self.pin_rst)
 				
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
+		self.logger.info('Myfare RfidReaderRc522 spi(bus,dev)=({:s}, {:s}), irq ({:s}), rst ({:s}).'.format(self.spi_bus, self.spi_dev, self.spi_irq, self.spi_rst))
 	
 	# is the thread loop running?
 	@property
