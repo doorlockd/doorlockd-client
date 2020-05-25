@@ -198,7 +198,7 @@ def token_refresh_endpoint():
 
 	# Get token:
 	if 'Authorization' not in request.headers:
-		result = {'error': 'access denied', 'message': 'no authorization header in http request.'}
+		result = {'status': False,'error': 'access denied', 'message': 'no authorization header in http request.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 	
