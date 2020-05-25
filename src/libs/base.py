@@ -152,6 +152,7 @@ class baseTriggerAction(DoorlockdBaseClass):
 		
 
 class softStatus(DoorlockdBaseClass):
+	'''non-hardware status, can be used in AutomatedActions or other software actions.'''
 	_status = False
 	default_status = False
 	

@@ -10,10 +10,11 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	config_name = 'rfid_rc522'
 	default_status = True
 		
-	# SPI dev (bus , device)
+	# SPI dev (bus , device), IRQ and RST
 	spi_bus = 1
 	spi_device = 0
-
+	pin_irq = "P9_15"
+	pin_rst = "P9_23"
 	
 	# internals
 	counter = 0				# nice for statistics
@@ -25,9 +26,12 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	def __init__(self, start_thread=True):
 		
 		# get config or defaults
-		self.spi_bus = self.config.get('spi_bus', 1)
-		self.spi_device = self.config.get('spi_device', 0)
-		self.default_status = self.config.get('default_status', True)
+		self.spi_bus = self.config.get('spi_bus', self.spi_bus)
+		self.spi_device = self.config.get('spi_device', self.spi_device)
+		self.pin_irq = self.config.get('pin_irq', self.pin_irq)
+		self.pin_rst = self.config.get('pin_rst', self.pin_rst)
+
+		self.default_status = self.config.get('default_status', self.default_status)
 		
 		self.hw_init()
 
@@ -39,8 +43,8 @@ class RfidReaderRc522(DoorlockdBaseClass):
 	
 	def hw_init(self):
 		# hw_init RFID reader
-		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device)
-		
+		self.rdr = RFID(bus=self.spi_bus, device=self.spi_device, pin_irq=self.pin_irq, pin_rst=self.pin_rst)
+				
 		self.logger.info('Myfare RfidReaderRc522 starting up ({:s}).'.format(self.log_name))
 	
 	# is the thread loop running?

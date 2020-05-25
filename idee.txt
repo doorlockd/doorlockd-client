@@ -66,8 +66,8 @@ minimal doorlockd + web api:
 [ ] "Restinator" remake (FlaskRequestClass/)
 [ ] [web interface?]
 [x] HW, out12v
-[ ] HW, Solenoid thread wait
-[ ] HW, BuzzerOut thread wait
+[x] HW, Solenoid thread wait
+[X] HW, BuzzerOut thread wait
 [x] HW, button, ..
 [x] HW, Mifare RFID reader....
 [ ] HW, irq and rst pin config.
