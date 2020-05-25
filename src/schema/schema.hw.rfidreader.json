@@ -30,6 +30,16 @@
 		  "readOnly": true,
           "type": ["number"]
       },
+      "pin_irq": {
+          "description": "pin_irq name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "pin_rst": {
+          "description": "pin_irq name",
+		  "readOnly": true,
+          "type": ["string"]
+      },
       "status": {
           "description": "current status, change to trigger",
           "type": ["boolean"]
