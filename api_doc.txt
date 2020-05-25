@@ -1,0 +1,36 @@
+################################
+#    API JWT authentication    #
+################################
+
+#
+# /api/login/				[POST] 
+#
+	post	: {'email': 'xxx', 'password': 'xxx'}
+	response: {"status": true,"token": "XXXXXXXXXXXXXXXXX","message": "User logged on."}
+	
+	error:
+	response: {"status": false,"error": "error-type","message": "error description"}
+
+	example: curl -X POST -H "Content-Type: application/json" \
+			 http://192.168.7.2:8000/api/login/ -d '{"email": "root","password": "secret"}' 
+
+	
+#
+# /api/refresh_token/		[POST] 
+#
+
+	post	: no payload
+	response: {"status": true,"token": "XXXXXXXXXXXXXXXXX","message": "User logged on."}
+	
+	error:
+	response: {"status": false,"error": "error-type","message": "error description"}
+	
+	
+################################
+#    API DB                    #
+################################
+
+
+################################
+#    API HW                    #
+################################

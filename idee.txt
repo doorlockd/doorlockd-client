@@ -37,17 +37,30 @@ minimal doorlockd + web api:
   'output leds' ??
   
 - API:
-  /tags/				[*]
-  /unknowntags/			[*]
-  /users/				[*]
-  /changelog/*/ 		[*]
+	#
+	# API JWT
+	#
+		/api/login/				[POST] json: {'email': 'xxx', 'password': 'xxx'} 
+		/api/refresh_token/		[POST] (no payload) 
 
-#
-# /hw/solenoid		{ status = false|true }
-# /hw/buzzer 		{ status = false|true }
-# /hw/button1		{ status = false|true } (read-only ?)
-# /hw/button2		{ status = false|true } (read-only ?)
+	#
+	# API DB:
+	#
+		/api/tags/				[*]
+		/api/unknowntags/		[*]
+		/api/users/				[*]
+		/api/changelog/*/ 		[*]
 
+	#
+	# API HW
+	#
+		/api/hw/solenoid			{ status = false|true }
+		/api/hw/buzzer 				{ status = false|true }
+		/api/hw/button1				{ status = false|true } (read-only ?)
+		/api/hw/button2				{ status = false|true } (read-only ?)
+		/api/hw/rfidreader			{ status = false|true } (on/off)
+		/api/hw/automated_actions 	{ status=false|true; trigger_actions=['delay1s','solenoid']} 
+									# (actions: buzzer|solenoid|delay1s|...)
 
 
 /*
@@ -58,7 +71,7 @@ minimal doorlockd + web api:
 [x] flask api 
 [x] api auth / + json web tokens ??
 [x] api token uid -> changelogs.user_id 
-[x] change: user.password -> user.password_hash [GET/PUT], user.password [PUT] (getter:Null?||WriteOnly) [only: plain writeonly ]
+[x] change: user.password -> user.password_hash [GET/PUT], user.password [PUT] (getter:Null?||WriteOnly) [only: plain writeonly]
 [x] fix: password_hash (read/write) instead of WriteOnly/ReadOnly; password WrieOnly 
 [x] validatie: jsonschema : regexp ???
 [x] refresh token with token.
@@ -70,8 +83,8 @@ minimal doorlockd + web api:
 [X] HW, BuzzerOut thread wait
 [x] HW, button, ..
 [x] HW, Mifare RFID reader....
-[ ] HW, irq and rst pin config.
-[ ] workaround to stop/restart RFID reader (maybe reset GPIO pins?)
+[x] HW, irq and rst pin config.
+[x] workaround to stop/restart RFID reader (maybe reset GPIO pins?)
 [ ] HW, Led
 [ ] HW, UI Leds setup (2/bicoler led)
 [ ] HW, UI Leds setup (4 leds)

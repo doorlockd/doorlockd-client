@@ -148,31 +148,31 @@ def login_endpoint():
 	# post_data['password']
 	
 	if 'email' not in post_data:
-		result = {'error': 'missing attribute', 'message': 'email field is missing in post data.'}
+		result = {'status': False,'error': 'missing attribute', 'message': 'email field is missing in post data.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 	
 	if 'password' not in post_data:
-		result = {'error': 'missing attribute','message': 'email field is missing in post data.'}
+		result = {'status': False,'error': 'missing attribute','message': 'email field is missing in post data.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 		
 	# get user from database
 	u = User.where('email', post_data['email']).first()
 	if not u:
-		result = {'error': 'access denied', 'message': 'User not found.'}
+		result = {'status': False,'error': 'access denied', 'message': 'User not found.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 
 	# verify password
 	if not u.do_verify_password(post_data['password']):
-		result = {'error': 'access denied', 'message': 'password incorrect.'}
+		result = {'status': False,'error': 'access denied', 'message': 'password incorrect.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 
 	# is disabled
 	if u.is_disabled:
-		result = {'error': 'access denied', 'message':'User disabled.'}
+		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 		
@@ -209,29 +209,29 @@ def token_refresh_endpoint():
 		payload = Token.verify(token)
 		# print("FOUND: Auth (payload):", payload)
 	except jwt.ExpiredSignatureError:
-		result = {'error': 'token error', 'message': 'Token expired. Please log in again.'}
+		result = {'status': False,'error': 'token error', 'message': 'Token expired. Please log in again.'}
 		return(json.dumps(result, indent=4))
 	except jwt.InvalidTokenError as exc:
-		result = {'error': 'token error', 'message': 'JWT Invalid Token {}'.format( exc.__class__.__name__) }
+		result = {'status': False,'error': 'token error', 'message': 'JWT Invalid Token {}'.format( exc.__class__.__name__) }
 		return(json.dumps(result, indent=4))
 
 	# payload.uid : int
 	# payload.refresh : True
 	if not 'refresh' in payload:
-		result = {'error': 'access denied', 'message': 'Token has no permision to be refreshed.'}
+		result = {'status': False,'error': 'access denied', 'message': 'Token has no permision to be refreshed.'}
 		return(json.dumps(result, indent=4))
 
 		
 	# verify if user still has access.
 	u = User.find(payload['uid'])
 	if not u:
-		result = {'error': 'access denied', 'message': 'User not found. (uid not found)'}
+		result = {'status': False,'error': 'access denied', 'message': 'User not found. (uid not found)'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 
 	# is disabled
 	if u.is_disabled:
-		result = {'error': 'access denied', 'message':'User disabled.'}
+		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 		
