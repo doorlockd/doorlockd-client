@@ -76,6 +76,9 @@ minimal doorlockd + web api:
 [ ] HW, UI Leds setup (2/bicoler led)
 [ ] HW, UI Leds setup (4 leds)
 [ ] HW, UI Leds setup (1 single led)
+
+[ ] idee: split Harwdware en Actions
+
 [ ] UI - user interface (led)
 [x] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
 [x] data_container Singleton

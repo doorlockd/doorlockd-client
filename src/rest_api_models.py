@@ -87,7 +87,7 @@ def create_api_for_object(any_object=None, json_schema=None, urlpath=None, app=N
 
 			self._read_json_schema(json_schema)
 
-			# self.need_auth = True
+			self.need_auth = True
 			self.need_validation = True
 			# self.need_defaults = True
 			self.need_enforce_read_only = True
