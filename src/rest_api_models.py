@@ -80,7 +80,7 @@ from rest_api_lib.rest_api_singleobject import RestApiSingleObject
 # create rest api wrapper for dummy obj, as used for hardware objects
 #
 def create_api_for_object(any_object=None, json_schema=None, urlpath=None, app=None):
-	class AnySingleObjectRestApi( RestApiSingleObject):
+	class AnySingleObjectRestApi(JwtForRestApi,  RestApiSingleObject):
 		def __init__(self):
 			print ("DEBUG: setting _object any object:", type(any_object), any_object)
 			self._object = any_object
