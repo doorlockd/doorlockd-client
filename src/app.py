@@ -83,7 +83,8 @@ app.config['ORATOR_DATABASES'] = dc.config['ORATOR_DATABASES']
 if dc.config.get('webserver',{}).get('enable_cors', False):
 	from flask_cors import CORS
 	CORS(app) # This will enable CORS for all routes
-
+	dc.logger.warning('Warning: CORS enabled on api server.')
+	
 
 #
 # Initializing Orator, using flask app.config['ORATOR_DATABASES'] 
