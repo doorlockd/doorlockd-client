@@ -306,7 +306,7 @@ class RestApi(MethodView):
 
 		# response(True) -> HTTP 204 No Content; Location: ...
 		if obj is True:
-			self.response(None, 204, location)
+			self.response({}, 204, location)
 	
 		
 		# short cut for :
