@@ -86,7 +86,7 @@ def index():
 @app.errorhandler(404)
 def page_not_found(e):
     # note that we set the 404 status explicitly
-    return render_template('404.html'), 404
+    return render_template('index.html'), 404
   
 
 # config webserver: enable_cors = False|True
