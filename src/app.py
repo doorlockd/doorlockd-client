@@ -5,7 +5,7 @@ import sys
 import signal
 
 # flask webserver
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, make_response, render_template
 from flask_orator import Orator
 #from waitress import serve -> moved into conditional statement to start waitress
 
@@ -75,9 +75,19 @@ dc.logger.info('doorlockd starting up...')
 #
 # Creating Flask application
 #
-app = Flask(__name__, static_url_path='', static_folder='static_html')
+app = Flask(__name__, static_url_path='', static_folder='static_html', template_folder='static_html')
 app.debug = dc.config.get('webserver',{}).get('debug', False)
 app.config['ORATOR_DATABASES'] = dc.config['ORATOR_DATABASES']
+
+@app.route("/")
+def index():
+    return render_template('index.html')
+
+@app.errorhandler(404)
+def page_not_found(e):
+    # note that we set the 404 status explicitly
+    return render_template('404.html'), 404
+  
 
 # config webserver: enable_cors = False|True
 if dc.config.get('webserver',{}).get('enable_cors', False):

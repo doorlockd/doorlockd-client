@@ -34,7 +34,7 @@
 	/api/tags/:id?				[PUT/POST/GET/DELETE]
 	/api/unknowntags/:id?		[PUT/POST/GET/DELETE]
 	/api/users/:id?				[PUT/POST/GET/DELETE]
-	/api/changelog/:model/:id? 	[GET]
+	/api/changelog/:model/:id  	[GET]
 
 	!!! see schema files for more info
 	
