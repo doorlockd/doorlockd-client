@@ -22,7 +22,7 @@ class Button(hwButtonInput):
 
 	def trigger(self):		
 		# raise trigger_action event:
-		dc.e.raise(self.trigger_action)
+		dc.e.raise_event(self.trigger_action)
 		self.counter = self.counter + 1
 				
 
