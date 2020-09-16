@@ -18,6 +18,9 @@ class Solenoid(hw12vOut, baseTriggerAction):
 		# hw_init
 		self.hw_init()
 
+	def event_callback(self, data):
+		self.trigger(data.get('wait', False))
+		
 		
 	def trigger(self, wait=False):
 		'''open the door, turn Solenoid on for self.time seconds. '''

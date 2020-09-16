@@ -188,33 +188,18 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		
 
 class RfidActions(DoorlockdBaseClass):
-	trigger_action = 'solenoid'
+	trigger_action = 'door_open'
 	config_name = 'rfid_action'
 	counter = 0
 
 	def __init__(self):
 		# get config or defaults
-		self.trigger_action = self.config.get('trigger_action', 'solenoid')
+		self.trigger_action = self.config.get('trigger_action', 'door_open')
 		
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
 		hwid_str = hwid2hexstr(hwid) # make hwid in hex string format
 
-		# # lookup hwid in db
-		# item = Tag.where('hwid', hwid_str).first()
-		# if not item:
-		# 	# hwid not found
-		# 	self.logger.info('{:s} hwid ({:s}) not found.'.format(self.log_name, hwid_str))
-		# 	# UnknownTag.create(hwid=hwid_str)
-		# 	UnknownTag.first_or_new(hwid=hwid_str).save() # get or instantiate and save() with new timestamp
-		# 	time.sleep(1)
-		# else:
-		# 	if not item.is_disabled:
-		# 		self.logger.info('{:s} hwid ({:s}) access alowed.'.format(self.log_name, hwid_str))
-		# 		self.trigger()
-		# 	else:
-		# 		self.logger.info('{:s} hwid ({:s}) access denied.'.format(self.log_name, hwid_str))
-		# 		time.sleep(1)
 		if dc.api.lookup_detected_hwid(hwid_str):
 			self.logger.info('{:s} hwid ({:s}) access alowed.'.format(self.log_name, hwid_str))
 			self.trigger()
@@ -223,24 +208,8 @@ class RfidActions(DoorlockdBaseClass):
 			time.sleep(1)
 			
 		
-	
-
-	
-	def trigger(self):
-		# call trigger on destination hw
 		
-		if dc.hw.get(self.trigger_action, None) is not None:
-				
-			# valid issubclass baseTriggerAction
-			if not isinstance(dc.hw[ self.trigger_action ], baseTriggerAction):
-				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
-				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
-
-			dc.hw[ self.trigger_action ].trigger(wait=True)
-			self.counter = self.counter + 1
-
-		else:
-			self.logger.error('Trigger error on {:s}: action not found.'.format(self.config_name))
-			raise   Exception('Trigger error on {:s}: action not found.'.format(self.config_name))
-	
-
+	def trigger(self):		
+		# raise trigger_action event:
+		dc.e.raise(self.trigger_action)
+		self.counter = self.counter + 1

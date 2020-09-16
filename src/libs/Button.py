@@ -3,7 +3,7 @@ import time
 
 class Button(hwButtonInput):
 	config_name = 'not set'
-	trigger_action = 'not set' # solenoid|buzzer|whatever
+	trigger_action = 'not set' # open_door|ring_buzzer|whatever
 	
 	counter = 0
 	
@@ -20,25 +20,10 @@ class Button(hwButtonInput):
 		self.hw_init()
 
 
-	def trigger(self):
-		# call trigger on destination hw
-		
-		if dc.hw.get(self.trigger_action, None) is not None:
-			# # loops back to self
-			# if dc.hw[ self.trigger_action ] is  self:
-			# 	self.logger.error('Trigger error on {:s}: action is looping back to self {:s}.'.format(self.config_name, self.trigger_action))
-			# 	raise   Exception('Trigger error on {:s}: action is looping back to self {:s}.'.format(self.config_name, self.trigger_action))
+	def trigger(self):		
+		# raise trigger_action event:
+		dc.e.raise(self.trigger_action)
+		self.counter = self.counter + 1
 				
-			# valid issubclass baseTriggerAction
-			if not isinstance(dc.hw[ self.trigger_action ], baseTriggerAction):
-				self.logger.error('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
-				raise   Exception('Trigger error on {:s}: action {:s} is no valid baseTriggerAction.'.format(self.config_name, self.trigger_action))
 
-			dc.hw[ self.trigger_action ].trigger()
-			self.counter = self.counter + 1
-
-		else:
-			self.logger.error('Trigger error on {:s}: action not found.'.format(self.config_name))
-			raise   Exception('Trigger error on {:s}: action not found.'.format(self.config_name))
-			
 		

@@ -17,6 +17,8 @@ from models import *
 from libs.data_container import data_container as dc
 # dc.config: config dict
 # dc.logging: logging object
+# dc.e: events object
+# dc.hw: hardware dict
 
 import toml
 import logging
@@ -32,6 +34,9 @@ from libs.Dummy import Dummy
 from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
 from libs.AutomatedActions import AutomatedActions, Delay1sec
 
+# events
+from libs.Events import Events
+dc.e = Events()
 
 # Read Config settings 
 try:
@@ -70,6 +75,7 @@ if dc.config.get('doorlockd',{}).get('logfile_name'):
 	
 dc.logger = logger
 dc.logger.info('doorlockd starting up...')
+
 
 
 #
@@ -160,24 +166,28 @@ if __name__ == '__main__':
 	#
 	dc.hw['solenoid'] = Solenoid()
 	rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
+	# subscribe to event open_door
+	dc.e.subscribe('open_door', dc.hw['solenoid'].event_callback)
 
 	# 
 	# Hardware: Buzzer
 	#
 	dc.hw['buzzer'] = Buzzer()
 	rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
+	# subscribe to event ring_buzzer
+	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback)
 
 
 	# 
-	# Hardware:  Button1, default functionality is intercom: trigger_action = solenoid 
+	# Hardware:  Button1, default functionality is intercom: trigger_action = open_door 
 	#
-	dc.hw['button1'] = Button('button1', trigger_action='solenoid')
+	dc.hw['button1'] = Button('button1', trigger_action='open_door')
 	rest_api_models.create_api_for_object(dc.hw['button1'], 'schema/schema.hw.button.json', '/api/hw/button1', app)
 
 	# 
-	# Hardware:  Button2, default functionality is doorbell: trigger_action = buzzer 
+	# Hardware:  Button2, default functionality is doorbell: trigger_action = ring_buzzer 
 	#
-	dc.hw['button2'] = Button('button2', trigger_action='buzzer')
+	dc.hw['button2'] = Button('button2', trigger_action='ring_buzzer')
 	rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
 
 	# Hardware:  Mifare RFID Reader  
