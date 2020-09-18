@@ -1,5 +1,5 @@
 # from .data_container import data_container as dc
-from .base import hw12vOut, GPIO, baseTriggerAction
+from .base import hw12vOut, GPIO, baseTriggerAction, dc
 import time
 import threading
 
@@ -38,29 +38,21 @@ class Buzzer(hw12vOut, baseTriggerAction):
 	def trigger_begin(self):
 		'''turn Buzzer on for start'''
 		# self.deamon = True
-		self.logger.debug('{:s} open.'.format(self.log_name))
+		self.logger.debug('{:s} on.'.format(self.log_name))
 		self.counter = self.counter + 1
 
 		#
 		# set GPIO_PIN high for x amount of time
 		#
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
-
+		dc.e.raise_event('buzzer_on')
 
 
 	def trigger_end(self):
 		'''Buzzer  end. '''
-		# # if self.ui is not None:
-		# 	# self.ui.ui_on_door_open()
-		#
-		# time.sleep(self.time_wait)
 		GPIO.output(self.gpio_pin, GPIO.LOW)
-		#
-		# if self.ui is not None:
-		# 	self.ui.ui_off_door_open()
-
-
-		self.logger.debug('{:s} close.'.format(self.log_name))
+		dc.e.raise_event('buzzer_off')
+		self.logger.debug('{:s} off.'.format(self.log_name))
 
 
 
