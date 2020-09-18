@@ -1,0 +1,6 @@
+src/libs/Button.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button
+src/libs/Buzzer.py:		dc.e.raise_event('buzzer_on') # when buzzer is on
+src/libs/Buzzer.py:		dc.e.raise_event('buzzer_off') # when buzzer is off
+src/libs/RfidReaderRc522.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for rfid_action
+src/libs/Solenoid.py:		dc.e.raise_event('solenoid_open') # when solenoid is on
+src/libs/Solenoid.py:		dc.e.raise_event('solenoid_close') # when solenoid is off
