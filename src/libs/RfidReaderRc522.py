@@ -123,18 +123,17 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		rdr = self.rdr
 		rdr.wait_for_tag()
 		(error, tag_type) = rdr.request()
-		# self.ui_pulse_comm()
-
-		# ## commmented out , to verbose...., perhaps no error here?.
-		# if error:
-		#   self.logger.debug("Can't detect RFID tag, rdr.request error")
+		
+		dc.e.raise_event('rfid_comm') # when there is any RFID communication
+		
 			
 
 		if not error:
 			self.logger.debug("Tag detected")
 
 			(error, hwid) = rdr.anticoll()
-			# self.ui_pulse_comm()
+			dc.e.raise_event('rfid_comm') # when there is any RFID communication
+			
 			if not error:
 				self.logger.debug("HWID: " + str(hwid))
 				# Select Tag is required before Auth
@@ -151,7 +150,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 				# Always stop crypto1 when done working
 				#rdr.stop_crypto()
 			if error:
-				# self.ui_show_comm_error()
+				dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error 
 				self.logger.debug('Error ' + self.__class__.__name__+ ': error return by rdr.anticoll :')
 
 
