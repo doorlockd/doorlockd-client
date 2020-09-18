@@ -189,7 +189,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		
 
 class RfidActions(DoorlockdBaseClass):
-	trigger_action = 'door_open'
+	trigger_action = 'open_door'
 	config_name = 'rfid_action'
 	counter = 0
 
