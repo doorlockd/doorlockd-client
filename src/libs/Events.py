@@ -30,7 +30,7 @@ class Events(DoorlockdBaseClass):
 	
 	def raise_event(self, event_id, data={}):
 		'''raise an event by event_id, and pass any data to the callback functions.'''
-		logger.debug("raise_event '{}'.".format(event_id))
+		self.logger.debug("raise_event '{}'.".format(event_id))
 		if event_id not in self._events:
 			# nothing to do
 			return
@@ -39,6 +39,6 @@ class Events(DoorlockdBaseClass):
 		for event in sorted(self._events[event_id], key=lambda event: event['prio']):
 			if event['f_action'](data) is False:
 				# stop executing action
-				logger.info("Eventloop '{}' stopped by function '{}'.".format(event_id, event['f_action']))
+				self.logger.info("Eventloop '{}' stopped by function '{}'.".format(event_id, event['f_action']))
 				break
 				
