@@ -37,21 +37,19 @@ class Buzzer(hw12vOut, baseTriggerAction):
 
 	def trigger_begin(self):
 		'''turn Buzzer on for start'''
-		# self.deamon = True
-		self.logger.debug('{:s} on.'.format(self.log_name))
+		# set GPIO_PIN high for x amount of time
+		GPIO.output(self.gpio_pin, GPIO.HIGH)
 		self.counter = self.counter + 1
 
-		#
-		# set GPIO_PIN high for x amount of time
-		#
-		GPIO.output(self.gpio_pin, GPIO.HIGH)
-		dc.e.raise_event('buzzer_on')
+		dc.e.raise_event('buzzer_on') # when buzzer is on
+		self.logger.debug('{:s} on.'.format(self.log_name))
+
 
 
 	def trigger_end(self):
 		'''Buzzer  end. '''
 		GPIO.output(self.gpio_pin, GPIO.LOW)
-		dc.e.raise_event('buzzer_off')
+		dc.e.raise_event('buzzer_off') # when buzzer is off
 		self.logger.debug('{:s} off.'.format(self.log_name))
 
 

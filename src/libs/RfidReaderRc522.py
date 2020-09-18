@@ -211,5 +211,5 @@ class RfidActions(DoorlockdBaseClass):
 		
 	def trigger(self):		
 		# raise trigger_action event:
-		dc.e.raise_event(self.trigger_action)
+		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for rfid_action
 		self.counter = self.counter + 1

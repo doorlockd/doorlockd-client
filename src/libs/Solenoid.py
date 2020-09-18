@@ -1,5 +1,5 @@
 # from .data_container import data_container as dc
-from .base import hw12vOut, GPIO, baseTriggerAction
+from .base import hw12vOut, GPIO, baseTriggerAction, dc
 import time
 import threading
 
@@ -36,29 +36,22 @@ class Solenoid(hw12vOut, baseTriggerAction):
 
 	def trigger_begin(self):
 		'''open the door, turn Solenoid on for start'''
-		# self.deamon = True
-		self.logger.debug('{:s} open.'.format(self.log_name))
-		self.counter = self.counter + 1
 
-		#
 		# set GPIO_PIN high for x amount of time
 		#
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
+		self.counter = self.counter + 1
+		
+		dc.e.raise_event('solenoid_open') # when solenoid is on
+		self.logger.debug('{:s} open.'.format(self.log_name))
 
 
 
 	def trigger_end(self):
 		'''open the door, turn Solenoid on for end. '''
-		# # if self.ui is not None:
-		# 	# self.ui.ui_on_door_open()
-		#
-		# time.sleep(self.time_wait)
+
 		GPIO.output(self.gpio_pin, GPIO.LOW)
-		#
-		# if self.ui is not None:
-		# 	self.ui.ui_off_door_open()
-
-
+		dc.e.raise_event('solenoid_close') # when solenoid is off
 		self.logger.debug('{:s} close.'.format(self.log_name))
 
 
