@@ -195,7 +195,7 @@ class RfidActions(DoorlockdBaseClass):
 
 	def __init__(self):
 		# get config or defaults
-		self.trigger_action = self.config.get('trigger_action', 'door_open')
+		self.trigger_action = self.config.get('trigger_action', self.trigger_action)
 		
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
