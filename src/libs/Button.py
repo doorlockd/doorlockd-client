@@ -22,7 +22,7 @@ class Button(hwButtonInput):
 
 	def trigger(self):		
 		# raise button push event
-		dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button_n_pushed
+		dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button?_pushed when button is pushed
 		
 		# raise configured trigger_action event:
 		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button

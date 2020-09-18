@@ -1,6 +1,14 @@
+## raise events      
+src/libs/Button.py:		dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button_n_pushed
 src/libs/Button.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button
 src/libs/Buzzer.py:		dc.e.raise_event('buzzer_on') # when buzzer is on
 src/libs/Buzzer.py:		dc.e.raise_event('buzzer_off') # when buzzer is off
+src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_comm') # when there is any RFID communication
+src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_comm') # when there is any RFID communication
+src/libs/RfidReaderRc522.py:				dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error 
 src/libs/RfidReaderRc522.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for rfid_action
 src/libs/Solenoid.py:		dc.e.raise_event('solenoid_open') # when solenoid is on
 src/libs/Solenoid.py:		dc.e.raise_event('solenoid_close') # when solenoid is off
+## subscribe events  
+src/app.py:	dc.e.subscribe('open_door', dc.hw['solenoid'].event_callback)
+src/app.py:	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback) 

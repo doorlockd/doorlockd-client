@@ -111,9 +111,11 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		'''threading run()'''
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		self.stop_loop = False
+		dc.e.raise_event('rfid_ready') # when rfid starts detecting
 		while not self.stop_loop:
 			# self.logger.debug("...(re)starting io_wait_for_tag_detected()")
 			self.io_wait_for_tag_detected()
+		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 			
 
 	def io_wait_for_tag_detected(self):
@@ -201,10 +203,13 @@ class RfidActions(DoorlockdBaseClass):
 
 		if dc.api.lookup_detected_hwid(hwid_str):
 			self.logger.info('{:s} hwid ({:s}) access alowed.'.format(self.log_name, hwid_str))
+			dc.e.raise_event('rfid_access_allowed') # raise when rfid is access_allowed
 			self.trigger()
 		else:
 			self.logger.info('{:s} hwid ({:s}) access denied.'.format(self.log_name, hwid_str))
+			dc.e.raise_event('rfid_access_denied') # raise when rfid is access_denied, will folow by ..._fin in x seconds
 			time.sleep(1)
+			dc.e.raise_event('rfid_access_denied_fin') # raise when rfid is access_denied after sleeping x seconds.
 			
 		
 		
