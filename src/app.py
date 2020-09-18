@@ -175,7 +175,7 @@ if __name__ == '__main__':
 	dc.hw['buzzer'] = Buzzer()
 	rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
 	# subscribe to event ring_buzzer
-	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback)
+	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback) 
 
 
 	# 
