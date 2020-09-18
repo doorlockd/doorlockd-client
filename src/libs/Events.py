@@ -1,9 +1,10 @@
+from .base import DoorlockdBaseClass, dc
 
-
-class Events(object):
+class Events(DoorlockdBaseClass):
 	#	 
 	# _events[event_id][] = { prio=5, f_action=function, ... }
 	#
+	config_name = 'Events'
 	_events = {}
 				
 	def subscribe(self, event_id, f_action, prio=50):
@@ -29,6 +30,7 @@ class Events(object):
 	
 	def raise_event(self, event_id, data={}):
 		'''raise an event by event_id, and pass any data to the callback functions.'''
+		logger.debug("raise_event '{}'.".format(event_id))
 		if event_id not in self._events:
 			# nothing to do
 			return
@@ -37,6 +39,6 @@ class Events(object):
 		for event in sorted(self._events[event_id], key=lambda event: event['prio']):
 			if event['f_action'](data) is False:
 				# stop executing action
-				print("Eventloop '{}' stopped by function '{}'.".format(event_id, event['f_action']))
+				logger.info("Eventloop '{}' stopped by function '{}'.".format(event_id, event['f_action']))
 				break
 				
