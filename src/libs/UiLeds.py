@@ -37,12 +37,12 @@ class UiLeds(DoorlockdBaseClass):
 		self.l4 = Led(self.config.get('led4', "P8_19"), 'led4')	
 
 		# attach event call back (ecb) functions
-		dc.e.subscrine('rfid_ready', self._ecb_rfid_ready)
-		dc.e.subscrine('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
-		dc.e.subscrine('rfid_comm_ready', self._ecb_rfid_comm_ready)
-		dc.e.subscrine('rfid_denied(', self._ecb_rfid_denied)
-		dc.e.subscrine('rfid_access(', self._ecb_rfid_access)
-		dc.e.subscrine('door_open(', self._ecb_door_open)
+		dc.e.subscribe('rfid_ready', self._ecb_rfid_ready)
+		dc.e.subscribe('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
+		dc.e.subscribe('rfid_comm_ready', self._ecb_rfid_comm_ready)
+		dc.e.subscribe('rfid_denied(', self._ecb_rfid_denied)
+		dc.e.subscribe('rfid_access(', self._ecb_rfid_access)
+		dc.e.subscribe('door_open(', self._ecb_door_open)
 		
 	def _ecb_rfid_ready(self):
 		self.l1.on()
