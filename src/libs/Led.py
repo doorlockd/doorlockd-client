@@ -23,18 +23,18 @@ class Led(hwLed):
 		time.sleep(0.05)
 		self.off()
 	
-	def signal(self, wait=False):
+	def signal(self, wait=True):
 		'''show signal for 2 seconds.'''
-		time_wait = 2
+		self.on()
+		time.sleep(0.6)
+		self.off()
+		time.sleep(0.3)
+		self.on()
+		time.sleep(0.6)
+		self.off()
+		time.sleep(0.3)
+		self.on()
+		time.sleep(0.6)
 		
-		# set signal with pwm
-		self.pwm(50, 1)
 		
-		# do we block ot wait in a new thread
-		if wait:
-			time.sleep(time_wait)
-			self.off()
-		else:
-			t = threading.Timer(time_wait, self.off)
-			t.start()  # after self.time_wait seconds, trigger_end() will be executed
-
+		

@@ -114,34 +114,13 @@ class hwLed(baseHardwareIO):
 	
 	def __init__(self):
 		pass
-	
-	def change_state(self, state):
-		if(self.state == state):
-			# nothing happens
-			return()
-		# cleanup old state
-		elif(self.state == 'GPIO'):
-			GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)						
-		elif(self.state == 'PWM'):
-			PWM.stop(self.gpio_pin)
-		
-		# init new state and values
-		if(state == 'GPIO'):
-			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
-			self.state = state
-		elif(state == 'PWM'):
-			PWM.start(self.gpio_pin)
-			self.state = state
-		# if new state is exit , nothin new is initialized.
 			
-		
 	def hw_init(self):
 		'''initialize gpio port.'''
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
 		try:
-			# GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
-			self.change_state('GPIO')
+			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
 	
 		except Exception as e:
 			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
@@ -150,24 +129,12 @@ class hwLed(baseHardwareIO):
 		
 	def on(self):
 		'''turn LED on'''
-		self.change_state('GPIO')
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
 
 	def off(self):
 		'''turn LED off'''
-		self.change_state('GPIO')
 		GPIO.output(self.gpio_pin, GPIO.LOW)
 
-
-	def pwm(self, duty, freq):
-		'''turn LED on with pulse with modulation
-		
-		WARNING: pwm seems a bit buggy. 
-		
-		'''
-		self.change_state('PWM')
-		PWM.set_frequency(self.gpio_pin, freq)
-		PWM.set_duty_cycle(self.gpio_pin, duty)
 		
 	
 
