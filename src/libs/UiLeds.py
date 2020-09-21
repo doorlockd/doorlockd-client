@@ -89,7 +89,7 @@ class UiLeds(DoorlockdBaseClass):
 		self.l3.blink()
 
 	def _ecb_button2_pushed(self, date):
-		self.l4.blink()
+		self.l3.blink()
 
 
 	
