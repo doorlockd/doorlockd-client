@@ -118,7 +118,7 @@ class hwLed(baseHardwareIO):
 	def change_state(self, state):
 		if(self.state == state):
 			# nothing happens
-			pass
+			return()
 		# cleanup old state
 		elif(self.state == 'GPIO'):
 			GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)						
@@ -160,7 +160,11 @@ class hwLed(baseHardwareIO):
 
 
 	def pwm(self, duty, freq):
-		'''turn LED on with pulse with modulation'''
+		'''turn LED on with pulse with modulation
+		
+		WARNING: pwm seems a bit buggy. 
+		
+		'''
 		self.change_state('PWM')
 		PWM.set_frequency(self.gpio_pin, freq)
 		PWM.set_duty_cycle(self.gpio_pin, duty)
