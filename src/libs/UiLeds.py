@@ -49,7 +49,11 @@ class UiLeds(DoorlockdBaseClass):
 		dc.e.subscribe('button1_pushed', self._ecb_button1_pushed)
 		dc.e.subscribe('button2_pushed', self._ecb_button2_pushed)
 		
-		
+	def hw_exit(self):
+		l1.hw_exit()
+		l2.hw_exit()
+		l3.hw_exit()
+		l4.hw_exit()
 		
 	def _ecb_rfid_ready(self, data):
 		self.l1.on()

@@ -78,10 +78,16 @@ if dc.config.get('doorlockd',{}).get('logfile_name'):
 dc.logger = logger
 dc.logger.info('doorlockd starting up...')
 
+
+#
+# initilize hardware container
+#
+dc.hw = {}
+
 # 
 # UI Leds 
 #
-uileds = UiLeds() # init will attach all event subscribtions
+dc.hw['uileds'] = UiLeds() # init will attach all event subscribtions
 
 
 #
@@ -157,10 +163,7 @@ if __name__ == '__main__':
 	import rest_api_models
 	rest_api_models.add_to_flask(app)
 	
-	#
-	# setup hardware
-	#
-	dc.hw = {}
+
 
 	# 
 	# our dummy hardware, can be used as placeholder for trigger_action.
