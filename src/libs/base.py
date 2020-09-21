@@ -128,9 +128,10 @@ class hwLed(baseHardwareIO):
 		# init new state and values
 		if(state == 'GPIO'):
 			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+			self.state = state
 		elif(state == 'PWM'):
 			PWM.start(self.gpio_pin)
-
+			self.state = state
 		# if new state is exit , nothin new is initialized.
 			
 		
