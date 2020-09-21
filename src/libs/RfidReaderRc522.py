@@ -111,9 +111,9 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		'''threading run()'''
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		self.stop_loop = False
-		dc.e.raise_event('rfid_ready') # when rfid starts detecting
 		while not self.stop_loop:
 			# self.logger.debug("...(re)starting io_wait_for_tag_detected()")
+			dc.e.raise_event('rfid_ready') # when rfid starts detecting
 			self.io_wait_for_tag_detected()
 		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 			

@@ -40,8 +40,8 @@ class UiLeds(DoorlockdBaseClass):
 		dc.e.subscribe('rfid_ready', self._ecb_rfid_ready)
 		dc.e.subscribe('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
 		dc.e.subscribe('rfid_comm_ready', self._ecb_rfid_comm_ready)
-		dc.e.subscribe('rfid_denied(', self._ecb_rfid_denied)
-		dc.e.subscribe('rfid_access(', self._ecb_rfid_access)
+		dc.e.subscribe('rfid_access_denied', self._ecb_rfid_denied)
+		dc.e.subscribe('rfid_access_allowed', self._ecb_rfid_access)
 		dc.e.subscribe('door_open(', self._ecb_door_open)
 		
 	def _ecb_rfid_ready(self, data):
