@@ -1,5 +1,6 @@
 from .data_container import data_container as dc
 import Adafruit_BBIO.GPIO as GPIO
+import time 
 
 
 class DoorlockdBaseClass():
