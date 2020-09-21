@@ -1,5 +1,6 @@
 # from libs.data_container import data_container
-from app import data_container
+# from app import data_container
+from app import data_container as dc
 
 
 # data_container
