@@ -105,9 +105,43 @@ class hw12vOut(baseHardwareIO):
 			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
 			self.logger.info('Error: {:s}.'.format(str(e)))
 			raise SystemExit('Unable to setup {:s} on {:s}'.format(self.config_name, self.log_name))
+
 		
+class hwLed(baseHardwareIO):
+	'''hardware: LED output GPIO control.'''
+	
+	def __init__(self, gpio_pin, config_name='led', hw_init=True):
+		self.gpio_pin = gpio_pin
+		self.config_name = config_name
 		
+		if (hw_init):
+			self.hw_init()
+	
+	def hw_init(self):
+		'''initialize gpio port.'''
+		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+
+		try:
+			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+	
+		except Exception as e:
+			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
+			self.logger.info('Error: {:s}.'.format(str(e)))
+			raise SystemExit('Unable to setup {:s} on {:s}'.format(self.config_name, self.log_name))
 		
+	def on(self):
+		'''turn LED on'''
+		GPIO.output(self.gpio_pin, GPIO.HIGH)
+
+	def off(self):
+		'''turn LED off'''
+		GPIO.output(self.gpio_pin, GPIO.LOW)
+
+	def blink_one(self):
+		self.on()
+		time.sleep(0.05)
+		self.off()
+	
 
 class hwButtonInput(baseHardwareIO):
 	'''hardware: input button between GPIO and GND.'''

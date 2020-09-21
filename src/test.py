@@ -3,4 +3,9 @@ from app import data_container
 
 
 # data_container
-from libs.Solenoid import Solenoid
+# from libs.Solenoid import Solenoid
+
+from libs.UiLeds import UiLeds
+
+l = UiLeds()
+l.selftest()

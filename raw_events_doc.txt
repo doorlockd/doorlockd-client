@@ -11,7 +11,7 @@ src/libs/RfidReaderRc522.py:				dc.e.raise_event('rfid_comm_error') # when there
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_access_allowed') # raise when rfid is access_allowed
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_access_denied') # raise when rfid is access_denied, will folow by ..._fin in x seconds
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_access_denied_fin') # raise when rfid is access_denied after sleeping x seconds.
-src/libs/RfidReaderRc522.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for rfid_action
+src/libs/RfidReaderRc522.py:		dc.e.raise_event(self.trigger_action, {'wait': True}) # raise configured trigger_action for rfid_action
 src/libs/Solenoid.py:		dc.e.raise_event('solenoid_open') # when solenoid is on
 src/libs/Solenoid.py:		dc.e.raise_event('solenoid_close') # when solenoid is off
 ## subscribe events  
