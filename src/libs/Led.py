@@ -23,8 +23,8 @@ class Led(hwLed):
 		time.sleep(0.05)
 		self.off()
 	
-	def signal(self, wait=True):
-		'''show signal for 2 seconds.'''
+	def signal(self):
+		'''show signal for 2.x seconds.'''
 		self.on()
 		time.sleep(0.6)
 		self.off()
@@ -35,6 +35,7 @@ class Led(hwLed):
 		time.sleep(0.3)
 		self.on()
 		time.sleep(0.6)
+		self.off()
 		
 		
-		
+	

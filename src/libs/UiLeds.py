@@ -37,7 +37,10 @@ class UiLeds(DoorlockdBaseClass):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
 			led = getattr(self, ln)
 			print("LED selftest: {}, {}, {}".format(ln, led.config_name, led.gpio_pin))
-			for action in ['on', 'off', 'blink_once', 'signal']:
+
+		for action in ['blink_once','on', 'off', 'signal']:
+			for ln in ['l1', 'l2', 'l3', 'l4']:
+				led = getattr(self, ln)
 				print("LED test: {}, {}()".format(ln, action))
 				getattr(led, action)()	# call method action on led : led.action()
 				time.sleep(1)
