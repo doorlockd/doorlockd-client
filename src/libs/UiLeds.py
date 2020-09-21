@@ -36,7 +36,8 @@ class UiLeds(DoorlockdBaseClass):
 		self.l3 = Led(self.config.get('led3', "P8_13"), 'led3')	
 		self.l4 = Led(self.config.get('led4', "P8_19"), 'led4')	
 
-		# detach event call back (ecb) functions
+	def subscribe_events(self, dc):
+		# attach event call back (ecb) functions
 		dc.e.subscrine('rfid_ready', self._ecb_rfid_ready)
 		dc.e.subscrine('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
 		dc.e.subscrine('rfid_comm_ready', self._ecb_rfid_comm_ready)
