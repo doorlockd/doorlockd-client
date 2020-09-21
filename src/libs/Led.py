@@ -18,7 +18,7 @@ class Led(hwLed):
 		if (hw_init):
 			self.hw_init()
 
-	def blink_once(self):
+	def blink(self):
 		self.on()
 		time.sleep(0.05)
 		self.off()
