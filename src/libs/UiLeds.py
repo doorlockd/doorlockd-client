@@ -32,8 +32,6 @@ class UiLeds(DoorlockdBaseClass):
 		self.l2 = Led(self.config.get('led2', "P9_16"), 'led2')	
 		self.l3 = Led(self.config.get('led3', "P8_13"), 'led3')	
 		self.l4 = Led(self.config.get('led4', "P8_19"), 'led4')	
-
-	def 
 		
 	def selftest(self):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
