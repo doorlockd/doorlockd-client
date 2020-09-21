@@ -1,4 +1,5 @@
-from .base import DoorlockdBaseClass, hwLed, dc
+from .base import DoorlockdBaseClass, dc
+from .Led import Led
 import time
 import threading
 
@@ -20,19 +21,20 @@ import threading
 
 class UiLeds(DoorlockdBaseClass):
 	config_name = 'ui_leds'
-
-	def __init__(self):
 	#	[ui_leds]
 	# 	led1 = "P9_14"
 	# 	led2 = "P9_16"
 	# 	led3 = "P8_13"
-	# 	led4 = "P8_19"
-	
-		self.l1 = hwLed(self.config.get('led1', "P9_14"), 'led1')	
-		self.l2 = hwLed(self.config.get('led2', "P9_16"), 'led2')	
-		self.l3 = hwLed(self.config.get('led3', "P8_13"), 'led3')	
-		self.l4 = hwLed(self.config.get('led4', "P8_19"), 'led4')	
+	# 	led4 = "P8_19"	
 
+	def __init__(self):
+		self.l1 = Led(self.config.get('led1', "P9_14"), 'led1')	
+		self.l2 = Led(self.config.get('led2', "P9_16"), 'led2')	
+		self.l3 = Led(self.config.get('led3', "P8_13"), 'led3')	
+		self.l4 = Led(self.config.get('led4', "P8_19"), 'led4')	
+
+	def 
+		
 	def selftest(self):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
 			led = getattr(self, ln)

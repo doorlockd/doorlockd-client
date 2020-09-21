@@ -1,6 +1,5 @@
 from .data_container import data_container as dc
 import Adafruit_BBIO.GPIO as GPIO
-import time 
 
 
 class DoorlockdBaseClass():
@@ -111,12 +110,8 @@ class hw12vOut(baseHardwareIO):
 class hwLed(baseHardwareIO):
 	'''hardware: LED output GPIO control.'''
 	
-	def __init__(self, gpio_pin, config_name='led', hw_init=True):
-		self.gpio_pin = gpio_pin
-		self.config_name = config_name
-		
-		if (hw_init):
-			self.hw_init()
+	def __init__(self):
+		pass
 	
 	def hw_init(self):
 		'''initialize gpio port.'''
@@ -138,10 +133,10 @@ class hwLed(baseHardwareIO):
 		'''turn LED off'''
 		GPIO.output(self.gpio_pin, GPIO.LOW)
 
-	def blink_one(self):
-		self.on()
-		time.sleep(0.05)
-		self.off()
+	# def blink_one(self):
+	# 	self.on()
+	# 	time.sleep(0.05)
+	# 	self.off()
 	
 
 class hwButtonInput(baseHardwareIO):
