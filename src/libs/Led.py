@@ -1,7 +1,7 @@
 from .base import hwLed
 import time
 
-class hwLed(baseHardwareIO):
+class Led(hwLed):
 	'''hardware: LED output GPIO control.'''
 	
 	def __init__(self, gpio_pin, config_name='led', hw_init=True):
