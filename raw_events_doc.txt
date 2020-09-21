@@ -3,7 +3,7 @@ src/libs/Button.py:		dc.e.raise_event('{}_pushed'.format(self.config_name)) # ra
 src/libs/Button.py:		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button
 src/libs/Buzzer.py:		dc.e.raise_event('buzzer_on') # when buzzer is on
 src/libs/Buzzer.py:		dc.e.raise_event('buzzer_off') # when buzzer is off
-src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_ready') # when rfid starts detecting
+src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_ready') # when rfid starts detecting
 src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
@@ -20,6 +20,6 @@ src/app.py:	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback)
 src/libs/UiLeds.py:		dc.e.subscribe('rfid_ready', self._ecb_rfid_ready)
 src/libs/UiLeds.py:		dc.e.subscribe('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
 src/libs/UiLeds.py:		dc.e.subscribe('rfid_comm_ready', self._ecb_rfid_comm_ready)
-src/libs/UiLeds.py:		dc.e.subscribe('rfid_denied(', self._ecb_rfid_denied)
-src/libs/UiLeds.py:		dc.e.subscribe('rfid_access(', self._ecb_rfid_access)
+src/libs/UiLeds.py:		dc.e.subscribe('rfid_access_denied', self._ecb_rfid_denied)
+src/libs/UiLeds.py:		dc.e.subscribe('rfid_access_allowed', self._ecb_rfid_access)
 src/libs/UiLeds.py:		dc.e.subscribe('door_open(', self._ecb_door_open)

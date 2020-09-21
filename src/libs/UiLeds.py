@@ -11,13 +11,14 @@ import threading
 # x signal -__--__-
 
 # 1 2 3 4 | LEDs
+# o o o o ( rfid_stopped)
 # * o o o ( hw ready )
 # i . i i ( rfid comm pulse)
 # i * i i ( rfid comm ready)
 # i i x i ( rfid denied )
 # i i * i ( rfid access )
-# i i i * ( door open )
-# i i i o ( door close )
+# i i i * ( solenoid_open )
+# i i i o ( solenoid_close )
 # i i . i ( button1_pressed)
 # i i i . ( button2_pressed)
 
@@ -38,17 +39,30 @@ class UiLeds(DoorlockdBaseClass):
 
 		# attach event call back (ecb) functions
 		dc.e.subscribe('rfid_ready', self._ecb_rfid_ready)
+		dc.e.subscribe('rfid_stopped', self._ecb_rfid_stopped)
 		dc.e.subscribe('rfid_comm_pulse', self._ecb_rfid_comm_pulse)
 		dc.e.subscribe('rfid_comm_ready', self._ecb_rfid_comm_ready)
 		dc.e.subscribe('rfid_access_denied', self._ecb_rfid_denied)
 		dc.e.subscribe('rfid_access_allowed', self._ecb_rfid_access)
-		dc.e.subscribe('door_open(', self._ecb_door_open)
+		dc.e.subscribe('solenoid_open', self._ecb_solenoid_open)
+		dc.e.subscribe('solenoid_close', self._ecb_solenoid_close)
+		dc.e.subscribe('button1_pushed', self._ecb_button1_pushed)
+		dc.e.subscribe('button2_pushed', self._ecb_button2_pushed)
+		
+		
 		
 	def _ecb_rfid_ready(self, data):
 		self.l1.on()
 		self.l2.off()
 		self.l3.off()
 		self.l4.off()
+	
+	def _ecb_rfid_stopped(self, data):
+		self.l1.off()
+		self.l2.off()
+		self.l3.off()
+		self.l4.off()
+		
 	
 	def _ecb_rfid_comm_pulse(self, data):
 		self.l2.blink()
@@ -65,11 +79,18 @@ class UiLeds(DoorlockdBaseClass):
 		self.l2.on()
 		self.l3.on()
 
-	def _ecb_door_open(self, date):
+	def _ecb_solenoid_open(self, date):
 		self.l4.on()
 
-	def _ecb_door_close(self, date):
+	def _ecb_solenoid_close(self, date):
 		self.l4.off()
+
+	def _ecb_button1_pushed(self, date):
+		self.l3.blink()
+
+	def _ecb_button2_pushed(self, date):
+		self.l4.blink()
+
 
 	
 	def selftest(self):
