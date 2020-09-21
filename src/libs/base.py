@@ -149,12 +149,12 @@ class hwLed(baseHardwareIO):
 		
 	def on(self):
 		'''turn LED on'''
-		self.change_state('GPIO', GPIO.HIGH)
+		self.change_state('GPIO')
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
 
 	def off(self):
 		'''turn LED off'''
-		self.change_state('GPIO', GPIO.LOW)
+		self.change_state('GPIO')
 		GPIO.output(self.gpio_pin, GPIO.LOW)
 
 
