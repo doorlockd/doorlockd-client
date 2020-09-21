@@ -43,6 +43,7 @@ class UiLeds(DoorlockdBaseClass):
 				led = getattr(self, ln)
 				print("LED test: {}, {}()".format(ln, action))
 				getattr(led, action)()	# call method action on led : led.action()
+				time.sleep(0.25)
 			time.sleep(1)
 		print("LED selftest finished")
 
