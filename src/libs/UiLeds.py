@@ -44,31 +44,31 @@ class UiLeds(DoorlockdBaseClass):
 		dc.e.subscribe('rfid_access(', self._ecb_rfid_access)
 		dc.e.subscribe('door_open(', self._ecb_door_open)
 		
-	def _ecb_rfid_ready(self):
+	def _ecb_rfid_ready(self, data):
 		self.l1.on()
 		self.l2.off()
 		self.l3.off()
 		self.l4.off()
 	
-	def _ecb_rfid_comm_pulse(self):
+	def _ecb_rfid_comm_pulse(self, data):
 		self.l2.blink()
 
-	def _ecb_rfid_comm_ready(self):
+	def _ecb_rfid_comm_ready(self, date):
 		self.l2.on()
 
-	def _ecb_rfid_denied(self):
+	def _ecb_rfid_denied(self, date):
 		self.l3.signal()
 		## after signal is finished
 		# self.l2.off()
 
-	def _ecb_rfid_access(self):
+	def _ecb_rfid_access(self, date):
 		self.l2.on()
 		self.l3.on()
 
-	def _ecb_door_open(self):
+	def _ecb_door_open(self, date):
 		self.l4.on()
 
-	def _ecb_door_close(self):
+	def _ecb_door_close(self, date):
 		self.l4.off()
 
 	
