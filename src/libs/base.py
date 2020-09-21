@@ -1,5 +1,6 @@
 from .data_container import data_container as dc
 import Adafruit_BBIO.GPIO as GPIO
+import Adafruit_BBIO.PWM as PWM
 
 
 class DoorlockdBaseClass():
@@ -109,16 +110,37 @@ class hw12vOut(baseHardwareIO):
 		
 class hwLed(baseHardwareIO):
 	'''hardware: LED output GPIO control.'''
+	state = False # False|'PWM'|'GPIO'
 	
 	def __init__(self):
 		pass
 	
+	def change_state(self, state):
+		if(self.state == state):
+			# nothing happens
+			pass
+		# cleanup old state
+		elif(self.state == 'GPIO'):
+			GPIO.setup(self.gpio_pin, GPIO.IN, initial=GPIO.LOW)						
+		elif(self.state == 'PWM'):
+			PWM.stop(self.gpio_pin)
+		
+		# init new state and values
+		if(state == 'GPIO'):
+			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+		elif(state == 'PWM'):
+			PWM.start(self.gpio_pin)
+
+		# if new state is exit , nothin new is initialized.
+			
+		
 	def hw_init(self):
 		'''initialize gpio port.'''
 		self.logger.info('initializing {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
 
 		try:
-			GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+			# GPIO.setup(self.gpio_pin, GPIO.OUT, initial=GPIO.LOW)
+			self.change_state('GPIO')
 	
 		except Exception as e:
 			self.logger.info('failed to setup {:s} on {:s}.'.format(self.config_name, self.log_name))
@@ -127,16 +149,21 @@ class hwLed(baseHardwareIO):
 		
 	def on(self):
 		'''turn LED on'''
+		self.change_state('GPIO', GPIO.HIGH)
 		GPIO.output(self.gpio_pin, GPIO.HIGH)
 
 	def off(self):
 		'''turn LED off'''
+		self.change_state('GPIO', GPIO.LOW)
 		GPIO.output(self.gpio_pin, GPIO.LOW)
 
-	# def blink_one(self):
-	# 	self.on()
-	# 	time.sleep(0.05)
-	# 	self.off()
+
+	def pwm(self, duty, freq):
+		'''turn LED on with pulse with modulation'''
+		self.change_state('PWM')
+		PWM.set_frequency(self.gpio_pin, freq)
+		PWM.set_duty_cycle(self.gpio_pin, duty)
+		
 	
 
 class hwButtonInput(baseHardwareIO):
