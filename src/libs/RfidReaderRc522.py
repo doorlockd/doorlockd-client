@@ -126,7 +126,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 		rdr.wait_for_tag()
 		(error, tag_type) = rdr.request()
 		
-		dc.e.raise_event('rfid_comm') # when there is any RFID communication
+		dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
 			
 
@@ -134,7 +134,7 @@ class RfidReaderRc522(DoorlockdBaseClass):
 			self.logger.debug("Tag detected")
 
 			(error, hwid) = rdr.anticoll()
-			dc.e.raise_event('rfid_comm') # when there is any RFID communication
+			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
 			
 			if not error:
 				self.logger.debug("HWID: " + str(hwid))
