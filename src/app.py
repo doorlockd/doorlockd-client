@@ -81,8 +81,8 @@ dc.logger.info('doorlockd starting up...')
 # 
 # UI Leds 
 #
-uileds = UiLeds() 
-uileds.subscribe_events(dc)
+uileds = UiLeds() # init will attach all event subscribtions
+
 
 #
 # Creating Flask application
