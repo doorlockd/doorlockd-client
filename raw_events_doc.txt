@@ -5,8 +5,8 @@ src/libs/Buzzer.py:		dc.e.raise_event('buzzer_on') # when buzzer is on
 src/libs/Buzzer.py:		dc.e.raise_event('buzzer_off') # when buzzer is off
 src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_ready') # when rfid starts detecting
 src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
-src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_comm') # when there is any RFID communication
-src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_comm') # when there is any RFID communication
+src/libs/RfidReaderRc522.py:		dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
+src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
 src/libs/RfidReaderRc522.py:				dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error 
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_access_allowed') # raise when rfid is access_allowed
 src/libs/RfidReaderRc522.py:			dc.e.raise_event('rfid_access_denied') # raise when rfid is access_denied, will folow by ..._fin in x seconds

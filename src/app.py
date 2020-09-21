@@ -33,10 +33,12 @@ from libs.Button import Button
 from libs.Dummy import Dummy
 from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
 from libs.AutomatedActions import AutomatedActions, Delay1sec
+from libs.UiLeds import UiLeds
 
 # events
 from libs.Events import Events
 dc.e = Events()
+
 
 # Read Config settings 
 try:
@@ -76,7 +78,10 @@ if dc.config.get('doorlockd',{}).get('logfile_name'):
 dc.logger = logger
 dc.logger.info('doorlockd starting up...')
 
-
+# 
+# UI Leds 
+#
+uileds = UiLeds() # init will attach all event subscribtions
 
 #
 # Creating Flask application
