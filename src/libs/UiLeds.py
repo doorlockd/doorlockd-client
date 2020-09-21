@@ -1,4 +1,4 @@
-from .base import hwLed, dc
+from .base import DoorlockdBaseClass, hwLed, dc
 import time
 import threading
 
