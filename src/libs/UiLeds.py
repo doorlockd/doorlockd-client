@@ -23,9 +23,44 @@ import threading
 # i i i . ( button2_pressed)
 
 
-class UiLeds(DoorlockdBaseClass):
-	config_name = 'ui_leds'
-	#	[ui_leds]
+class UiLedsWrapper(DoorlockdBaseClass):
+	'''Wrapper Class, will init an return the configured or requested UiLeds_'leds_type' object.'''
+	config_name = 'ui_leds'	# 
+	# leds_type = '4leds'  	# [none|4leds|duoled|...]
+	
+	def __init__(self, leds_type=none):
+		
+		if (!leds_type):
+			# overwrite leds_type
+			self.leds_type = leds_type
+		else:
+			# get config value or set hardcoded default
+			self.leds_type = self.config.get('leds_type', '4leds') # [none|4leds|duoled|...]
+	
+		# init leds_type:
+		if(leds_type == '4leds'):
+			return UiLeds_4leds()
+		elif(leds_type == 'none'):
+			return UiLeds_none()
+		else:
+			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'")
+			return UiLeds_none()
+			
+			
+
+		
+
+class UiLeds_none(DoorlockdBaseClass):
+	'''dummy UiLeds class, in case no Leds are configured.'''
+	config_name = 'ui_leds.none'
+	
+	# implement the only needed method
+	def hw_exit(self):
+		pass
+	
+class UiLeds_4leds(DoorlockdBaseClass):
+	config_name = 'ui_leds.4leds'
+	#	[ui_leds.4leds]
 	# 	led1 = "P9_14"
 	# 	led2 = "P9_16"
 	# 	led3 = "P8_13"

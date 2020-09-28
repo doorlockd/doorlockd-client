@@ -33,7 +33,7 @@ from libs.Button import Button
 from libs.Dummy import Dummy
 from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
 from libs.AutomatedActions import AutomatedActions, Delay1sec
-from libs.UiLeds import UiLeds
+from libs.UiLeds import UiLedsWrapper
 
 # events
 from libs.Events import Events
@@ -87,7 +87,7 @@ dc.hw = {}
 # 
 # UI Leds 
 #
-dc.hw['uileds'] = UiLeds() # init will attach all event subscribtions
+dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
 
 
 #

@@ -85,9 +85,9 @@ minimal doorlockd + web api:
 [x] HW, Mifare RFID reader....
 [x] HW, irq and rst pin config.
 [x] workaround to stop/restart RFID reader (maybe reset GPIO pins?)
-[ ] HW, Led
+[x] HW, Led
 [ ] HW, UI Leds setup (2/bicoler led)
-[ ] HW, UI Leds setup (4 leds)
+[x] HW, UI Leds setup (4 leds)
 [ ] HW, UI Leds setup (1 single led)
 
 [ ] idee: split Harwdware en Actions
