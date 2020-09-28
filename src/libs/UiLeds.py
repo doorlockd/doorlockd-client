@@ -201,69 +201,67 @@ class UiLeds_duoled(DoorlockdBaseClass):
 		# = long  blink
 		# x signal - -- -
 
-		# r g  | LED (Red , Green)
-		# , o  ( rfid_stopped)
-		# - -  ( rfid ready )
-		# . .  ( rfid comm pulse)
-		# i .  ( rfid comm ready)
-		# x i  ( rfid denied )
-		# * *  ( rfid access ) --> turn yellow
-		# 0 *  ( solenoid_open ) --> turn green
-		# 0 0  ( solenoid_close )
-		# . .  ( button1_pressed)
-		# . .  ( button2_pressed)
+		# r g | y | LED (Red , Green)
+		# , o     ( rfid_stopped)
+		# - -  -  ( rfid ready )
+		# . .  .  ( rfid comm pulse)
+		# i .     ( rfid comm ready)
+		# x i     ( rfid denied )
+		# * *  *  ( rfid access ) --> turn yellow
+		# 0 *     ( solenoid_open ) --> turn green
+		# 0 0  0  ( solenoid_close )
+		# . .  .  ( button1_pressed)
+		# . .  .  ( button2_pressed)
 		
 	def hw_init(self):
 		self.logger.info('initializing {}.'.format(self.config_name))
-		self.lr = Led(self.config.get('led_red', "P8_13"), 'led_red')	
-		self.lg = Led(self.config.get('led_green', "P8_19"), 'led_green')	
+		self.led = DuoLed(
+			self.config.get('led_red', "P8_13"), 
+			self.config.get('led_green', "P8_19"), 
+			'duoled')
+
 
 		
 	def hw_exit(self):
 		self.logger.info('exitting {}.'.format(self.config_name))
-		self.lr.hw_exit()
-		self.lg.hw_exit()
+		self.led.hw_exit()
 		
 	def _ecb_rfid_ready(self, data):
-		self.lr.medium()
-		self.lg.medium()
+		self.led.y.medium()
 	
 	def _ecb_rfid_stopped(self, data):
-		self.lg.off() # and off
-		self.lr.short() # and off
+		self.led.g.off()   # and off
+		self.led.r.short() # and off
 		
 	
 	def _ecb_rfid_comm_pulse(self, data):
-		self.lr.blink()
-		self.lg.blink()
+		self.led.y.blink()
 
 	def _ecb_rfid_comm_ready(self, date):
-		self.lg.blink()
+		self.led.r.off() # and off
+		self.led.g.blink()
 
 	def _ecb_rfid_denied(self, date):
-		self.lr.signal()
+		self.led.g.off() # and off
+		self.led.r.signal()
 		## after signal is finished
-		# self.lr.off()
-
+		# red is off
+		
 	def _ecb_rfid_access(self, date):
-		self.lr.on()
-		self.lg.on()
+		self.led.y.on()
 
 	def _ecb_solenoid_open(self, date):
-		self.lr.off()
-		self.lg.on()
+		self.led.r.off()
+		self.led.g.on()
 
 	def _ecb_solenoid_close(self, date):
-		self.lr.off()
-		self.lg.off()
+		self.led.y.off()
 
 	def _ecb_button1_pushed(self, date):
-		self.lr.blink()
-		self.lg.blink()
+		self.led.y.blink()
 
 	def _ecb_button2_pushed(self, date):
-		self.lr.blink()
-		self.lg.blink()
+		self.led.y.blink()
 
 
 	
