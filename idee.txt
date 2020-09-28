@@ -86,20 +86,20 @@ minimal doorlockd + web api:
 [x] HW, irq and rst pin config.
 [x] workaround to stop/restart RFID reader (maybe reset GPIO pins?)
 [x] HW, Led
-[ ] HW, UI Leds setup (2/bicoler led)
+[x] HW, UI Leds setup (2/bicoler led)
 [x] HW, UI Leds setup (4 leds)
 [ ] HW, UI Leds setup (1 single led)
 
 [ ] idee: split Harwdware en Actions
 
-[ ] UI - user interface (led)
+[x] UI - user interface (led)
 [x] rest_api_singleobject.py: rest_api class (handling HW and other objects.)
 [x] data_container Singleton
 [x] config,
 [_] logging,()
 [ ] waitress access_log
-[_] threading.
-[ ] Mifare 
+[x] threading.
+[x] Mifare 
 [-] python requirements.txt
 [ ] SSL (https://...) [ Flask ssl_context='adhoc'/ OpenSSL?/stunel?/ ]
 [x] Ctrl-C + object.hw_exit()

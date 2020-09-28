@@ -102,7 +102,6 @@ class DuoLedColor(Led):
 		self.red.off()
 		self.green.off()
 	
-
 	# disabled some methods:
 	def hw_init(self):
 		pass
