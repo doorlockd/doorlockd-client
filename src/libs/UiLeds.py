@@ -215,9 +215,7 @@ class UiLeds_duoled(DoorlockdBaseClass):
 		
 	def hw_init(self):
 		self.logger.info('initializing {}.'.format(self.config_name))
-		self.led = DuoLed(
-			[self.config.get('led_red', "P8_13"), self.config.get('led_green', "P8_19")], 
-			'duoled')
+		self.led = DuoLed(self.config.get('led_red', "P8_13"), self.config.get('led_green', "P8_19"),'duoled')
 
 
 		
