@@ -28,20 +28,20 @@ class UiLedsWrapper(DoorlockdBaseClass):
 	config_name = 'ui_leds'	# 
 	# leds_type = '4leds'  	# [none|4leds|duoled|...]
 	
-	def __new__(self, leds_type=None):
+	def __new__(cls, leds_type=None):
 		
 		if (leds_type is not None):
 			# overwrite leds_type
-			self.leds_type = leds_type
+			leds_type = leds_type
 		else:
 			# get config value or set hardcoded default
-			self.leds_type = self.config.get('leds_type', '4leds') # [none|4leds|duoled|...]
+			leds_type = cls.config.get('leds_type', '4leds') # [none|4leds|duoled|...]
 	
 	
 		# init leds_type:
-		if(self.leds_type == '4leds'):
+		if(leds_type == '4leds'):
 			return UiLeds_4leds()
-		elif(self.leds_type == 'none'):
+		elif(leds_type == 'none'):
 			return UiLeds_none()
 		else:
 			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'".format(self.leds_type))
