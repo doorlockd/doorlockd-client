@@ -28,9 +28,9 @@ class UiLedsWrapper(DoorlockdBaseClass):
 	config_name = 'ui_leds'	# 
 	# leds_type = '4leds'  	# [none|4leds|duoled|...]
 	
-	def __init__(self, leds_type=none):
+	def __init__(self, leds_type=None):
 		
-		if (leds_type is not none):
+		if (leds_type is not None):
 			# overwrite leds_type
 			self.leds_type = leds_type
 		else:
