@@ -49,7 +49,6 @@ class Led(hwLed):
 
 class DuoLed(hwLed):
 	'''hardware: LED output GPIO control.'''
-	__gpio_pin = ''
 	
 	def __init__(self, gpio_pin_red, gpio_pin_green, config_name='duoled', hw_init=True):
 		self.gpio_pin_red = gpio_pin_red 
@@ -88,7 +87,6 @@ class DuoLed(hwLed):
 
 class DuoLedColor(Led):
 	# implements Led function for yellow
-	__gpio_pin = ''
 
 	def __init__(self, led_red, led_green, config_name='led_yellow'):
 		self.config_name = config_name
