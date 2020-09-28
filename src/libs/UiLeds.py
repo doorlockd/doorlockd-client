@@ -263,7 +263,7 @@ class UiLeds_duoled(DoorlockdBaseClass):
 
 	
 	def selftest(self):
-		for led in ['r','g','y']:
+		for ln in ['r','g','y']:
 			led = getattr(self.led, ln)
 			print("LED selftest: {}, {}, {}".format(ln, led.config_name, led.gpio_pin))
 
