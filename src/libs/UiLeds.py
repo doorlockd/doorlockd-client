@@ -37,13 +37,14 @@ class UiLedsWrapper(DoorlockdBaseClass):
 			# get config value or set hardcoded default
 			self.leds_type = self.config.get('leds_type', '4leds') # [none|4leds|duoled|...]
 	
+	
 		# init leds_type:
-		if(leds_type == '4leds'):
+		if(self.leds_type == '4leds'):
 			return UiLeds_4leds()
-		elif(leds_type == 'none'):
+		elif(self.leds_type == 'none'):
 			return UiLeds_none()
 		else:
-			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'")
+			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'".format(self.leds_type))
 			return UiLeds_none()
 			
 			
