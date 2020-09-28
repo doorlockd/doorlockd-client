@@ -18,10 +18,19 @@ class Led(hwLed):
 		if (hw_init):
 			self.hw_init()
 
-	def blink(self):
+	def blink(self, duration=0.05):
 		self.on()
-		time.sleep(0.05)
+		time.sleep(duration)
 		self.off()
+	
+	def short(self):
+		self.blink(0.1)
+		
+	def medium(self):
+		self.blink(0.3)
+		
+	def long(self):
+		self.blink(0.6)
 	
 	def signal(self):
 		'''show signal for 2.x seconds.'''
