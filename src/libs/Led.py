@@ -72,12 +72,10 @@ class DuoLed(hwLed):
 	def hw_init(self):
 		# Red
 		self.r = Led(self.gpio_pin_red, 'led_red')
-		
 		# Green
 		self.g = Led(self.gpio_pin_green, 'led_green')
-		
-		# Yello
-		self.y = DuoLedYellow(self.r, self.g)
+		# Yellow
+		self.y = DuoLedColor(self.r, self.g)
 		
 	def hw_exit(self):
 		self.r.hw_exit()
@@ -87,27 +85,27 @@ class DuoLed(hwLed):
 		
 		
 
-	class DuoLedYellow(Led):
-		# implements Led function for yellow
+class DuoLedColor(Led):
+	# implements Led function for yellow
 
-		def __init__(self, led_red, led_green, config_name='led_yellow'):
-			self.config_name = config_name
-		
-			self.red = led_red;
-			self.green = led_green;
+	def __init__(self, led_red, led_green, config_name='led_yellow'):
+		self.config_name = config_name
+	
+		self.red = led_red;
+		self.green = led_green;
 
-		def on(self):
-			self.red.on()
-			self.green.on()
-		
-		def onff(self):
-			self.red.off()
-			self.green.off()
-		
+	def on(self):
+		self.red.on()
+		self.green.on()
+	
+	def onff(self):
+		self.red.off()
+		self.green.off()
+	
 
-		# disabled some methods:
-		def hw_init(self):
-			pass
-		
-		def hw_exit(self):
-			pass
+	# disabled some methods:
+	def hw_init(self):
+		pass
+	
+	def hw_exit(self):
+		pass
