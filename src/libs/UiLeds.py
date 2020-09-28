@@ -24,10 +24,8 @@ import threading
 
 
 class UiLedsWrapper(DoorlockdBaseClass):
-	'''Wrapper Class, will init an return the configured or requested UiLeds_'leds_type' object.'''
-	config_name = 'ui_leds'	# 
-	# leds_type = '4leds'  	# [none|4leds|duoled|...]
-	
+	'''Wrapper Class, will return the configured or requested UiLeds_'leds_type' object.'''
+		
 	def __new__(cls, leds_type=None):
 		
 		if (leds_type is not None):
@@ -35,7 +33,7 @@ class UiLedsWrapper(DoorlockdBaseClass):
 			leds_type = leds_type
 		else:
 			# get config value or set hardcoded default
-			leds_type = cls.config.get('leds_type', '4leds') # [none|4leds|duoled|...]
+			leds_type = dc.config.get('ui_leds',{}).get('leds_type', '4leds') # [none|4leds|duoled|...]
 	
 	
 		# init leds_type:
