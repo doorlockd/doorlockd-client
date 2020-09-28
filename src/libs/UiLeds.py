@@ -155,7 +155,7 @@ class UiLeds_4leds(DoorlockdBaseClass):
 	def selftest(self):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
 			led = getattr(self, ln)
-			print("LED selftest: {}, {}, {}".format(ln, led.config_name, led.gpio_pin))
+			print("LED selftest: {}, {}, {}".format(ln, led.config_name, getattr(led, 'gpio_pin', '- no gpio -')))
 
 		for action in ['blink','on', 'off', 'signal']:
 			for ln in ['l1', 'l2', 'l3', 'l4']:
@@ -265,7 +265,7 @@ class UiLeds_duoled(DoorlockdBaseClass):
 	def selftest(self):
 		for ln in ['r','g','y']:
 			led = getattr(self.led, ln)
-			print("LED selftest: ", ln, led.config_name, led.gpio_pin)
+			print("LED selftest: {}, {}, {}".format(ln, led.config_name, getattr(led, 'gpio_pin', '- no gpio -')))
 
 			for action in ['blink','on', 'off', 'signal']:
 				print("LED test: {}, {}()".format(ln, action))
