@@ -22,10 +22,12 @@ class UiLedsWrapper(DoorlockdBaseClass):
 		# init leds_type:
 		if(leds_type == '4leds'):
 			return UiLeds_4leds()
+		elif(leds_type == 'duoled'):
+			return UiLeds_duoled()
 		elif(leds_type == 'none'):
 			return UiLeds_none()
 		else:
-			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'".format(self.leds_type))
+			dc.logger.warning("Warning: UiLeds: leds_type = '{}' is unkown, using type 'none'".format(leds_type))
 			return UiLeds_none()
 			
 			
