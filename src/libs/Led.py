@@ -8,7 +8,38 @@ import threading
 # . blink_once
 # x signal -__--__-
 
-class Led(hwLed):
+class LedMethods():
+	
+	def blink(self, duration=0.05):
+		self.on()
+		time.sleep(duration)
+		self.off()
+	
+	def short(self):
+		self.blink(0.1)
+		
+	def medium(self):
+		self.blink(0.3)
+		
+	def long(self):
+		self.blink(0.6)
+	
+	def signal(self):
+		'''show signal for 2.x seconds.'''
+		self.on()
+		time.sleep(0.6)
+		self.off()
+		time.sleep(0.3)
+		self.on()
+		time.sleep(0.6)
+		self.off()
+		time.sleep(0.3)
+		self.on()
+		time.sleep(0.6)
+		self.off()
+	
+
+class Led(hwLed, LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
 	def __init__(self, gpio_pin, config_name='led', hw_init=True):
@@ -17,6 +48,7 @@ class Led(hwLed):
 		
 		if (hw_init):
 			self.hw_init()
+
 
 	def blink(self, duration=0.05):
 		self.on()
@@ -47,7 +79,7 @@ class Led(hwLed):
 		self.off()
 
 
-class DuoLed(hwLed):
+class DuoLed(LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
 	def __init__(self, gpio_pin_red, gpio_pin_green, config_name='duoled', hw_init=True):
@@ -85,7 +117,7 @@ class DuoLed(hwLed):
 		
 		
 
-class DuoLedColor(Led):
+class DuoLedColor(LedMethods):
 	# implements Led function for yellow
 
 	def __init__(self, led_red, led_green, config_name='led_yellow'):
