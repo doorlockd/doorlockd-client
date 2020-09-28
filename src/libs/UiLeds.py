@@ -30,7 +30,7 @@ class UiLedsWrapper(DoorlockdBaseClass):
 	
 	def __init__(self, leds_type=none):
 		
-		if (!leds_type):
+		if (leds_type is not none):
 			# overwrite leds_type
 			self.leds_type = leds_type
 		else:
