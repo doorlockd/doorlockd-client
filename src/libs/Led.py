@@ -68,7 +68,7 @@ class DuoLed(hwLed):
 	
 
 
-	def hw_init():
+	def hw_init(self):
 		# Red
 		self.r = Led(self.gpio_pin[0], 'led_red')
 		
@@ -78,7 +78,7 @@ class DuoLed(hwLed):
 		# Yello
 		self.y = DuoLedYellow(self.red, self.green)
 		
-	def hw_exit():
+	def hw_exit(self):
 		self.r.hw_exit()
 		self.g.hw_exit()
 		self.y.hw_exit()
