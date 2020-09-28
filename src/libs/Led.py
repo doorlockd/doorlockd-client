@@ -100,7 +100,7 @@ class DuoLedColor(Led):
 		self.red.on()
 		self.green.on()
 	
-	def onff(self):
+	def off(self):
 		self.red.off()
 		self.green.off()
 	
