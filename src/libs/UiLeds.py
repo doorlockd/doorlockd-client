@@ -1,5 +1,5 @@
 from .base import DoorlockdBaseClass, dc
-from .Led import Led
+from .Led import Led, DuoLed
 import time
 import threading
 
