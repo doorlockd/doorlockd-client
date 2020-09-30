@@ -17,6 +17,11 @@ class Solenoid(hw12vOut, baseTriggerAction):
 		
 		# hw_init
 		self.hw_init()
+		
+		# subscribe to event 
+		event_name = self.config.get('action_on', 'open_door') 
+		dc.e.subscribe(event_name, self.event_callback)
+		
 
 	def event_callback(self, data):
 		self.trigger(data.get('wait', False))

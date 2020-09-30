@@ -175,17 +175,12 @@ if __name__ == '__main__':
 	#
 	dc.hw['solenoid'] = Solenoid()
 	rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
-	# subscribe to event open_door
-	dc.e.subscribe('open_door', dc.hw['solenoid'].event_callback)
 
 	# 
 	# Hardware: Buzzer
 	#
 	dc.hw['buzzer'] = Buzzer()
 	rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
-	# subscribe to event ring_buzzer
-	dc.e.subscribe('ring_buzzer', dc.hw['buzzer'].event_callback) 
-
 
 	# 
 	# Hardware:  Button1, default functionality is intercom: trigger_action = open_door 

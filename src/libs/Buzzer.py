@@ -17,6 +17,10 @@ class Buzzer(hw12vOut, baseTriggerAction):
 		
 		# hw_init
 		self.hw_init()
+
+		# subscribe to event 
+		event_name = self.config.get('action_on', 'ring_buzzer') 
+		dc.e.subscribe(event_name, self.event_callback)
 		
 
 	def event_callback(self, data):
