@@ -170,7 +170,7 @@ class UiLeds_4leds(DoorlockdBaseClass):
 
 class UiLeds_duoled(DoorlockdBaseClass):
 	config_name = 'ui_leds.duoled'
-	#	[ui_leds.4leds]
+	#	[ui_leds.duoled]
 	# 	led_red = "P8_13"
 	# 	led_green = "P8_19"	
 
