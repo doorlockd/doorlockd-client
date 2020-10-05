@@ -18,6 +18,7 @@ class ApiErrorRespons(Exception):
 	"""Class for passing dict objects, ready to be served as JSON"""
 	def __init__(self, err, code=500):
 		self.err = err;
+		self.code = code;
 		
 		if(not isinstance(err,dict)):
 			print("error:  ApiErrorRespons should have an dict as argument not", err);
