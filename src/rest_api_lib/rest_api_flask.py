@@ -18,7 +18,7 @@ class ApiErrorRespons(Exception):
 	"""Class for passing dict objects, ready to be served as JSON"""
 	def __init__(self, err, code=500):
 		self.err = err;
-		self.code = code;
+		self.code = c;
 		
 		if(not isinstance(err,dict)):
 			print("error:  ApiErrorRespons should have an dict as argument not", err);
@@ -136,8 +136,6 @@ class RestApi(MethodView):
 
 	def _call_get_http_auth(self):
 		# if need_auth: read token or fail 401
-		import time
-		time.sleep(1)
 		
 		# check if we need it.
 		if self.need_auth:
