@@ -31,7 +31,7 @@ class RestApiOrator(RestApi):
 			if m:
 				key = m.group(1)
 				error['message'] = "key '{}' is not unique, value '{}' does already exist".format(key, str(item[key]))
-				error['type'] = 'not unique'
+				error['type'] = 'validation'
 				error['fields'] = { key: "Not unique, '{}' does already exist".format(str(item[key]))}
 				raise ApiErrorRespons(error, 400)
 				
