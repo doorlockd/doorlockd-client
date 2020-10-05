@@ -135,6 +135,8 @@ class RestApi(MethodView):
 
 	def _call_get_http_auth(self):
 		# if need_auth: read token or fail 401
+		import time
+		time.sleep(1)
 		
 		# check if we need it.
 		if self.need_auth:
