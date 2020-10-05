@@ -153,7 +153,7 @@ def login_endpoint():
 	
 	if post_data is None:
 		result = {'status': False,'error': 'missing attributes', 'message': 'json data is missing.'}
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 400, {'Content-Type': 'application/json'}))
 		
 	# post_data['email']
 	# post_data['password']
@@ -161,12 +161,12 @@ def login_endpoint():
 	if 'email' not in post_data:
 		result = {'status': False,'error': 'missing attribute', 'message': 'email field is missing in post data.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 400, {'Content-Type': 'application/json'}))
 	
 	if 'password' not in post_data:
 		result = {'status': False,'error': 'missing attribute','message': 'password field is missing in post data.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 400, {'Content-Type': 'application/json'}))
 		
 	# get user from database
 	u = User.where('email', post_data['email']).first()
@@ -174,19 +174,18 @@ def login_endpoint():
 		result = {'status': False,'error': 'access denied', 'message': 'User not found.'}
 		# print ("DEBUG: ", result)
 		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
-		return(json.dumps(result, indent=4))
 
 	# verify password
 	if not u.do_verify_password(post_data['password']):
 		result = {'status': False,'error': 'access denied', 'message': 'password incorrect.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
 	# is disabled
 	if u.is_disabled:
 		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 		
 	# 
 	# Password is verified and OK: make an JWT and return this
@@ -212,7 +211,7 @@ def token_refresh_endpoint():
 	if 'Authorization' not in request.headers:
 		result = {'status': False,'error': 'access denied', 'message': 'no authorization header in http request.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 	
 	# get token from header 'Bearer ##########TOKEN######'
 	token = request.headers.get('Authorization').split(" ")[1]
@@ -222,16 +221,16 @@ def token_refresh_endpoint():
 		# print("FOUND: Auth (payload):", payload)
 	except jwt.ExpiredSignatureError:
 		result = {'status': False,'error': 'token error', 'message': 'Token expired. Please log in again.'}
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 	except jwt.InvalidTokenError as exc:
 		result = {'status': False,'error': 'token error', 'message': 'JWT Invalid Token {}'.format( exc.__class__.__name__) }
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
 	# payload.uid : int
 	# payload.refresh : True
 	if not 'refresh' in payload:
 		result = {'status': False,'error': 'access denied', 'message': 'Token has no permision to be refreshed.'}
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
 		
 	# verify if user still has access.
@@ -239,13 +238,13 @@ def token_refresh_endpoint():
 	if not u:
 		result = {'status': False,'error': 'access denied', 'message': 'User not found. (uid not found)'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
 	# is disabled
 	if u.is_disabled:
 		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
-		return(json.dumps(result, indent=4))
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 		
 	# 
 	# all is verified and OK: make an JWT and return this

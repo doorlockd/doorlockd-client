@@ -16,7 +16,7 @@ import json
 
 class ApiErrorRespons(Exception):
 	"""Class for passing dict objects, ready to be served as JSON"""
-	def __init__(self, err):
+	def __init__(self, err, code=500):
 		self.err = err;
 		
 		if(not isinstance(err,dict)):
@@ -474,7 +474,7 @@ class RestApi(MethodView):
 
 		except ApiErrorRespons as e:
 			print("error ", type(e.err),  e.err)
-			self.response(e.err, 500)
+			self.response(e.err, e.code)
 			
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }

@@ -33,10 +33,10 @@ class RestApiOrator(RestApi):
 				error['message'] = "key '{}' is not unique, value '{}' does already exist".format(key, str(item[key]))
 				error['type'] = 'not unique'
 				error['fields'] = { key: "Not unique, '{}' does already exist".format(str(item[key]))}
-
-			print("\njsone db_create():", error)
+				raise ApiErrorRespons(error, 400)
+				
 			
-			raise ApiErrorRespons(error)
+			raise ApiErrorRespons(error, 500)
 		
 		# let's return a fresh copy for the client.
 		return self.db_find_one(new.get_key())
