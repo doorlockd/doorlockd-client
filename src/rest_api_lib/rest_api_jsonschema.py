@@ -100,14 +100,18 @@ class JsonSchemaForRestApi(object):
 			# catches only first error.
 			error = {}
 			error['type'] = 'validation'
-			# pointer '.' or path '/'
-			error['path'] = '.'.join(e.path)
+			error['error'] = 'validation'
+			# pointer '.' or path '/' --> error['fields'][key] = 'error message'
+			error['fields'] = { '.'.join(e.path): e.message }
 			error['message'] = e.message
 
 			print( '------validation-error:---------------' )
 			print( 'error: ', json.dumps(error, indent=3))
 			print( '--------------------------------------' )
+			print( 'raw: ', e )
+			print( '--------------------------------------' )
 
+			
 			# HTTP response
 			self.response(error, 400)
 

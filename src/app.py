@@ -4,15 +4,6 @@ import sys
 # support ctrl-c 
 import signal
 
-# flask webserver
-from flask import Flask, jsonify, make_response, render_template
-from flask_orator import Orator
-#from waitress import serve -> moved into conditional statement to start waitress
-
-
-# db models
-from models import *
-
 # global data_container
 from libs.data_container import data_container as dc
 # dc.config: config dict
@@ -20,31 +11,62 @@ from libs.data_container import data_container as dc
 # dc.e: events object
 # dc.hw: hardware dict
 
+
+
 import toml
 import logging
 
-import client_api_local # client_api_local.ClientApiDoorlockd
-dc.api = client_api_local.ClientApiDoorlockd()
-
-# hardware:
-from libs.Solenoid import Solenoid
-from libs.Buzzer import Buzzer
-from libs.Button import Button
-from libs.Dummy import Dummy
-from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
-from libs.AutomatedActions import AutomatedActions, Delay1sec
-from libs.UiLeds import UiLedsWrapper
-
-# events
-from libs.Events import Events
-dc.e = Events()
 
 
 # Read Config settings 
 try:
 	dc.config = toml.load('config.ini')
+		
 except FileNotFoundError:
 	sys.exit("Config file 'config.ini' is missing.")
+
+# overwrite config (can for example be set when imported from an cli script)
+if(hasattr( dc, 'config_overwrite')):	
+	for section in dc.config_overwrite.keys():
+		
+		# add section when missing
+		if dc.config.get(section,False):
+			dc.config[section] = {}
+		
+		for key, value in dc.config_overwrite[section].items():
+			print("overwrite config: ['{}'] {} = ".format(section, key), value)
+			dc.config[section][key] = value
+			
+
+
+# db models
+from models import *
+
+
+# if(dc.config.get('doorlockd',{}).get('enable_webserver',True)):
+# flask webserver
+from flask import Flask, jsonify, make_response, render_template
+#from waitress import serve -> moved into conditional statement to start waitress
+from flask_orator import Orator
+
+
+
+if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
+	# events
+	from libs.Events import Events
+	dc.e = Events()
+
+	# hardware:
+	from libs.Solenoid import Solenoid
+	from libs.Buzzer import Buzzer
+	from libs.Button import Button
+	from libs.Dummy import Dummy
+	from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
+	from libs.AutomatedActions import AutomatedActions, Delay1sec
+	from libs.UiLeds import UiLedsWrapper
+
+	import client_api_local # client_api_local.ClientApiDoorlockd
+	dc.api = client_api_local.ClientApiDoorlockd()
 
 
 
@@ -87,7 +109,8 @@ dc.hw = {}
 # 
 # UI Leds 
 #
-dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
+if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
+	dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
 
 
 #
@@ -105,7 +128,7 @@ def index():
 def page_not_found(e):
     # note that we set the 404 status explicitly
     return render_template('index.html'), 404
-  
+
 
 # config webserver: enable_cors = False|True
 if dc.config.get('webserver',{}).get('enable_cors', False):
@@ -156,15 +179,18 @@ signal.signal(signal.SIGHUP, signal_handler_reload)
 
 
 #
-# Main
+# Main Webserver
 #
-if __name__ == '__main__':
+if(dc.config.get('doorlockd',{}).get('enable_webserver',True)): 
 	# enable flask api endpoints:
 	import rest_api_models
 	rest_api_models.add_to_flask(app)
-	
 
 
+#
+# Main hardware
+#
+if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
 	# 
 	# our dummy hardware, can be used as placeholder for trigger_action.
 	#
@@ -174,30 +200,25 @@ if __name__ == '__main__':
 	# Hardware: Solenoid
 	#
 	dc.hw['solenoid'] = Solenoid()
-	rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
 
 	# 
 	# Hardware: Buzzer
 	#
 	dc.hw['buzzer'] = Buzzer()
-	rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
 
 	# 
 	# Hardware:  Button1, default functionality is intercom: trigger_action = open_door 
 	#
 	dc.hw['button1'] = Button('button1', trigger_action='open_door')
-	rest_api_models.create_api_for_object(dc.hw['button1'], 'schema/schema.hw.button.json', '/api/hw/button1', app)
 
 	# 
 	# Hardware:  Button2, default functionality is doorbell: trigger_action = ring_buzzer 
 	#
 	dc.hw['button2'] = Button('button2', trigger_action='ring_buzzer')
-	rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
 
 	# Hardware:  Mifare RFID Reader  
 	#
 	dc.hw['rfidreader'] = RfidReaderRc522()
-	rest_api_models.create_api_for_object(dc.hw['rfidreader'], 'schema/schema.hw.rfidreader.json', '/api/hw/rfidreader', app)
 	# dc.hw['rfidreader'].start_thread()
 
 	# register callback methods:
@@ -207,8 +228,24 @@ if __name__ == '__main__':
 	# Automated Actions:
 	dc.hw['automated_actions'] = AutomatedActions()
 	dc.hw['delay1sec'] = Delay1sec()
-	rest_api_models.create_api_for_object(dc.hw['automated_actions'], 'schema/schema.hw.automated_actions.json', '/api/hw/automated_actions', app)
 	
+
+#
+# Main Webserver + hardware
+#
+
+if(dc.config.get('doorlockd',{}).get('enable_webserver',True)): 
+	
+	# 
+	# setup hw endpoints
+	#
+	if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
+		rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
+		rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
+		rest_api_models.create_api_for_object(dc.hw['button1'], 'schema/schema.hw.button.json', '/api/hw/button1', app)
+		rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
+		rest_api_models.create_api_for_object(dc.hw['rfidreader'], 'schema/schema.hw.rfidreader.json', '/api/hw/rfidreader', app)
+		rest_api_models.create_api_for_object(dc.hw['automated_actions'], 'schema/schema.hw.automated_actions.json', '/api/hw/automated_actions', app)
 
 	# 
 	# Start Webserver 
@@ -224,13 +261,13 @@ if __name__ == '__main__':
 		# Waitress webserver:
 		#
 		from waitress import serve
-		
+	
 		serve(app, host=dc.config.get('webserver',{}).get('host', '0.0.0.0'), 
 				   port=dc.config.get('webserver',{}).get('port', 8000)) 
 		# fix waitress logging...
 	else:
 		dc.logger.error("Werbserver '{}' is not implemented, aborting.".format(dc.config.get('webserver',{}).get('type', 'Flask').lower()))
 		sys.exit("Werbserver '{}' is not implemented, aborting.".format(dc.config.get('webserver',{}).get('type', 'Flask').lower()))
-		
-		
+	
+	
 

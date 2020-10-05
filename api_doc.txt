@@ -1,3 +1,9 @@
+Create: POST	-> 200 ok; 500 db error  					(all have json data)
+Read: 	GET 	-> 200 ok; 404 not found, 					(all have json data)
+Update:	PUT 	-> 201 ok; 404 not found, 500 db error		(all have json data)
+Delete: DELETE	-> 204 ok (no data); 404 not found, 500 db error (error has json data)
+
+
 ################################
 #    API JWT authentication    #
 ################################

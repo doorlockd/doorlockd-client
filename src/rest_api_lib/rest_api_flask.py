@@ -8,9 +8,29 @@ import json
 # from https://flask.palletsprojects.com/en/1.1.x/views/#method-views-for-apis
 #
 
+
 #
 # HTTP status codes: https://restfulapi.net/http-status-codes/
 #
+# define Python user-defined exceptions
+
+class ApiErrorRespons(Exception):
+	"""Class for passing dict objects, ready to be served as JSON"""
+	def __init__(self, err):
+		self.err = err;
+		
+		if(not isinstance(err,dict)):
+			print("error:  ApiErrorRespons should have an dict as argument not", err);
+			self.err = {'raw_message': str(err)}
+
+		if('error' not in err):
+			print("error:  ApiErrorRespons dict is missing the 'error' field", err);
+			self.err = 'undefined'
+
+		if('message' not in err):
+			print("error:  ApiErrorRespons dict is missing the 'message' field", err);
+			self.err = 'undefined'
+			
 
 class ApiItem(object):
 	
@@ -452,6 +472,10 @@ class RestApi(MethodView):
 		try:
 			item = self.db_create(new_item)
 
+		except ApiErrorRespons as e:
+			print("error ", type(e.err),  e.err)
+			self.response(e.err, 500)
+			
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
 			print(error)
@@ -532,7 +556,7 @@ class RestApi(MethodView):
 		# enforce write-only permisions for response
 		result = self.enforce_write_only(item)
 			
-		# serialize json, http 200
+		# serialize json, http 201
 		self.response(result, 201)
 
 
@@ -560,7 +584,7 @@ class RestApi(MethodView):
 			self.response(error, 500)
 
 		# not found:
-		if result is 0:
+		if result == 0:
 			error = {'error': 'not found', 'message': '...'}
 			print(error)
 			self.response(error, 404)

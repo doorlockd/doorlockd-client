@@ -89,6 +89,11 @@ minimal doorlockd + web api:
 [x] HW, UI Leds setup (2/bicoler led)
 [x] HW, UI Leds setup (4 leds)
 [ ] HW, UI Leds setup (1 single led)
+[ ] overwrite_config ( config_defaults={},  config_overwrite={}, config_fromfile={}, ===> config={} )
+		config_defaults: enable_hardware = true
+		config_overwrite: enable_hardware = false
+		config_fromfile: pin / etc... config.
+
 
 [ ] idee: split Harwdware en Actions
 

@@ -1,7 +1,7 @@
 # from flask.views import MethodView
 # from flask import make_response, jsonify, request, abort
-from .rest_api_flask import RestApi 
-
+from .rest_api_flask import RestApi , ApiErrorRespons
+import re
 
 class RestApiOrator(RestApi):
 	_orator_model = None
@@ -19,7 +19,24 @@ class RestApiOrator(RestApi):
 
 	def db_create(self, item):
 		# create in data layer
-		new = self._orator_model.create(item)
+		try:
+			new = self._orator_model.create(item)
+		except Exception as e:
+			error = {'error': 'db error', 'message': 'database error..', 'raw_message': str(e) }
+			print("\ninside db_create():", e)
+			
+			
+			# match UNIQUE constraint message
+			m = re.match("^UNIQUE constraint failed: \w+[.](\w+) ", str(e))
+			if m:
+				key = m.group(1)
+				error['message'] = "key '{}' is not unique, value '{}' does already exist".format(key, str(item[key]))
+				error['type'] = 'not unique'
+				error['fields'] = { key: "Not unique, '{}' does already exist".format(str(item[key]))}
+
+			print("\njsone db_create():", error)
+			
+			raise ApiErrorRespons(error)
 		
 		# let's return a fresh copy for the client.
 		return self.db_find_one(new.get_key())

@@ -20,8 +20,13 @@ class JwtForRestApi(object):
 		auth_header = request.headers.get('Authorization')
 		
 		# get jwt token from header 'Bearer ##########TOKEN######'
-		token = auth_header.split(" ")[1]
-		# print("FOUND: Auth (token):", token)
+		try:
+			# fail on mailformed auth header
+			token = auth_header.split(" ")[1]
+		except:
+			print ("DEBUG: auth_header: ", auth_header)
+			result = {'error': 'token error', 'message': 'Malformed Authorization header.'}
+			self.response(result, 401)
 		
 		try: 
 			payload = Token.verify(token)
@@ -76,11 +81,13 @@ class Token(object):
 		# secret , default None
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
+		print("DEBUG: cls.secret: ", cls.secret)
 		if cls.secret is None:
 			dc.logger.info('JWT Token: auto-generating secret')
 			import secrets 
 			#only python > 3.6 , sorry config secret in your config.ini
 			cls.secret = secrets.token_urlsafe(64)
+			print("DEBUG: generating new cls.secret: ", cls.secret)
 
 		
 		dc.logger.debug("Token initialized ...")
@@ -144,6 +151,10 @@ def login_endpoint():
 	# get POST data from HTTP request
 	post_data = request.get_json()
 	
+	if post_data is None:
+		result = {'status': False,'error': 'missing attributes', 'message': 'json data is missing.'}
+		return(json.dumps(result, indent=4))
+		
 	# post_data['email']
 	# post_data['password']
 	
@@ -153,7 +164,7 @@ def login_endpoint():
 		return(json.dumps(result, indent=4))
 	
 	if 'password' not in post_data:
-		result = {'status': False,'error': 'missing attribute','message': 'email field is missing in post data.'}
+		result = {'status': False,'error': 'missing attribute','message': 'password field is missing in post data.'}
 		# print ("DEBUG: ", result)
 		return(json.dumps(result, indent=4))
 		
@@ -162,6 +173,7 @@ def login_endpoint():
 	if not u:
 		result = {'status': False,'error': 'access denied', 'message': 'User not found.'}
 		# print ("DEBUG: ", result)
+		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 		return(json.dumps(result, indent=4))
 
 	# verify password

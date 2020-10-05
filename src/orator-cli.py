@@ -1,15 +1,24 @@
-#!/usr/bin/env python3
+#!/usr/bin/env bpython -i 
 #
+
+from libs.data_container import data_container as dc
+dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+
+
 from app import db
 
 if __name__ == '__main__':
     db.cli.run()
 
+else:
+	print("db.cli.run() --> orator cli")
+	print("create_user('root@localhost', 'secret')")
+	print("passwd('root@localhost', 'secret')")
 
 # 
 # usage: 
 # 
-# bpython -i test.py 
+# bpython -i orator-cli.py 
 #
 ##  
 # create_user('root@localhost', 'secret')
