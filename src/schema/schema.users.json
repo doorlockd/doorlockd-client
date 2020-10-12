@@ -19,7 +19,7 @@
           "description": "password hash.",
   		  "writeOnly": true,
 	      "pattern": "^.{16}.*$",
-          "type": ["string"]
+          "type": ["string", "null"]
       },
       "password_plain": {
           "description": "write plain password, will hashed and stored into password_hash.",
