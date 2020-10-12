@@ -111,6 +111,7 @@ class ChangelogObserver(object):
 		for k in obj.get_attributes().keys():
 			v = obj.get_raw_attribute(k)
 			if (isinstance(v, bool)):
+				print ("DEBUG: boolean: ", int(v), v)
 				# cast booleans into 1 / 0 
 				cast[k] =  int(v)
 			else:
