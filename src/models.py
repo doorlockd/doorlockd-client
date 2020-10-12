@@ -112,7 +112,7 @@ class ChangelogObserver(object):
 			v = obj.get_raw_attribute(k)
 			if (isinstance(v, bool)):
 				# cast booleans into 1 / 0 
-				cast[k] = (int) v
+				cast[k] =  int(v)
 			else:
 				cast[k] = v
 			
