@@ -248,6 +248,15 @@ class User(Model):
 			print("DEBUG: update password ", value)
 			self.set_raw_attribute('password_hash', self.do_hash_password(value))
 
+	# @password_hash.mutator
+	@mutator
+	def password_hash(self, value):
+		# update password_hash.
+
+		if value is not None:
+			print("DEBUG: update password_hash ", value)
+			self.set_raw_attribute('password_hash', value)
+
 
 	def do_hash_password(self, plain_password, salt=None):
 		'''returns an base85 encoded password hash to store in your database.
