@@ -109,7 +109,13 @@ class ChangelogObserver(object):
 	def cast_current_to_tabledict(self, obj):		
 		cast = {}
 		for k in obj.get_attributes().keys():
-			cast[k] = obj.get_raw_attribute(k)
+			v = obj.get_raw_attribute(k)
+			if (isinstance(v, bool))
+				# cast booleans into 1 / 0 
+				cast[k] = (int) v
+			else:
+				cast[k] = v
+			
 		return(cast)
 
 	# modeldict = dict like model, with casted attributes like dict / list / boolean 
