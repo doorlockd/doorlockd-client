@@ -80,7 +80,8 @@ class ChangelogObserver(object):
 	
 	'''
 	ignore_keys = []
-	dict_type = 'table_dict'
+	# dict_type = 'table_dict'
+	dict_type = 'model_dict'
 	# table_dict = dict like flat table structure , like db.table looks ( dict / list are (json) strings )
 	# model_dict = dict like model, with casted attributes like dict / list / boolean 
 	changelog_attribute = 'changelogs'
@@ -245,7 +246,7 @@ class User(Model):
 		# encode password hash.
 
 		if value is not None:
-			print("DEBUG: update password ", value)
+			# print("DEBUG: update password ", value)
 			self.set_raw_attribute('password_hash', self.do_hash_password(value))
 
 	# @password_hash.mutator
@@ -254,7 +255,7 @@ class User(Model):
 		# update password_hash.
 
 		if value is not None:
-			print("DEBUG: update password_hash ", value)
+			# print("DEBUG: update password_hash ", value)
 			self.set_raw_attribute('password_hash', value)
 
 
