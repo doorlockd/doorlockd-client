@@ -17,6 +17,8 @@
       },
       "password_hash": {
           "description": "password hash.",
+  		  "writeOnly": true,
+	      "pattern": "^.{16}.*$",
           "type": ["string"]
       },
       "password_plain": {

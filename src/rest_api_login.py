@@ -18,6 +18,7 @@ class JwtForRestApi(object):
 			return ({})
 		
 		auth_header = request.headers.get('Authorization')
+		# print("DEBUG: auth_header", auth_header)
 		
 		# get jwt token from header 'Bearer ##########TOKEN######'
 		try:
@@ -55,6 +56,7 @@ class JwtForRestApi(object):
 			
 		result = {'error': 'access denied', 'message': 'You are not admin. login, and get token with admin permisions.'}
 		# print ("DEBUG: ", result)
+		# print ("DEBUG: AUTH:", auth)
 		self.response(result, 401)
 		
 		
@@ -81,7 +83,7 @@ class Token(object):
 		# secret , default None
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
-		print("DEBUG: cls.secret: ", cls.secret)
+		# print("DEBUG: cls.secret: ", cls.secret)
 		if cls.secret is None:
 			dc.logger.info('JWT Token: auto-generating secret')
 			import secrets 
