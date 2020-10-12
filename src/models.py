@@ -80,8 +80,7 @@ class ChangelogObserver(object):
 	
 	'''
 	ignore_keys = []
-	# dict_type = 'table_dict'
-	dict_type = 'model_dict'
+	dict_type = 'table_dict'
 	# table_dict = dict like flat table structure , like db.table looks ( dict / list are (json) strings )
 	# model_dict = dict like model, with casted attributes like dict / list / boolean 
 	changelog_attribute = 'changelogs'
@@ -141,6 +140,10 @@ class ChangelogObserver(object):
 		# if(self.dict_type == 'table_dict'):
 			orig = self.cast_original_to_tabledict(obj)
 			newo = self.cast_current_to_tabledict(obj)
+			
+		print("DEBUG: ", self.dict_type)
+		print("DEBUG: orig:", orig)
+		print("DEBUG: newo:", newo)
 
 		
 		# set our timestamps
