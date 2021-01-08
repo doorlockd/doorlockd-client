@@ -83,14 +83,14 @@ class Token(object):
 		# secret , default None
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
-		# print("DEBUG: cls.secret: ", cls.secret)
-		if cls.secret is None:
+		# generate jwt_token.secret if not set:
+		if isinstance(cls.secret, str):
 			dc.logger.info('JWT Token: auto-generating secret')
 			import secrets 
 			#only python > 3.6 , sorry config secret in your config.ini
 			cls.secret = secrets.token_urlsafe(64)
-			print("DEBUG: generating new cls.secret: ", cls.secret)
-
+			dc.logger.debug("Generated [jwt_token] secret: {}".format(cls.secret))
+			
 		
 		dc.logger.debug("Token initialized ...")
 		dc.logger.debug("Token.expire: {}".format(Token.expire))
