@@ -84,7 +84,7 @@ class Token(object):
 		cls.secret = dc.config.get('jwt_token',{}).get('secret', None)
 
 		# generate jwt_token.secret if not set:
-		if isinstance(cls.secret, str):
+		if not isinstance(cls.secret, str):
 			dc.logger.info('JWT Token: auto-generating secret')
 			import secrets 
 			#only python > 3.6 , sorry config secret in your config.ini
