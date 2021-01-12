@@ -63,10 +63,16 @@ minimal doorlockd + web api:
 									# (actions: buzzer|solenoid|delay1s|...)
 
 
+
 /*
  * stappen plan
  */
- 
+### beta release 0.2:
+[ ] cleanup hardware page
+[ ] cleanup debug page ()
+[ ]
+-------------------- 
+[ ] change password feature.
 [x] orator, migratie, models
 [x] flask api 
 [x] api auth / + json web tokens ??

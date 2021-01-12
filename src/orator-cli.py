@@ -14,6 +14,7 @@ else:
 	print("db.cli.run() --> orator cli")
 	print("create_user('root@localhost', 'secret')")
 	print("passwd('root@localhost', 'secret')")
+	print("list_users()")
 
 # 
 # usage: 
@@ -24,6 +25,8 @@ else:
 # create_user('root@localhost', 'secret')
 ##
 # passwd('root@localhost', 'secret')
+##
+# list_users()
 ##
 
 
@@ -45,3 +48,10 @@ def passwd(email, password_plain=None):
 	
 	# save changes
 	u.save()
+
+def list_users():
+	# list all created users
+	for u in User.all():
+		print("{} email: {}".format('Disabled' if u.is_disabled else ' Enabled', u.email))
+		
+		
