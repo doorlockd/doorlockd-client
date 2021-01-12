@@ -19,7 +19,7 @@ else:
 # 
 # usage: 
 # 
-# bpython -i orator-cli.py 
+# bpython -i orator_cli.py 
 #
 ##  
 # create_user('root@localhost', 'secret')
@@ -52,6 +52,6 @@ def passwd(email, password_plain=None):
 def list_users():
 	# list all created users
 	for u in User.all():
-		print("{} email: {}".format('Disabled' if u.is_disabled else ' Enabled', u.email))
+		print("{} email: {}".format('Disabled' if u.is_disabled else 'Enabled ', u.email))
 		
 		
