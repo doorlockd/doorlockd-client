@@ -57,4 +57,8 @@ def list_users():
 		
 # for importing keys:
 def add_tag(hwid, description, is_disabled=False):
-	Tag.create({'hwid': hwid, 'description': description, 'is_disabled': is_disabled})
+	if Tag.where('hwid', hwid).count() == 0:
+		Tag.create({'hwid': hwid, 'description': description, 'is_disabled': is_disabled})
+	else:
+		print("Tag already exist.")
+		
