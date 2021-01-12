@@ -55,3 +55,6 @@ def list_users():
 		print("{} email: {}".format('Disabled' if u.is_disabled else 'Enabled ', u.email))
 		
 		
+# for importing keys:
+def add_tag(hwid, description, is_disabled=False):
+	User.create({'hwid': hwid, 'description': description, 'is_disabled': is_disabled})
