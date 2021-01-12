@@ -31,8 +31,8 @@ else:
 
 
 from models import *
-def create_user(email, password_plain):
-	User.create({'email': email, 'password_plain': password_plain})
+def create_user(email, password_plain, is_disabled=False):
+	User.create({'email': email, 'password_plain': password_plain, 'is_disabled': is_disabled})
 	
 	
 def passwd(email, password_plain=None):
