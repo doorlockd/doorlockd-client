@@ -183,8 +183,8 @@ def login_endpoint():
 		# print ("DEBUG: ", result)
 		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
-	# is disabled
-	if u.is_disabled:
+	# is user disabled
+	if not u.is_enabled:
 		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
 		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
@@ -242,8 +242,8 @@ def token_refresh_endpoint():
 		# print ("DEBUG: ", result)
 		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))
 
-	# is disabled
-	if u.is_disabled:
+	# is user disabled
+	if not u.is_enabled:
 		result = {'status': False,'error': 'access denied', 'message':'User disabled.'}
 		# print ("DEBUG: ", result)
 		return(make_response(json.dumps(result, indent=4), 401, {'Content-Type': 'application/json'}))

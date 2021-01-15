@@ -18,9 +18,9 @@ class ClientApiDoorlockd(DoorlockdBaseClass):
 			ut.save()
 			return(False)
 		else:
-			if not item.is_disabled:
-				self.logger.debug('{:s} hwid ({:s}) found is_disabled = ({:s}).'.format(self.log_name, hwid_str, str(item.is_disabled)))
+			if item.is_enabled:
+				self.logger.debug('{:s} hwid ({:s}) found is_enabled = ({:s}).'.format(self.log_name, hwid_str, str(item.is_enabled)))
 				return(True)
 			else:	
-				self.logger.debug('{:s} hwid ({:s}) found is_disabled = ({:s}).'.format(self.log_name, hwid_str, str(item.is_disabled)))
+				self.logger.debug('{:s} hwid ({:s}) found is_enabled = ({:s}).'.format(self.log_name, hwid_str, str(item.is_enabled)))
 				return(False)

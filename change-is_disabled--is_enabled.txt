@@ -1,0 +1,41 @@
+is_disabled --> is_enabled:
+
+User:
+
+- migrate db
+	make migration:							orator make:migration change_user_is_disabled_to_is_enabled.py --table=users
+	update data: 							
+- update model								
+- update json schema
+- update code (check for admin perm/login)
+- update angular
+-----------------------------------
+Tag:
+- migrate db
+	make migration:							orator make:migration change_tags_is_disabled_to_is_enabled.py --table=tags
+	update data:
+- update model
+- update json schema
+- update code (check for door_open)
+- update angular
+
+
+
+-----------------------------------
+
+
+# udpate code
+git pull
+
+# run migration
+python3 ./orator-cli.py migrate
+
+# update values in db
+sqlite3 data.db 'UPDATE users SET is_enabled = NOT is_enabled'
+sqlite3 data.db 'UPDATE tags SET is_enabled = NOT is_enabled'
+
+#
+
+
+
+

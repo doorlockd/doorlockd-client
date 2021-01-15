@@ -27,9 +27,9 @@
 	      "pattern": "^.{3}.*$",
           "type": ["string", "null"]
       },
-      "is_disabled": {
-          "description": "True if this user is disabled",
-		  "default" : false, 
+      "is_enabled": {
+          "description": "True if this user is enabled. false for disabled.",
+		  "default" : true, 
           "type": ["boolean"]
       },
       "created_at": {

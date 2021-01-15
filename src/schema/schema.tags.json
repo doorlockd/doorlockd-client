@@ -18,8 +18,8 @@
           "description": "Name of description for this rfid tag",
           "type": ["string"]
       },
-      "is_disabled": {
-          "description": "True if this tag is disabled",
+      "is_enabled": {
+          "description": "True if this tag is enabled.",
 		  "default" : false, 
           "type": ["boolean"]
       },

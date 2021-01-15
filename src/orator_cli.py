@@ -31,8 +31,8 @@ else:
 
 
 from models import *
-def create_user(email, password_plain, is_disabled=False):
-	User.create({'email': email, 'password_plain': password_plain, 'is_disabled': is_disabled})
+def create_user(email, password_plain, is_enabled=True):
+	User.create({'email': email, 'password_plain': password_plain, 'is_enabled': is_enabled})
 	
 	
 def passwd(email, password_plain=None):
@@ -52,7 +52,7 @@ def passwd(email, password_plain=None):
 def list_users():
 	# list all created users
 	for u in User.all():
-		print("{} email: {}".format('Disabled' if u.is_disabled else 'Enabled ', u.email))
+		print("{} email: {}".format('Enabled ' if u.is_enabled else 'Disabled', u.email))
 		
 		
 # for importing keys:
@@ -62,3 +62,14 @@ def add_tag(hwid, description, is_disabled=False):
 	else:
 		print("Tag already exist.")
 		
+
+
+# #
+# def fix_users_invert_is_enabled_value():
+# 	# fix after migration is_disabled --> is_enabled
+# 	for u in User.all():
+# 		print("old: {} email: {}".format('Enabled' if  u.is_enabled else 'Disabled ', u.email))
+# 		u.is_disabled = not u.is_disabled
+# 		u.save()
+# 		print("new: {} email: {}".format('Enabled' if  u.is_enabled else 'Disabled ', u.email))
+#

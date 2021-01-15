@@ -234,10 +234,10 @@ class ChangelogObserver(object):
 
 
 class User(Model):
-	__fillable__ = ['email', 'password_hash','password_plain','is_disabled']
+	__fillable__ = ['email', 'password_hash','password_plain','is_enabled']
 	# __appends__ = ['password_plain']
 	__hidden__ = ['changelogs']	
-	__casts__ = {'is_disabled': 'bool'}
+	__casts__ = {'is_enabled': 'bool'}
 
 	@classmethod
 	def _boot(cls):
@@ -318,9 +318,9 @@ class User(Model):
 
 	
 class Tag(Model):
-	__fillable__ = ['hwid', 'description', 'is_disabled']
+	__fillable__ = ['hwid', 'description', 'is_enabled']
 	__hidden__ = ['changelogs']
-	__casts__ = {'is_disabled': 'bool'}
+	__casts__ = {'is_enabled': 'bool'}
 	
 
 	@classmethod
