@@ -70,9 +70,11 @@ minimal doorlockd + web api:
 ### beta release 0.2:
 [ ] cleanup hardware page
 [ ] cleanup debug page ()
-[ ]
+
+[ ] Tag/User is_disabled --> is_enabled
+[ ] Tags Order by Description
+[ ] angular-web op github zetten
 -------------------- 
-[ ] change password feature.
 [x] orator, migratie, models
 [x] flask api 
 [x] api auth / + json web tokens ??

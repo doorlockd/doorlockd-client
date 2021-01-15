@@ -13,7 +13,7 @@ class Solenoid(hw12vOut, baseTriggerAction):
 		self.gpio_pin = self.config.get('pin')
 
 		# amount of time the door is open
-		self.time_wait = self.config.get('time', self.time_wait)
+		self.time_wait = self.config.get('time_wait', self.time_wait)
 		
 		# hw_init
 		self.hw_init()
