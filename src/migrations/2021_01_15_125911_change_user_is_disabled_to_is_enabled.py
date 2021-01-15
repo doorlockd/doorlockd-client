@@ -8,13 +8,14 @@ class ChangeUserIsDisabledToIsEnabled(Migration):
         Run the migrations.
         """
         with self.schema.table('user') as table:
-            # run ('UPDATE users SET is_disabled = NOT is_disabled')
-            schema.rename('is_disabled', 'is_enabled')
+            # run ('UPDATE tags SET is_enabled = NOT is_disabled')
+			table.boolean('is_enabled').default(True)
+			
+            
 
     def down(self):
         """
         Revert the migrations.
         """
-        with self.schema.table('user') as table:
-            schema.rename('is_enabled', 'is_disabled')
-            
+        with self.schema.table('tags') as table:
+			table.drop_column('is_enabled')

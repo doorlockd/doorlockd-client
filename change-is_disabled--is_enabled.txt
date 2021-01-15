@@ -31,8 +31,8 @@ git pull
 python3 ./orator-cli.py migrate
 
 # update values in db
-sqlite3 data.db 'UPDATE users SET is_enabled = NOT is_enabled'
-sqlite3 data.db 'UPDATE tags SET is_enabled = NOT is_enabled'
+sqlite3 data.db 'UPDATE users SET is_enabled = NOT is_disabled'
+sqlite3 data.db 'UPDATE tags SET is_enabled = NOT is_disabled'
 
 #
 
