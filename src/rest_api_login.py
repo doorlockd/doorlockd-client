@@ -18,7 +18,7 @@ class JwtForRestApi(object):
 			return ({})
 		
 		auth_header = request.headers.get('Authorization')
-		# print("DEBUG: auth_header", auth_header)
+		print("DEBUG: auth_header", auth_header)
 		
 		# get jwt token from header 'Bearer ##########TOKEN######'
 		try:

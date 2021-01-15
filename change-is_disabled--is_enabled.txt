@@ -22,6 +22,8 @@ Tag:
 
 
 -----------------------------------
+todo:
+[ ] fix migrations/
 
 
 # udpate code
