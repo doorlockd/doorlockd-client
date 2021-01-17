@@ -199,7 +199,7 @@ class RfidActions(DoorlockdBaseClass):
 		
 	
 	def callback_tag_detected(self, hwid, rfid_dev):
-		hwid_str = hwid2hexstr(hwid) # make hwid in hex string format
+		hwid_str = hwid2hexstr(hwid).lower() # make hwid in hex lowercase string format
 
 		if dc.api.lookup_detected_hwid(hwid_str):
 			self.logger.info('{:s} hwid ({:s}) access alowed.'.format(self.log_name, hwid_str))

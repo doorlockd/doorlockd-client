@@ -244,6 +244,10 @@ class User(Model):
 		super(User, cls)._boot()
 		# connect our Observer
 		cls.observe(ChangelogObserver(cls))
+			
+	@mutator
+	def email(self, value):
+		self.set_raw_attribute('email', value.lower())		
 					
 	# @accessor
 	# def password_plain(self):
@@ -322,6 +326,10 @@ class Tag(Model):
 	__hidden__ = ['changelogs']
 	__casts__ = {'is_enabled': 'bool'}
 	
+
+	@mutator
+	def hwid(self, value):
+		self.set_raw_attribute('hwid', value.lower())		
 
 	@classmethod
 	def _boot(cls):
