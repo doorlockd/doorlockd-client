@@ -7,13 +7,11 @@ class RemoveIsDisabled(Migration):
         """
         Run the migrations.
         """
-        pass 
-        #
-        # with self.schema.table('users') as table:
-        #     table.drop_column('is_disabled')
-        #
-        # with self.schema.table('tags') as table:
-        #     table.drop_column('is_disabled')
+        with self.schema.table('users') as table:
+            table.drop_column('is_disabled')
+
+        with self.schema.table('tags') as table:
+            table.drop_column('is_disabled')
 
     def down(self):
         """
