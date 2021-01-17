@@ -105,8 +105,9 @@ class JsonSchemaForRestApi(object):
 			error['error'] = 'validation'
 			# pointer '.' or path '/' --> error['fields'][key] = 'error message'
 			error['fields'] = { '.'.join(e.path): e.message }
-			error['message'] = e.message
-			
+			# error['message'] = e.message
+			error['message'] = format("{}, {}", '.'.join(e.path), e.message) # bit more userfriendly 
+						
 			# print( '------validation-error:---------------' )
 			# print( 'error: ', json.dumps(error, indent=3))
 			# print( '--------------------------------------' )
