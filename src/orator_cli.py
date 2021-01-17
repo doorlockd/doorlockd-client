@@ -63,13 +63,17 @@ def add_tag(hwid, description, is_disabled=False):
 		print("Tag already exist.")
 		
 
-
-# #
-# def fix_users_invert_is_enabled_value():
-# 	# fix after migration is_disabled --> is_enabled
-# 	for u in User.all():
-# 		print("old: {} email: {}".format('Enabled' if  u.is_enabled else 'Disabled ', u.email))
-# 		u.is_disabled = not u.is_disabled
-# 		u.save()
-# 		print("new: {} email: {}".format('Enabled' if  u.is_enabled else 'Disabled ', u.email))
 #
+# upgrade scripts
+# 
+def upgrade_tags_v2():
+	# read old table , convert data and insert into new table
+	for t in db.table('pre_upgrade_tags_v2').select(db.raw('id, hwid, description, (NOT is_disabled) as is_enabled, created_at, updated_at')).get():
+		print("insert:", t)
+		db.table('tags').insert(t)
+	
+	# destroy old table
+	db.table('tags').delete()
+
+
+
