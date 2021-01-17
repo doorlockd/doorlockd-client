@@ -1,6 +1,9 @@
 from flask.views import MethodView
 from flask import make_response, jsonify, request, abort, redirect
 import json
+# access conig and logger using our data container
+from libs.data_container import data_container as dc
+
 
 # from orator.exceptions.query import QueryException
 
@@ -21,15 +24,15 @@ class ApiErrorRespons(Exception):
 		self.code = c;
 		
 		if(not isinstance(err,dict)):
-			print("error:  ApiErrorRespons should have an dict as argument not", err);
+			dc.logger.debug("ApiErrorRespons should have an dict as argument not: {:s}".format(str(err)))
 			self.err = {'raw_message': str(err)}
 
 		if('error' not in err):
-			print("error:  ApiErrorRespons dict is missing the 'error' field", err);
+			dc.logger.debug("ApiErrorRespons dict is missing the 'error' field: {:s}".format(str(err)))
 			self.err = 'undefined'
 
 		if('message' not in err):
-			print("error:  ApiErrorRespons dict is missing the 'message' field", err);
+			dc.logger.debug("ApiErrorRespons dict is missing the 'message' field: {:s}".format(str(err)))
 			self.err = 'undefined'
 			
 
@@ -112,7 +115,7 @@ class RestApi(MethodView):
 		
 		view_instance = cls.as_view(view_class_name)
 
-		print('DEBUG: flask_add_rules: ', methods, uri_path)
+		dc.logger.debug("flask_add_rules: {:s} {:s}".format(str(methods), uri_path))
 
 		# copy methods to prevent updating the static value of this method
 		my_methods = methods.copy()
@@ -204,7 +207,7 @@ class RestApi(MethodView):
 			if key not in self.write_only_attributes:
 				result[key] = data[key]
 			else:
-				print("DEBUG: enforced write-only for attribute", key)
+				dc.logger.debug("enforced write-only for attribute '{}'".format(key))
 		
 		return(result)
 			
@@ -214,13 +217,14 @@ class RestApi(MethodView):
 			return 
 			
 		for key in self.read_only_attributes:
-			print ("DEBUG: read_only_attributes:", key)
+			# print ("DEBUG: read_only_attributes:", key)
 			
 			# if (old[key] != new[key]):
 			if (self.x_getattr(old, key) != self.x_getattr(new, key) ):
 				# read-only attribute is changed	
-				print ("DEBUG: {} != {}".format(self.x_getattr(old, key), self.x_getattr(new, key) ))
-				print ("DEBUG: {} != {}".format(type(self.x_getattr(old, key)), type(self.x_getattr(new, key)) ))
+				dc.logger.debug("read-only: {} != {}".format(self.x_getattr(old, key), self.x_getattr(new, key) ))
+				dc.logger.debug("read-only: {} != {}".format(type(self.x_getattr(old, key)), type(self.x_getattr(new, key)) ))
+				
 				error = {'error': 'read-only violation', 'message': "Cannot change read-only attribute: path '{}'.".format(key)}				
 				self.response(error, 409)
 			
@@ -545,7 +549,8 @@ class RestApi(MethodView):
 			item = self.db_update(id, new_item, old_item)
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
-			print(error)
+			dc.logger.debug('put error: {:s}'.format(str(e)))
+			
 			if self.debug_mode:
 				raise(e)
 				
@@ -578,7 +583,7 @@ class RestApi(MethodView):
 				
 		except Exception as e:
 			error = {'error': 'db error', 'message': str(e) }
-			print(error)
+			dc.logger.debug('delete, db error: {:s}'.format(str(e)))
 			if self.debug_mode:
 				raise(e)
 			
@@ -587,7 +592,7 @@ class RestApi(MethodView):
 		# not found:
 		if result == 0:
 			error = {'error': 'not found', 'message': '...'}
-			print(error)
+			dc.logger.debug('delete db error, not found')
 			self.response(error, 404)
 			
 		# serialize json, http 204

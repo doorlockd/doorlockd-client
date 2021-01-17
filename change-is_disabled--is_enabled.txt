@@ -23,11 +23,18 @@ Tag:
 
 -----------------------------------
 todo:
-[ ] fix migrations/
+[x] fix migrations/
+[ ] fix angular: create tag from unknowntags
+[ ] fix angular: create user, is_enabled  default true 
+[ ] fix angular: 
+
 
 
 # udpate code
 git pull
+
+# remove 1 migration
+rm migrations/2021_01_15_154000_remove_is_disabled.py
 
 # run migration
 python3 ./orator-cli.py migrate
@@ -36,8 +43,8 @@ python3 ./orator-cli.py migrate
 sqlite3 data.db 'UPDATE users SET is_enabled = NOT is_disabled'
 sqlite3 data.db 'UPDATE tags SET is_enabled = NOT is_disabled'
 
-#
+# get back migrations/2021_01_15_154000_remove_is_disabled.py
+git reset --hard HEAD
 
-
-
-
+# run last migration
+python3 ./orator-cli.py migrate

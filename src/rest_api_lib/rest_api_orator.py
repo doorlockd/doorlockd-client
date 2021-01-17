@@ -2,6 +2,8 @@
 # from flask import make_response, jsonify, request, abort
 from .rest_api_flask import RestApi , ApiErrorRespons
 import re
+from libs.data_container import data_container as dc
+
 
 class RestApiOrator(RestApi):
 	_orator_model = None
@@ -23,7 +25,7 @@ class RestApiOrator(RestApi):
 			new = self._orator_model.create(item)
 		except Exception as e:
 			error = {'error': 'db error', 'message': 'database error..', 'raw_message': str(e) }
-			print("\ninside db_create():", e)
+			dc.logger.debug("inside db_create(): {}".format(str(e)))
 			
 			
 			# match UNIQUE constraint message

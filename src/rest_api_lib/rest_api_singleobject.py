@@ -3,6 +3,9 @@
 from .rest_api_flask import RestApi 
 from .rest_api_jsonschema import JsonSchemaForRestApi
 from flask import jsonify
+# access conig and logger using our data container
+from libs.data_container import data_container as dc
+
 
 #
 # nieuw ideee:
@@ -47,7 +50,7 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 		
 		view_instance = cls.as_view(view_class_name)
 
-		print('DEBUG: flask_add_rules: ', methods, uri_path)
+		dc.logger.debug('flask_add_rules: {} {}'.format(str(methods), uri_path))
 
 		# copy methods to prevent updating the static value of this method
 		my_methods = methods.copy()

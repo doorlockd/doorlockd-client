@@ -1,5 +1,7 @@
 from jsonschema import validate, ValidationError, FormatChecker
 import json
+# access conig and logger using our data container
+from libs.data_container import data_container as dc
 
 class JsonSchemaForRestApi(object):
 	'''adds json_schema functionality to your RestApi:
@@ -104,13 +106,18 @@ class JsonSchemaForRestApi(object):
 			# pointer '.' or path '/' --> error['fields'][key] = 'error message'
 			error['fields'] = { '.'.join(e.path): e.message }
 			error['message'] = e.message
+			
+			# print( '------validation-error:---------------' )
+			# print( 'error: ', json.dumps(error, indent=3))
+			# print( '--------------------------------------' )
+			# print( 'raw: ', e )
+			# print( '--------------------------------------' )
 
-			print( '------validation-error:---------------' )
-			print( 'error: ', json.dumps(error, indent=3))
-			print( '--------------------------------------' )
-			print( 'raw: ', e )
-			print( '--------------------------------------' )
-
+			dc.logger.debug("------validation-error:---------------")
+			dc.logger.debug("validation-error: json-dumps(error): {}".format(json.dumps(error, indent=3)))
+			dc.logger.debug("--------------------------------------")
+			dc.logger.debug("validation-error: raw: {}".format(str(e)))
+			dc.logger.debug("--------------------------------------")
 			
 			# HTTP response
 			self.response(error, 400)
@@ -125,7 +132,7 @@ class JsonSchemaForRestApi(object):
 			if 'default' in propertie:
 				if key not in model: 
 					# we have a missing attribute:
-					print("debug: set missing key:", key, propertie['default'])
+					dc.logger.debug("jsonschema: set missing key: '{}' = '{}'".format( key, propertie['default']))
 					model[key] = propertie['default']
 			
 	
