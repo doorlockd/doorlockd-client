@@ -25,13 +25,13 @@ Tag:
 todo:
 [x] fix migrations/
 [x] fix angular: create tag from unknowntags
-[ ] fix angular: create user, is_enabled  default true 
-[ ] fix email, hwid uniq lowecase.
-[ ] fix json valididation error message: field name is not .....
+[x] fix angular: create user, is_enabled  default true 
+[x] fix email, hwid uniq lowecase.
+[x] fix json valididation error message: field name is not .....
 [ ] fix angular: 
 
-[ ] fix migration: new idea: rename table -> table_migration_x , create empty table. make version upgrade script.
-
+[fail] fix migration: new idea: rename table -> table_migration_x , create empty table. make version upgrade script.
+[x] fix: minimal aproach: redo migration from scratch. manual SQL to migrate current node.
 
 
 --------------------------------------------------------------------------------
