@@ -74,7 +74,7 @@ minimal doorlockd + web api:
 [x] Tag/User is_disabled --> is_enabled
 [x] Tags Order by Description
 [x] angular-web op github zetten
-[ ] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
+[x] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
 [ ] doorlock-cli maken. (cleo)
 [ ]
 -------------------- 
