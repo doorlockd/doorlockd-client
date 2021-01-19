@@ -27,11 +27,9 @@ class CreateCommand(Command):
 		crypt = self.option('crypt')
 		is_enabled = not self.option('disabled')
 
-
 		if not password and not crypt:
 			# get password from stdin
 			password = self.secret('New password for {}: '.format(email))
-
 			
 		if password: 
 			User.create({'email': email, 'password_plain': password, 'is_enabled': is_enabled})
@@ -39,7 +37,6 @@ class CreateCommand(Command):
 		if crypt:
 			User.create({'email': email, 'password_hash': crypt, 'is_enabled': is_enabled})
 			
-
 		self.line('changes saved to database')
 		
 
@@ -84,7 +81,6 @@ class PasswdCommand(Command):
 			# get password from stdin
 			password = self.secret('New password for {}: '.format(email))
 
-
 		if password: 
 			# update password
 			u.password_plain = password
@@ -94,7 +90,6 @@ class PasswdCommand(Command):
 			# update password_hash
 			u.password_hash = crypt
 			self.line('password_hash is set.')
-			
 			
 		u.save()
 		self.line('changes saved to database')
@@ -112,8 +107,7 @@ class ListCommand(Command):
 		cols=['email', 'is_enabled', 'created_at', 'updated_at']
 		
 		table = self.table()
-		table.set_headers(cols)
-		
+		table.set_headers(cols)		
 		
 		# list all created users
 		data = []
@@ -124,8 +118,5 @@ class ListCommand(Command):
 			data.append(row)
 			
 		table.set_rows(data)
-		
-		# print(data)
-
 		table.render()
 		
