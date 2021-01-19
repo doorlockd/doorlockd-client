@@ -1,37 +1,57 @@
 is_disabled --> is_enabled:
 
-User:
+-------------------------------------------------------------------------------------
+#
+# Migration steps:
+#
 
-- migrate db
-	make migration:							orator make:migration change_user_is_disabled_to_is_enabled.py --table=users
-	update data: 							
-- update model								
-- update json schema
-- update code (check for admin perm/login)
-- update angular
------------------------------------
-Tag:
-- migrate db
-	make migration:							orator make:migration change_tags_is_disabled_to_is_enabled.py --table=tags
-	update data:
-- update model
-- update json schema
-- update code (check for door_open)
-- update angular
+# change dir
+cd /opt/doorlockd/src
+
+# s
+systemctl stop doorlockd
+
+# udpate code
+git pull
+
+# update sql db with below SQL
+sqlite3 data.db 
+
+-- paste SQL from below
 
 
+# copy and extract angular web
+tar xzvf ~debian/door/static_html.tgz
 
------------------------------------
-todo:
-[x] fix migrations/
-[x] fix angular: create tag from unknowntags
-[x] fix angular: create user, is_enabled  default true 
-[x] fix email, hwid uniq lowecase.
-[x] fix json valididation error message: field name is not .....
-[ ] fix angular: 
+# 
+systemctl restart doorlockd
 
-[fail] fix migration: new idea: rename table -> table_migration_x , create empty table. make version upgrade script.
-[x] fix: minimal aproach: redo migration from scratch. manual SQL to migrate current node.
+
+-------------------------------------------------------------------------------------
+#
+# Migration steps:
+#
+
+# change dir
+cd /opt/doorlockd/src
+
+# s
+systemctl stop doorlockd
+
+# udpate code
+git pull
+
+# update sql db with below SQL
+sqlite3 data.db 
+
+-- paste SQL from below
+
+
+# copy and extract angular web
+tar xzvf ~debian/door/static_html.tgz
+
+# 
+systemctl restart doorlockd
 
 
 --------------------------------------------------------------------------------
@@ -68,11 +88,39 @@ ALTER TABLE tags_v2 RENAME TO tags;
 CREATE UNIQUE INDEX tags_hwid_unique ON "tags" ("hwid");
 COMMIT;
 
-
 -------------------------------------------------------------------------------------
+prep plan:
+
+User:
+
+- migrate db
+	make migration:							orator make:migration change_user_is_disabled_to_is_enabled.py --table=users
+	update data: 							
+- update model								
+- update json schema
+- update code (check for admin perm/login)
+- update angular
 
 
-# udpate code
-git pull
+Tag:
+- migrate db
+	make migration:							orator make:migration change_tags_is_disabled_to_is_enabled.py --table=tags
+	update data:
+- update model
+- update json schema
+- update code (check for door_open)
+- update angular
 
-# update sql db with above SQL
+
+
+-----------------------------------
+todo:
+[x] fix migrations/
+[x] fix angular: create tag from unknowntags
+[x] fix angular: create user, is_enabled  default true 
+[x] fix email, hwid uniq lowecase.
+[x] fix json valididation error message: field name is not .....
+
+[fail] fix migration: new idea: rename table -> table_migration_x , create empty table. make version upgrade script.
+[x] fix: minimal aproach: redo migration from scratch. manual SQL to migrate current node.
+[ ] remove this file from git
