@@ -329,7 +329,10 @@ class Tag(Model):
 
 	@mutator
 	def hwid(self, value):
-		self.set_raw_attribute('hwid', value.lower())		
+		self.set_raw_attribute('hwid', value.lower())
+		# ^08: hwid are random generated hwid 
+		if(self.hwid[0:2] == '08'):
+			raise Exception("this key can't be used, it has an random hwid.")
 
 	@classmethod
 	def _boot(cls):

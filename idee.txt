@@ -77,6 +77,8 @@ minimal doorlockd + web api:
 [x] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
 [ ] doorlock-cli maken. (cleo)
 [ ] ??? last seen field (maybe yes / maybe not?).
+[ ] tag create error RFiD hwid 08 . random hwid.
+
 -------------------- 
 [x] orator, migratie, models
 [x] flask api 
