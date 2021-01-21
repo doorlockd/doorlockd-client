@@ -16,7 +16,7 @@ class GenSecretCommand(Command):
 	"""
 	Generate secret for jwt_token config.
 
-	secret 
+	gen:secret  : Generate secret for jwt_token config.
 	"""
 
 	def handle(self):
@@ -26,7 +26,7 @@ class GenSecretCommand(Command):
 		secret = secrets.token_urlsafe(64)
 		
 		self.line('# ')
-		self.line('# Add the information below to the config.ini:')
+		self.line('# Add the information below the [jwt_token] section in your config.ini:')
 		self.line('# ')
 		self.line('[jwt_token]')
 		self.line('secret = "{}"'.format(secret))

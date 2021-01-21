@@ -3,11 +3,14 @@ from cleo import Command
 import sys
 sys.path.append("..")
 
-# init db with correct config and env.
-from libs.data_container import data_container as dc
-dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
-from app import db
+# import models , use connect_db to initialize the db
 from models import *
+
+def connect_db():
+	# init db with correct config and env.
+	from libs.data_container import data_container as dc
+	dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+	from app import db
 
 
 class CreateCommand(Command):
@@ -22,6 +25,8 @@ class CreateCommand(Command):
 	"""
 
 	def handle(self):
+		connect_db() # connect db
+		
 		email = self.argument('email')
 		password = self.option('password')
 		crypt = self.option('crypt')
@@ -55,6 +60,8 @@ class PasswdCommand(Command):
 	"""
 
 	def handle(self):
+		connect_db() # connect db
+		
 		email = self.argument('email')
 		password = self.option('password')
 		crypt = self.option('crypt')
@@ -104,6 +111,8 @@ class ListCommand(Command):
 	"""
 
 	def handle(self):
+		connect_db() # connect db
+		
 		cols=['email', 'is_enabled', 'created_at', 'updated_at']
 		
 		table = self.table()
