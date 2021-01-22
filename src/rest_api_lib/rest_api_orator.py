@@ -28,7 +28,7 @@ class RestApiOrator(RestApi):
 		except ModelError as e:
 			print("DEBUG ModelError: ",e, type(e))
 			# ModelError is already a dict conform our json api stadard
-			raise ApiErrorRespons(e, 400)
+			raise ApiErrorRespons(e.err, 400)
 
 		except Exception as e:			
 			

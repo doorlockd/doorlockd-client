@@ -52,6 +52,7 @@ class ModelError(Exception):
 	
 	"""
 	def __init__(self, err_type='error', message='undefined ModelError', fields=None):
+		self.err = {}
 		self.err['type'] = err_type
 		self.err['message'] = message
 
