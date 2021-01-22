@@ -363,7 +363,7 @@ class Tag(Model):
 		self.set_raw_attribute('hwid', value.lower())
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
-			error = {'error': 'validation'}
+			error = {'error': 'error'}
 			error['message'] = "this tag can't be used, it uses an random hwid."
 			raise ModelError(error)
 
