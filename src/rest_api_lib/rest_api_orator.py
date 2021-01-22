@@ -26,6 +26,7 @@ class RestApiOrator(RestApi):
 			new = self._orator_model.create(item)
 
 		except ModelError as e:
+			print("DEBUG ModelError: ",e, typeof(e))
 			# ModelError is already a dict conform our json api stadard
 			raise ApiErrorRespons(e, 400)
 
