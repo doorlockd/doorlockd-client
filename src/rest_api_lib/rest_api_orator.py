@@ -4,6 +4,7 @@ from .rest_api_flask import RestApi , ApiErrorRespons
 import re
 from libs.data_container import data_container as dc
 
+from modesl import ModelError
 
 class RestApiOrator(RestApi):
 	_orator_model = None
@@ -28,10 +29,7 @@ class RestApiOrator(RestApi):
 			# ModelError is already a dict conform our json api stadard
 			raise ApiErrorRespons(e, 400)
 
-		except Exception as e:
-			error = {'error': 'db error', 'message': 'database error..', 'raw_message': str(e) }
-			dc.logger.debug("inside db_create(): {}".format(str(e)))
-			
+		except Exception as e:			
 			
 			# match UNIQUE constraint message
 			m = re.match("^UNIQUE constraint failed: \w+[.](\w+) ", str(e))
@@ -42,6 +40,9 @@ class RestApiOrator(RestApi):
 				error['fields'] = { key: "Not unique, '{}' does already exist".format(str(item[key]))}
 				raise ApiErrorRespons(error, 400)
 				
+			# no match: let's make some nice error message:
+			error = {'error': 'db error', 'message': 'database error..', 'raw_message': str(e) }
+			dc.logger.debug("inside db_create(): {}".format(str(e)))
 			
 			raise ApiErrorRespons(error, 500)
 			
