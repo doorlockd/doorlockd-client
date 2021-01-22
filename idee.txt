@@ -75,9 +75,10 @@ minimal doorlockd + web api:
 [x] Tags Order by Description
 [x] angular-web op github zetten
 [x] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
-[ ] doorlock-cli maken. (cleo)
+[x] doorlock-cli maken. (cleo)
 [ ] ??? last seen field (maybe yes / maybe not?).
-[ ] tag create error RFiD hwid 08 . random hwid.
+[!] tag create error RFiD hwid ^08 4bytes . random hwid. http 500 -> iets bruikbaars. 4bytes?!
+[ ] json api errors spec. : change error.error -> error.type : ('token error','validation','...',  ) ==> put in doc.
 
 -------------------- 
 [x] orator, migratie, models

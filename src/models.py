@@ -7,6 +7,7 @@ import hashlib
 import os
 import base64
 
+
 # 
 # get current logged on uid for our ChangelogObserver
 #
@@ -35,6 +36,36 @@ def get_unverified_current_uid():
 	else:
 		print ('Error: get_unverified_current_uid(): No uid in jwt payload!')
 		return(None)
+
+#
+#  Exception ModelError() --> for validation errors etc.
+#
+class ModelError(Exception):
+	"""Class for passing dict objects, ready to be served as JSON
+	
+		error = {}
+		error['type'] = 'validation|access denied|token error|...' # see json api for examples
+		error['message'] = "errror message shown to user"
+
+		# pointer '.' or path '/' --> error['fields'][key] = 'error message'
+		error['fields']['key name'] = 'error message shown to user'
+	
+	"""
+	def __init__(self, err, code=500):
+		self.err = err;
+		self.code = code;
+		
+		if(not isinstance(err,dict)):
+			dc.logger.debug("ApiErrorRespons should have an dict as argument not: {:s}".format(str(err)))
+			self.err = {'raw_message': str(err)}
+
+		if('error' not in err):
+			dc.logger.debug("ApiErrorRespons dict is missing the 'error' field: {:s}".format(str(err)))
+			self.err = 'undefined'
+
+		if('message' not in err):
+			dc.logger.debug("ApiErrorRespons dict is missing the 'message' field: {:s}".format(str(err)))
+			self.err = 'undefined'
 
 
 
@@ -332,7 +363,8 @@ class Tag(Model):
 		self.set_raw_attribute('hwid', value.lower())
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
-			raise Exception("this key can't be used, it has an random hwid.")
+			err = {'type': 'validation', 'message': "this key can't be used, it has an random hwid."}
+			raise ModelError(err)
 
 	@classmethod
 	def _boot(cls):
