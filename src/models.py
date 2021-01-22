@@ -51,14 +51,20 @@ class ModelError(Exception):
 		error['fields']['key name'] = 'error message shown to user'
 	
 	"""
-	def __init__(self, err_type='error', message='undefined ModelError', fields=None):
-		self.err = {}
-		self.err['type'] = err_type
-		self.err['message'] = message
+	def __init__(self, err):
+		self.err = err;
+		
+		if(not isinstance(err,dict)):
+			# dc.logger.debug("ModelError should have an dict as argument not: {:s}".format(str(err)))
+			self.err = {'raw_message': str(err)}
 
-		# if fields = { key: message }
-		if fields:
-			self.fields = fields;
+		if('error' not in err):
+			# dc.logger.debug("ModelError dict is missing the 'error' field: {:s}".format(str(err)))
+			self.err = 'undefined'
+
+		if('message' not in err):
+			# dc.logger.debug("ModelError dict is missing the 'message' field: {:s}".format(str(err)))
+			self.err = 'undefined'
 		
 
 
@@ -357,7 +363,9 @@ class Tag(Model):
 		self.set_raw_attribute('hwid', value.lower())
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
-			raise ModelError('validation', "this key can't be used, it has an random hwid.")
+			error = {'error': 'validation'}
+			error['message'] = "this key can't be used, it has an random hwid."
+			raise ModelError(error)
 
 	@classmethod
 	def _boot(cls):
