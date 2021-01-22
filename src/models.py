@@ -44,17 +44,14 @@ class ModelError(Exception):
 	"""Class for passing dict objects, ready to be served as JSON
 	
 		error = {}
-		error['type'] = 'validation|access denied|token error|...' # see json api for examples
+		error['error'] = 'validation|access denied|token error|...' # see json api for examples
 		error['message'] = "errror message shown to user"
 
 		# pointer '.' or path '/' --> error['fields'][key] = 'error message'
 		error['fields']['key name'] = 'error message shown to user'
 	
 	"""
-	def __init__(self, err, code=500):
-		self.err = err;
-		self.code = code;
-		
+	pass
 
 
 
@@ -352,7 +349,7 @@ class Tag(Model):
 		self.set_raw_attribute('hwid', value.lower())
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
-			err = {'type': 'validation', 'message': "this key can't be used, it has an random hwid."}
+			err = {'error': 'validation', 'message': "this key can't be used, it has an random hwid."}
 			raise ModelError(err)
 
 	@classmethod
