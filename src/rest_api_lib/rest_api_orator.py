@@ -4,7 +4,7 @@ from .rest_api_flask import RestApi , ApiErrorRespons
 import re
 from libs.data_container import data_container as dc
 
-from modesl import ModelError
+from models import ModelError
 
 class RestApiOrator(RestApi):
 	_orator_model = None
