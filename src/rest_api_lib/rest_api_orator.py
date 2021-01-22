@@ -23,9 +23,9 @@ class RestApiOrator(RestApi):
 		# create in data layer
 		try:
 			new = self._orator_model.create(item)
-		except ModelError as e:
-			# ModelError is already a dict conform our json api stadard
-			raise ApiErrorRespons(e, 400)
+		# except ModelError as e:
+		# 	# ModelError is already a dict conform our json api stadard
+		# 	raise ApiErrorRespons(e, 400)
 
 		except Exception as e:
 			error = {'error': 'db error', 'message': 'database error..', 'raw_message': str(e) }
