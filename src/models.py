@@ -44,17 +44,20 @@ class ModelError(Exception):
 	"""Class for passing dict objects, ready to be served as JSON
 	
 		error = {}
-		error['error'] = 'validation|access denied|token error|...' # see json api for examples
+		error['type'] = 'validation|access denied|token error|...' # see json api for examples
 		error['message'] = "errror message shown to user"
 
 		# pointer '.' or path '/' --> error['fields'][key] = 'error message'
 		error['fields']['key name'] = 'error message shown to user'
 	
 	"""
-	def __init__(self, err_type='error', message='undefined ModelError', fields={}):
-		self.type = err_type;
-		self.message = message;
-		self.fields = fields;
+	def __init__(self, err_type='error', message='undefined ModelError', fields=None):
+		self.err['type'] = err_type
+		self.err['message'] = message
+
+		# if fields = { key: message }
+		if fields:
+			self.fields = fields;
 		
 
 
