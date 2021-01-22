@@ -55,17 +55,6 @@ class ModelError(Exception):
 		self.err = err;
 		self.code = code;
 		
-		if(not isinstance(err,dict)):
-			dc.logger.debug("ApiErrorRespons should have an dict as argument not: {:s}".format(str(err)))
-			self.err = {'raw_message': str(err)}
-
-		if('error' not in err):
-			dc.logger.debug("ApiErrorRespons dict is missing the 'error' field: {:s}".format(str(err)))
-			self.err = 'undefined'
-
-		if('message' not in err):
-			dc.logger.debug("ApiErrorRespons dict is missing the 'message' field: {:s}".format(str(err)))
-			self.err = 'undefined'
 
 
 
