@@ -364,7 +364,7 @@ class Tag(Model):
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
 			error = {'error': 'validation'}
-			error['message'] = "this key can't be used, it has an random hwid."
+			error['message'] = "this tag can't be used, it uses an random hwid."
 			raise ModelError(error)
 
 	@classmethod
