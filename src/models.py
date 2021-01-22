@@ -51,7 +51,11 @@ class ModelError(Exception):
 		error['fields']['key name'] = 'error message shown to user'
 	
 	"""
-	pass
+	def __init__(self, err_type='error', message='undefined ModelError', fields={}):
+		self.type = err_type;
+		self.message = message;
+		self.fields = fields;
+		
 
 
 
@@ -349,8 +353,7 @@ class Tag(Model):
 		self.set_raw_attribute('hwid', value.lower())
 		# ^08: hwid are random generated hwid 
 		if(self.hwid[0:2] == '08'):
-			err = {'error': 'validation', 'message': "this key can't be used, it has an random hwid."}
-			raise ModelError(err)
+			raise ModelError('validation', "this key can't be used, it has an random hwid.")
 
 	@classmethod
 	def _boot(cls):
