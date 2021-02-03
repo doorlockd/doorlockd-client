@@ -114,7 +114,9 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''start RFID reader and wait , callback_tag_detected() is run when a tag is detected. 
 		'''
 		
-		target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))		
+		# target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
+		target = clf.connect(rdwr={'on-connect': lambda tag: False})
+			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
 		if target is not None:
