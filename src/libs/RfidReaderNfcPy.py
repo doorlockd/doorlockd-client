@@ -3,7 +3,9 @@ from .tools import hwid2hexstr
 import time
 import threading
 
-from pirc522.rfid import RFID
+import nfc
+from nfc.clf import RemoteTarget
+
 
 class RfidReaderNfcPy(DoorlockdBaseClass):
 	# config_name required for DoorlockdBaseClass
