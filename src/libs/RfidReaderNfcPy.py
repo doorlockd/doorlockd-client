@@ -119,7 +119,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
-		if target is not None:
+		if target is False:
+			# let's see how often this happens:
+			self.logger.debug("target: " + str(target))
+		elif target is not None:
 			# TODO: (hwid)
 			dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
@@ -143,14 +146,13 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 
 
 	def hw_exit(self):
-		'''calling rdr.stop_crypto() and rdr.cleanup() '''
-		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling rdr.stop_crypto() and rdr.cleanup()')
+		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling clf.close() ')
 		
 		# stop internal thread
 		self.stop_thread()
 		
-		# Calls GPIO cleanup
-		self.rdr.cleanup()
+		# Calls close on nfc frontend
+		self.clf.close()
 		
 
 		
