@@ -129,10 +129,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			# track statistics
 			self.counter = self.counter + 1
 			
-		else:
-			# error?
-			dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error 
-			self.logger.debug('Error ' + self.__class__.__name__+ ': error return by clf.sense() :')
+		# else:
+		# 	# error?
+		# 	dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error
+		# 	self.logger.debug('Error ' + self.__class__.__name__+ ': error return by clf.sense() :')
 			
 
 
