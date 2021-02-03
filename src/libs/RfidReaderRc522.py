@@ -137,6 +137,12 @@ class RfidReaderRc522(DoorlockdBaseClass):
 			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
 			
 			if not error:
+				# strip checksum byte from hwid
+				hwid = hwid[:-1]
+				# sql fix for old entries: 
+				# -- UPDATE tags SET hwid=substr(hwid, 1, 11) WHERE LENGTH(hwid) = 14
+				#
+				
 				self.logger.debug("HWID: " + str(hwid))
 				# Select Tag is required before Auth
 				
