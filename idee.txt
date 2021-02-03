@@ -6,14 +6,14 @@ minimal doorlockd + web api:
 
 - db :
   tabel tags:
-   ((int)id, (string)hwid, (string)description, (bool)access, *_dates)
+   ((int)id, (string)hwid, (string)description, (bool)is_enabled, *_dates)
    
   table unkowntags:
     ((int)id, (string)hwid, *_dates)
 
 
    table users:
-	 (id, email, password, *_dates)
+	 (id, email, password,(bool)is_enabled, *_dates)
 
 
 	db *history:
@@ -34,7 +34,8 @@ minimal doorlockd + web api:
   
   rfid	rc522
   
-  'output leds' ??
+  'output leds' : UILed class --> Led hw class.
+  
   
 - API:
 	#
@@ -61,7 +62,17 @@ minimal doorlockd + web api:
 		/api/hw/rfidreader			{ status = false|true } (on/off)
 		/api/hw/automated_actions 	{ status=false|true; trigger_actions=['delay1s','solenoid']} 
 									# (actions: buzzer|solenoid|delay1s|...)
+/*
+ * Rfid tag types
+ */
 
+type A 4byte ID / 8byte ID
+type B 
+
+
+type A 4byte ^08: is altijd random id
+type A 7bytes altijd uniek  (... ? warschnlijk)
+type B ... 
 
 
 /*
@@ -77,8 +88,10 @@ minimal doorlockd + web api:
 [x] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
 [x] doorlock-cli maken. (cleo)
 [ ] ??? last seen field (maybe yes / maybe not?).
-[!] tag create error RFiD hwid ^08 4bytes . random hwid. http 500 -> iets bruikbaars. 4bytes?!
+[!] tag create error RFiD hwid ^08 4bytes (only type A)  . random hwid. http 500 -> iets bruikbaars. 4bytes?!
+[ ] hwid checksum byte... cleanup/check 
 [ ] json api errors spec. : change error.error -> error.type : ('token error','validation','...',  ) ==> put in doc.
+[ ] RFID reader: nfc.clf -> pn532
 
 -------------------- 
 [x] orator, migratie, models

@@ -1,7 +1,7 @@
 
 
 def hwid2hexstr(hwid):
-	'''	Convert array of integers into a collon seperated hex string.
+	'''	Convert array of integers into a collon seperated hex string (lowercase).
 
 	hwid as suplied by rdr. 
 	hexstr as stored as string in db.
