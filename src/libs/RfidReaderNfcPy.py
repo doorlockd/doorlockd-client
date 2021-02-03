@@ -122,6 +122,9 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
 			self.logger.debug("HWID: " + str(target))
+			self.logger.debug("debug test type: " + type(target))
+			self.logger.debug("debug test id..: " + str(target.identifier))
+			self.logger.debug("debug test hexs: " + hwid2hexstr(target.identifier))
 			
 			# 
 			self.callback_tag_detected(target)
