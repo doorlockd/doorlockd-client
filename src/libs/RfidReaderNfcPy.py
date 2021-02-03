@@ -116,10 +116,11 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''
 		
 		target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))		
-		dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
+		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
 		if target is not None:
 			# TODO: (hwid)
+			dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 			dc.e.raise_event('rfid_comm_ready') # when there is any RFID communication
 			self.logger.debug("HWID: " + str(target))
 			
