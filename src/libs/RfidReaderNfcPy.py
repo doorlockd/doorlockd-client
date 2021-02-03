@@ -84,12 +84,11 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		
 		
 		 
-	def callback_tag_detected(self, hwid, rfid_dev):
+	def callback_tag_detected(self, hwid):
 		'''Overwrite this callback method with your own.
 			
-		def callback_tag_detected(hwid, rdr):
-			# hwid = [255,255,255,255,255,..]
-			# rfid_dev = the calling RfidReaderNfcPy Object 
+		def callback_tag_detected(hwid):
+			# hwid = [255,255,255,255]
 		
 			# lookup hwid in db
 			# if has_access:
@@ -125,7 +124,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			self.logger.debug("HWID: " + str(target))
 			
 			# 
-			self.callback_tag_detected(target, clf)
+			self.callback_tag_detected(target)
 			
 			# track statistics
 			self.counter = self.counter + 1
@@ -161,7 +160,7 @@ class RfidActions(DoorlockdBaseClass):
 		self.trigger_action = self.config.get('trigger_action', self.trigger_action)
 		
 	
-	def callback_tag_detected(self, target, clf):
+	def callback_tag_detected(self, target):
 		hwid_str = hwid2hexstr(target.identifier) # make hwid in hex lowercase string format
 
 		if dc.api.lookup_detected_hwid(hwid_str):
