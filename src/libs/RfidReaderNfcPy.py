@@ -123,8 +123,15 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		
 		if target is False:
 			# let's see how often this happens:
-			self.logger.debug("target: " + str(target))
+			self.logger.info("Some error occured (target==False), re-connecting clf in 1 sec. targe=" + str(target))
 			time.sleep(1)
+			# hw error ??
+			# lets fix:
+			
+			# Calls close on nfc frontend
+			self.clf.close()
+			# reconnect:
+			self.hw_init()
 			
 		elif target is not None:
 			# TODO: (hwid)
