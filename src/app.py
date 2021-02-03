@@ -61,9 +61,16 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 	from libs.Buzzer import Buzzer
 	from libs.Button import Button
 	from libs.Dummy import Dummy
-	from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
 	from libs.AutomatedActions import AutomatedActions, Delay1sec
 	from libs.UiLeds import UiLedsWrapper
+
+	if  (dc.config.get('rfid',{}).get('module','') == 'rc522'): 
+		from libs.RfidReaderRc522 import RfidReaderRc522, RfidActions
+	elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'): 
+		from libs.RfidReaderNfcPy import RfidReaderNfcPy, RfidActions
+	else:
+		sys.exit("Rfid module not set, set [rfid] module in config.")
+		
 
 	import client_api_local # client_api_local.ClientApiDoorlockd
 	dc.api = client_api_local.ClientApiDoorlockd()
@@ -216,10 +223,16 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 	#
 	dc.hw['button2'] = Button('button2', trigger_action='ring_buzzer')
 
-	# Hardware:  Mifare RFID Reader  
 	#
-	dc.hw['rfidreader'] = RfidReaderRc522()
-	# dc.hw['rfidreader'].start_thread()
+	# Hardware:  RFID Reader  
+	#
+	if  (dc.config.get('rfid',{}).get('module','') == 'rc522'): 
+		dc.hw['rfidreader'] = RfidReaderRc522()
+		# dc.hw['rfidreader'].start_thread()
+				
+	elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'): 
+		dc.hw['rfidreader'] = RfidReaderNfcPy()
+		
 
 	# register callback methods:
 	dc.hw['rfidactions'] = RfidActions()
