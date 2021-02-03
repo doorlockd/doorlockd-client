@@ -104,12 +104,12 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.logger.info('run detect loop started ({:s}).'.format(self.log_name))
 		self.stop_loop = False
 		
-		dc.e.raise_event('rfid_ready') # when rfid starts detecting
 		
 		while not self.stop_loop:
+			dc.e.raise_event('rfid_ready') # when rfid starts detecting
 			self.io_wait_for_tag_detected()
 		
-		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
+			dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 			
 
 	def io_wait_for_tag_detected(self):
@@ -124,6 +124,8 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		if target is False:
 			# let's see how often this happens:
 			self.logger.debug("target: " + str(target))
+			time.sleep(1)
+			
 		elif target is not None:
 			# TODO: (hwid)
 			dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
