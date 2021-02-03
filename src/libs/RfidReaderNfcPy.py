@@ -161,6 +161,10 @@ class RfidActions(DoorlockdBaseClass):
 		
 	
 	def callback_tag_detected(self, target):
+		print("DEBUG: ", target)
+		print("DEBUG: ", target.identifier)
+		print("DEBUG: ", hwid2hexstr(target.identifier))
+		
 		hwid_str = hwid2hexstr(target.identifier) # make hwid in hex lowercase string format
 
 		if dc.api.lookup_detected_hwid(hwid_str):
