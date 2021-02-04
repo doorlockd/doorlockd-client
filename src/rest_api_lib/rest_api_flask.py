@@ -220,7 +220,7 @@ class RestApi(MethodView):
 			# print ("DEBUG: read_only_attributes:", key)
 			
 			# if (old[key] != new[key]):
-			if (self.x_getattr(old, key) != self.x_getattr(new, key) ):
+			if (self.x_getattr(old, key, None) != self.x_getattr(new, key, None) ):
 				# read-only attribute is changed	
 				dc.logger.debug("read-only: {} != {}".format(self.x_getattr(old, key), self.x_getattr(new, key) ))
 				dc.logger.debug("read-only: {} != {}".format(type(self.x_getattr(old, key)), type(self.x_getattr(new, key)) ))
