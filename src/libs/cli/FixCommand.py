@@ -42,7 +42,7 @@ class FixRemoveChecksumByteCommand(Command):
 		for model in ['Tag', 'UnknownTag']:
 			# for all items 
 			for tag in globals()[model].all():
-				hwid_old = t.hwid
+				hwid_old = tag.hwid
 			
 				# is hwid 5 bytes ("01:02:03:04:05")
 				if(len(hwid_old) == 14 ):
@@ -50,8 +50,8 @@ class FixRemoveChecksumByteCommand(Command):
 					hwid_new = hwid_old[0:11] # first 11 chars
 				
 					# update db:
-					t.hwid = hwid_new
-					done = t.save()
+					tag.hwid = hwid_new
+					done = tag.save()
 
 					# display in table
 					data.append([model, hwid_old, hwid_new, str(done)])
