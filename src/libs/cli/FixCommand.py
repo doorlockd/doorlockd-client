@@ -59,7 +59,6 @@ class FixRemoveChecksumByteCommand(Command):
 		table.set_rows(data)
 		table.render()
 		
-
+		self.line('Found {} items.'.format(data.lenght()))
 		
-
 
