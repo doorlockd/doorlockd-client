@@ -89,7 +89,9 @@ class RestApiSingleObject(JsonSchemaForRestApi, RestApi):
 		#make dict from object
 		d = {}
 		for attr in self.all_attributes:
-			d[attr] = getattr(obj, attr, None)			
+			if(hasattr(obj, attr)):
+				# only set when we have one.
+				d[attr] = getattr(obj, attr, None)			
 		return(d)
 		
 	# overwrite make_json	
