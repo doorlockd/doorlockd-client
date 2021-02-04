@@ -33,6 +33,7 @@ class FixRemoveChecksumByteCommand(Command):
 		
 		cols=['model','hwid old', 'hwid new', 'done']
 		
+		# init table
 		table = self.table()
 		table.set_headers(cols)		
 		
@@ -55,11 +56,15 @@ class FixRemoveChecksumByteCommand(Command):
 
 					# display in table
 					data.append([model, hwid_old, hwid_new, str(done)])
-			
-		table.set_rows(data,
-			self.table_separator(),
-			[self.table_cell('Found {} items.'.format(len(data)), colspan=3)])
 
+		# result footer
+		data.append(self.table_separator())
+		data.append([self.table_cell('Found {} items'.format(len(data) -1 ), colspan=4)])
+		
+		# add data to table 
+		table.set_rows(data)
+
+		# render table
 		table.render()
 		
 		
