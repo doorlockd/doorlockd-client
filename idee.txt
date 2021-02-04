@@ -89,9 +89,11 @@ type B ...
 [x] doorlock-cli maken. (cleo)
 [ ] ??? last seen field (maybe yes / maybe not?).
 [!] tag create error RFiD hwid ^08 4bytes (only type A)  . random hwid. http 500 -> iets bruikbaars. 4bytes?!
-[ ] hwid checksum byte... cleanup/check 
+[ ] tag create 00:00:00:00 failure
+[!] hwid checksum byte... cleanup/check 
 [ ] json api errors spec. : change error.error -> error.type : ('token error','validation','...',  ) ==> put in doc.
 [ ] RFID reader: nfc.clf -> pn532
+[ ] json schema :::: rest_api_flask read-only  x_gettatr (is required properties working?? )
 
 -------------------- 
 [x] orator, migratie, models
