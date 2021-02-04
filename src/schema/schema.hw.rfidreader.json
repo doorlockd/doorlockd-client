@@ -21,22 +21,27 @@
           "type": ["integer"]
       },
       "spi_bus": {
-          "description": "spi_bus number",
+          "description": "spi_bus number for rc522",
 		  "readOnly": true,
           "type": ["number"]
       },
       "spi_device": {
-          "description": "spi_device number",
+          "description": "spi_device number for rc522",
 		  "readOnly": true,
           "type": ["number"]
       },
       "pin_irq": {
-          "description": "pin_irq name",
+          "description": "pin_irq name for rc522",
 		  "readOnly": true,
           "type": ["string"]
       },
       "pin_rst": {
-          "description": "pin_irq name",
+          "description": "pin_irq name for rc522",
+		  "readOnly": true,
+          "type": ["string"]
+      },
+      "path": {
+          "description": "connection path for nfcpy",
 		  "readOnly": true,
           "type": ["string"]
       },
