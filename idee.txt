@@ -88,13 +88,12 @@ type B ...
 [x] doorlockd branches (master -> 'version @Old deWAR', ' minimal-2020-03' -> master)
 [x] doorlock-cli maken. (cleo)
 [ ] ??? last seen field (maybe yes / maybe not?).
-[!] tag create error RFiD hwid ^08 4bytes (only type A)  . random hwid. http 500 -> iets bruikbaars. 4bytes?!
-[ ] tag create 00:00:00:00 failure
-[!] hwid checksum byte... cleanup/check 
+[x] tag create error RFiD hwid ^08 4bytes (only type A)  . random hwid. http 500 -> iets bruikbaars. 4bytes?!
+[?] tag create 00:00:00:00 failure
+[?] hwid checksum byte... cleanup/check , admin-cli tested ok| rc522 code NOT TESTED
 [ ] json api errors spec. : change error.error -> error.type : ('token error','validation','...',  ) ==> put in doc.
-[ ] RFID reader: nfc.clf -> pn532
-[ ] json schema :::: rest_api_flask read-only  x_gettatr (is required properties working?? )
-
+[x] RFID reader: nfc.clf -> pn532
+[x] RFid NFC start stop by status not working.
 -------------------- 
 [x] orator, migratie, models
 [x] flask api 

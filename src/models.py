@@ -7,7 +7,6 @@ import hashlib
 import os
 import base64
 
-
 # 
 # get current logged on uid for our ChangelogObserver
 #
@@ -365,6 +364,12 @@ class Tag(Model):
 		if(self.hwid[0:2] == '08'):
 			error = {'error': 'error'}
 			error['message'] = "this tag can't be used, it uses an random hwid."
+			raise ModelError(error)
+
+		# ^00(:00)*$ I don't trust hwid of only zeros. 
+		if(self.hwid == '00:00:00:00' or self.hwid == '00:00:00:00:00:00:00'):
+			error = {'error': 'error'}
+			error['message'] = "Sorry, I don't trust hwid of only zeros."
 			raise ModelError(error)
 
 	@classmethod
