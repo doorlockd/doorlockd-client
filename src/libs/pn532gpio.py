@@ -12,6 +12,22 @@ class pn532Gpio():
 	GPIO interface to the PN532 rfid device, connected using nfcpy.
 	including configuring AUX1 and AUX2
 	
+	Example:
+	# initilialize
+	clf = nfc.ContactlessFrontend('ttyS2:pn532')
+	gpio = pn532Gpio(clf)
+
+	# control gpio
+	gpio.gpio_on('p72')           # set p72 on   (high: 1/True)
+	gpio.gpio_off('p72')          # set p72 off  (low:  0/False)
+	gpio.gpio_tollge('p72')       # change value of p72
+	gpio.gpio_get('p71')          # read value of p71 (boolean)
+
+	# configure 
+	gpio.cfg_gpio_set('p71', 2)   # set p71 as GPIO_TYPE 2: input (High Impedance)
+	gpio.cfg_gpio_get('p72')      # get gpio config for p72, see cfg_gpio_get() for details. 	
+	gpio.cfg_aux_set(aux1=0xb)    # set AUX1 to 'low' see comments or datasheet/PN532 for all options.
+	gpio.cfg_aux_get('aux2')      # get AUX2 config.
 	"""
 	clf = None
 
@@ -34,6 +50,8 @@ class pn532Gpio():
 	         'p35': ['P3', 0x20],
 	         'p71': ['P7', 0x02],
 	         'p72': ['P7', 0x04]}
+	
+	GPIO_TYPE = ['Open drain', 'Quasi Bidirectional', 'input', 'Push/pull output']
 	
 	
 	def __init__(self, clf, hw_read_state=False):
@@ -273,7 +291,6 @@ class pn532Gpio():
 		
 		see section 8.6.23.53, Table 279. Description of CIU_AnalogTest bits on Page 185.
 		* references to https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
-		'''
 		# 0x0    0000 Tristate
 		# 0x1    0001 DAC output: register CIU_TestDAC1[1]
 		# 0x2    0010 DAC output: test signal corr1[1]
@@ -296,6 +313,7 @@ class pn532Gpio():
 		#             At 106 kbit/s: not applicable
 		#             At 212 kbit/s and 424 kbit/s: High during last part of preamble, Sync, Data bits and CRC.
 		# 0xf    1111 Test bus bit as defined by the TstBusBitSel in Table 265 on page 181
+		'''
 		#
 		# CIU_AnalogTest register (6328h) : AnalogSelAux1 AnalogSelAux2
 		# bit allocation:   7    6    5    4   | 3    2    1    0  
@@ -331,10 +349,19 @@ class pn532Gpio():
 		print("DEBUG: P3 {0:08b}, P7 {1:08b}".format(self._state['P3'], self._state['P7']))
 		
 
-	def debug_info(self):
+	def debug_info(self, no_cache=False):
 		"""
 		some debug overview , handy when using bpython cli interface.
 		"""
+		# get cfg if missing
+		if not hasattr(self._cfg, 'P3'):
+			self.hw_read_cfg()
+		
+		# read current IO values
+		if(no_cache):
+			self.hw_read_state()
+			self.hw_read_cfg()
+		
 		print("bin   ReadGPIO P3 {0:08b}".format(self._state['P3']))
 		print("bin   P3CFGA   P3 {0:08b}".format(self._cfg['P3']['A']))
 		print("bin   P3CFGB   P3 {0:08b}".format(self._cfg['P3']['B']))
@@ -343,7 +370,6 @@ class pn532Gpio():
 		print("bin   P7CFGA   P7 {0:08b}".format(self._cfg['P7']['A']))
 		print("bin   P7CFGB   P7 {0:08b}".format(self._cfg['P7']['B']))
 		
-		GPIO_TYPE = ['Open drain', 'Quasi Bidirectional', 'input', 'Push/pull output']
 		
 		for p in ['p30', 'p31', 'p32', 'p33', 'p34', 'p35', 'p71', 'p71']:
 			v = str(self.gpio_get(p))
@@ -351,4 +377,4 @@ class pn532Gpio():
 			print ("GPIO port {} value {:5s} config: {}: {} ".format(
 					p,
 					v,
-					t, GPIO_TYPE[t] ))
+					t, self.GPIO_TYPE[t] ))
