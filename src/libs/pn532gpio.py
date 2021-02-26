@@ -1,60 +1,23 @@
-
-
-# 0x0e = writeGPIO
-# 1st byte: x00  https://www.nxp.com/docs/en/user-guide/141520.pdf WriteGPIO
-# 2nd byte: x82
-
-# clf.device.chipset.command(0x0e, b'\x00\x82', 0.1)
-
-
-# get GPIO mode:
-# >>> clf.device.chipset.command(0x06, b'\xff\xf4\xff\xf5\xff\xfc\xff\xfd', 0.1)
-# bytearray(b'\x07\x00\xff\x00')
-# >>> clf.device.chipset.command(0x06, b'\x63\x28', 0.1)
-# bytearray(b'\x00')
-
-# AUX1 pin : see CIU_AnalogTest register (6328h) on https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
-# >>> clf.device.chipset.command(0x08, b'\x63\x28\x00', 0.1)
-# bytearray(b'')
-# >>> clf.device.chipset.command(0x08, b'\x63\x28\xb0', 0.1)
-
-## https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf :
-## P3 and P7  registers:
-# where x is 3 or 7 and n is the bit index.
-# At maximum 4 different controllable modes can be supported. These modes are defined with the following bits:
-# • PxCFGA[n]=0 and PxCFGB[n]=0: Open drain
-# • PxCFGA[n]=1 and PxCFGB[n]=0: Quasi Bidirectional (Reset mode)
-# • PxCFGA[n]=0 and PxCFGB[n]=1: input (High Impedance)
-# • PxCFGA[n]=1 and PxCFGB[n]=1: Push/pull output
-# Px[n] is used to write or read the port value.
-# Here is the list of the registers used for these GPIO configuration
-# name, 	addr,	Description 
-# P3CFGA	FCh 	Port 3 configuration
-# P3CFGB	FDh		Port 3 configuration
-# P3    	B0h		Port 3 value	
-# P7CFGA 	F4h 	Port 7configuration
-# P7CFGB	F5h 	Port 7configuration
-# P7    	F7h 	Port 7 value
-
-# ReadRegister
-# (P3CFGA, P3CFGB) =  clf.device.chipset.command(0x06, b'\xff\xfc\xff\xfd', 0.1)
-# (P7CFGA, P7CFGB) =  clf.device.chipset.command(0x06, b'\xff\xf4\xff\xf5', 0.1)
-# WriteRegister: 
-# write P7CFGA x03 , P7CFGB x04  === 70,71 Quasi Bidirectional; 72 input.
-# clf.device.chipset.command(0x08, b'\xff\xf4\x03\xff\xf5\x04', 0.1)
-
+#
+#
+# PN532 User Manual  : https://www.nxp.com/docs/en/user-guide/141520.pdf 
+# PN532/C1 Data Sheet: https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
+#
+# Using nfcpy to communicate with PN532.
+#
 
 
 class pn532Gpio():
 	"""
-	GPIO interface to the PN532 rfid device, connected using nfcpy
+	GPIO interface to the PN532 rfid device, connected using nfcpy.
+	including configuring AUX1 and AUX2
 	
 	"""
 	clf = None
 
 	# _state[field] = value     #  bit values  0x08  0x40  0x20  0x10  0x08  0x04  0x02  0x01
 	_state = {'P3': b'\x00'[0],	#  bits: [change=1, None,  P35,  P34,  P33,  P32,  P31,  P30]
-			  'P7': b'\x00'[0]}	#  bits: [change=1, None, None, None, None,  P72,  P71, None]
+	          'P7': b'\x00'[0]}	#  bits: [change=1, None, None, None, None,  P72,  P71, None]
 
 	# The field P3 contains the state of the GPIO located on the P3 port
 	# The field P7 contains the state of the GPIO located on the P7 port
@@ -64,13 +27,14 @@ class pn532Gpio():
 	
 	# lookup dictionary with portname = [field, bit possition]
 	_addr = {'p30': ['P3', 0x01],
-			 'p31': ['P3', 0x02],
-			 'p32': ['P3', 0x04],
+	         'p31': ['P3', 0x02],
+	         'p32': ['P3', 0x04],
 			 'p33': ['P3', 0x08],
-			 'p34': ['P3', 0x10],
-			 'p35': ['P3', 0x20],
-			 'p71': ['P7', 0x02],
-			 'p72': ['P7', 0x04]}
+	         'p34': ['P3', 0x10],
+	         'p35': ['P3', 0x20],
+	         'p71': ['P7', 0x02],
+	         'p72': ['P7', 0x04]}
+	
 	
 	def __init__(self, clf, hw_read_state=False):
 		# set Contact Less Frontend. PN532
@@ -80,6 +44,9 @@ class pn532Gpio():
 		if (hw_read_state):
 			self.hw_read_state()
 
+	#
+	# gpio config functions:
+	#
 
 	def hw_read_state(self):
 		# ReadGPIO command = 0x0c
@@ -87,7 +54,7 @@ class pn532Gpio():
 		self._state['P3'] = raw_state[0]
 		self._state['P7'] = raw_state[1]
 		# self._state['I0I1'] = raw_state[2] 
-		
+				
 	def hw_read_cfg(self):
 		# initialize P3 and P7 dict
 		self._cfg = {'P3': {}, 'P7': {}}
@@ -123,8 +90,6 @@ class pn532Gpio():
 		
 		result = self.clf.device.chipset.command(0x08, cmd, 0.1)
 		
-		return(result)		
-		
 		
 	def cfg_gpio_get(self, port):
 		"""
@@ -144,10 +109,10 @@ class pn532Gpio():
 			self.hw_read_cfg()
 		
 		# At maximum 4 different controllable modes can be supported. These modes are defined with the following bits:
-		# • PxCFGA[n]=0 and PxCFGB[n]=0: Open drain
-		# • PxCFGA[n]=1 and PxCFGB[n]=0: Quasi Bidirectional (Reset mode)
-		# • PxCFGA[n]=0 and PxCFGB[n]=1: input (High Impedance)
-		# • PxCFGA[n]=1 and PxCFGB[n]=1: Push/pull output
+		# 0 • PxCFGA[n]=0 and PxCFGB[n]=0: Open drain
+		# 1 • PxCFGA[n]=1 and PxCFGB[n]=0: Quasi Bidirectional (Reset mode)
+		# 2 • PxCFGA[n]=0 and PxCFGB[n]=1: input (High Impedance)
+		# 3 • PxCFGA[n]=1 and PxCFGB[n]=1: Push/pull output
 
 		# boolean value for PxCFGA[n]
 		pxcfga = self._cfg[ field ]['A'] | ~ mask& 255 == 255 
@@ -165,7 +130,7 @@ class pn532Gpio():
 		2: input, 
 		3: Push/pull output
 		
-		use hw_write_cfg() to write changes to hardware.
+		use write=False if you have more changes, use hw_write_cfg() to write changes to hardware.
 		"""
 		# lookup port in addr[], get state byte and bit position value
 		(field, mask) = self._addr[ port ]
@@ -195,8 +160,11 @@ class pn532Gpio():
 			self._cfg[ field ]['B'] &= ~ mask
 			
 		if(write):
-			return self.hw_write_cfg()
+			self.hw_write_cfg()
 			
+	#
+	# gpio control functions
+	#
 		
 	def commit(self):
 		# WriteGPIO command = 0x0e
@@ -206,15 +174,11 @@ class pn532Gpio():
 		self._state['P3'] &= ~0x80
 		self._state['P7'] &= ~0x80
 		
-		# return what result we got.
-		return(result)		
-		
-
 	def gpio_on(self, port, commit=True):
 		"""set GPIO port on		
 		example: gpio_on('p33') 
 		
-		Use commit=False if you have more GPIO updates, use commit(). 
+		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
 		# lookup port in addr[], get state byte and bit position value
 		(field, mask) = self._addr[ port ]
@@ -225,13 +189,13 @@ class pn532Gpio():
 		
 		# commit
 		if(commit):
-			return self.commit()
+			self.commit()
 		
 	def gpio_off(self, port, commit=True):
 		"""set GPIO port off
 		example: gpio_off('p33') 
 
-		Use commit=False if you have more GPIO updates, use commit(). 
+		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
 		# lookup port in addr[], get state byte and bit position value
 		(field, mask) = self._addr[ port ]
@@ -242,14 +206,14 @@ class pn532Gpio():
 		
 		# commit
 		if(commit):
-			return self.commit()
+			self.commit()
 		
 		
 	def gpio_toggle(self, port, commit=True):
 		"""toggle GPIO , turn off when on and visa versa.
 		example: gpio_toggle('p33') 
 		
-		Use commit=False if you have more GPIO updates, use commit(). 
+		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
 		# lookup port in addr[], get state byte and bit position value
 		(field, mask) = self._addr[ port ]
@@ -260,7 +224,7 @@ class pn532Gpio():
 		
 		# commit
 		if(commit):
-			return self.commit()
+			self.commit()
 
 	def gpio_get(self, port, no_cache=True):
 		""" return True/False if GPIO port is 1/0  """
@@ -273,25 +237,92 @@ class pn532Gpio():
 		(field, mask) = self._addr[ port ]
 		# return True if bit is set to 1
 		return(self._state[field] | ~ mask & 255 == 255)
+
 	#
-	# #
-	# # dev tests:
-	# #
-	# def set_p32_on(self):
-	# 	# self._state_p3 |= 0x04
-	# 	# self._state_p3 |= 0x80
-	# 	self._state['P3'] |= 0x84
+	# get/set AUX1, AUX2 registers
 	#
-	# def set_p32_off(self):
-	# 	self._state['P3'] &= 0x04
-	# 	self._state['P3'] |= 0x80
-	#
-	# def set_p32_toggle(self):
-	# 	self._state['P3'] ^= 0x04
-	# 	self._state['P3'] |= 0x80
-	#
+
+	def cfg_aux_get(self, aux="raw"):
+		"""read register 6328h, select AUX1 or AUX2 or Both by using RAW output.
+			parameter (str) "aux1" | "aux2" | "raw"
+		"""
+		# read registers
+		result = clf.device.chipset.command(0x06, b'\x63\x28', 0.1)
 		
-	# 
+		if(aux == 'raw'):
+			# return raw result, both aux1 and aux2 
+			return(result[0])
+		if(aux == 'aux2'):
+			# return bit 4-7 
+			return(result[0] >> 4)
+		if(aux == 'aux1'):
+			# return bit 0-3
+			return(result[0] & 0x0f)
+		
+		# in other cases:
+		raise ValueError("'aux' must be aux1 , aux2 or raw")
+		
+
+	def cfg_aux_set(self, aux1=None, aux2=None):
+		'''
+		set value of aux1 and/or aux2: 0x0 ... 0xf 
+		
+		see section 8.6.23.53, Table 279. Description of CIU_AnalogTest bits on Page 185.
+        * references to https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
+		'''
+		# 0x0    0000 Tristate
+		# 0x1    0001 DAC output: register CIU_TestDAC1[1]
+		# 0x2    0010 DAC output: test signal corr1[1]
+		# 0x3    0011 DAC output: test signal corr2[1]
+		# 0x4    0100 DAC output: test signal MinLevel[1]
+		# 0x5    0101 DAC output: ADC_I[1]
+		# 0x6    0110 DAC output: ADC_Q[1]
+		# 0x7    0111 DAC output: ADC_I combined with ADC_Q[1]
+		# 0x8    1000 Test signal for production test
+		# 0x9    1001 secure IC clock
+		# 0xa    1010 ErrorBusBit as described in Table 177 on page 145
+		# 0xb    1011 Low
+		# 0xc    1100 TxActive
+		#             At 106 kbit/s: High during Start bit, Data bits, Parity and CRC
+		#             At 212 kbit/s and 424 kbit/s: High during Preamble, Sync, Data bits and CRC
+		# 0xd    1101 RxActive
+		#             At 106 kbit/s: High during Data bits, Parity and CRC
+		#             At 212 kbit/s and 424 kbit/s: High during Data bits and CRC
+		# 0xe    1110 Subcarrier detected
+		#             At 106 kbit/s: not applicable
+		#             At 212 kbit/s and 424 kbit/s: High during last part of preamble, Sync, Data bits and CRC.
+		# 0xf    1111 Test bus bit as defined by the TstBusBitSel in Table 265 on page 181
+		#
+		# CIU_AnalogTest register (6328h) : AnalogSelAux1 AnalogSelAux2
+		# bit allocation:   7    6    5    4   | 3    2    1    0  
+		# (4 bits each)    AnalogSelAux1 (7-4) | AnalogSelAux2 (3-0)
+		#
+		# Controls the AUX* pin. Note: All test signals are described in Section 8.6.21.3 “Test signals at pin AUX” on page 142.
+		#  * references to https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
+		#			
+		if aux1 is None and aux2 is None:
+			raise ValueError("Either set aux1 or aux2, no reason in setting nothing")
+			
+		if aux1 is None:
+			aux1 = self.cfg_aux_get('aux1')
+		if aux2 is None:
+			aux2 = self.cfg_aux_get('aux2')
+					
+		
+		# write settings to register 6328h
+		cmd=bytearray()
+		cmd.append(0x63)
+		cmd.append(0x28) 
+		# combine aux1 and aux2 and write to hw:
+		cmd.append( aux2 << 4 | aux1 & 0x0f)
+		
+		result = self.clf.device.chipset.command(0x08, cmd, 0.1)
+				
+		
+	#
+	# Debug and helper functions:
+	#
+
 	def debug(self):
 		print("DEBUG: P3 {0:08b}, P7 {1:08b}".format(self._state['P3'], self._state['P7']))
 		
