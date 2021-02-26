@@ -44,10 +44,6 @@ class pn532Gpio():
 		if (hw_read_state):
 			self.hw_read_state()
 
-	#
-	# gpio config functions:
-	#
-
 	def hw_read_state(self):
 		# ReadGPIO command = 0x0c
 		raw_state =  self.clf.device.chipset.command(0x0c, b'', 0.1)
@@ -55,6 +51,10 @@ class pn532Gpio():
 		self._state['P7'] = raw_state[1]
 		# self._state['I0I1'] = raw_state[2] 
 				
+	#
+	# gpio config functions:
+	#
+
 	def hw_read_cfg(self):
 		# initialize P3 and P7 dict
 		self._cfg = {'P3': {}, 'P7': {}}
