@@ -51,6 +51,7 @@ class pn532Gpio():
 	         'p71': ['P7', 0x02],
 	         'p72': ['P7', 0x04]}
 	
+	# reference for cfg_gpio_set() / cfg_gpio_get()
 	GPIO_TYPE = ['Open drain', 'Quasi Bidirectional', 'input', 'Push/pull output']
 	
 	
