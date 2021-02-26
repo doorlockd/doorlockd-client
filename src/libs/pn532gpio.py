@@ -15,7 +15,7 @@ class pn532Gpio():
 	"""
 	clf = None
 
-	# _state[field] = value     #  bit values  0x08  0x40  0x20  0x10  0x08  0x04  0x02  0x01
+	# _state[field] = value    	#  bit values  0x08  0x40  0x20  0x10  0x08  0x04  0x02  0x01
 	_state = {'P3': b'\x00'[0],	#  bits: [change=1, None,  P35,  P34,  P33,  P32,  P31,  P30]
 	          'P7': b'\x00'[0]}	#  bits: [change=1, None, None, None, None,  P72,  P71, None]
 
