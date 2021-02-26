@@ -175,7 +175,8 @@ class pn532Gpio():
 		self._state['P7'] &= ~0x80
 		
 	def gpio_on(self, port, commit=True):
-		"""set GPIO port on		
+		"""
+		set GPIO port on		
 		example: gpio_on('p33') 
 		
 		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
@@ -192,7 +193,8 @@ class pn532Gpio():
 			self.commit()
 		
 	def gpio_off(self, port, commit=True):
-		"""set GPIO port off
+		"""
+		set GPIO port off
 		example: gpio_off('p33') 
 
 		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
@@ -210,7 +212,8 @@ class pn532Gpio():
 		
 		
 	def gpio_toggle(self, port, commit=True):
-		"""toggle GPIO , turn off when on and visa versa.
+		"""
+		toggle GPIO , turn off when on and visa versa.
 		example: gpio_toggle('p33') 
 		
 		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
@@ -243,8 +246,9 @@ class pn532Gpio():
 	#
 
 	def cfg_aux_get(self, aux="raw"):
-		"""read register 6328h, select AUX1 or AUX2 or Both by using RAW output.
-			parameter (str) "aux1" | "aux2" | "raw"
+		"""
+		read register 6328h, select AUX1 or AUX2 or Both by using RAW output.
+		parameter (str) "aux1" | "aux2" | "raw"
 		"""
 		# read registers
 		result = clf.device.chipset.command(0x06, b'\x63\x28', 0.1)
@@ -268,7 +272,7 @@ class pn532Gpio():
 		set value of aux1 and/or aux2: 0x0 ... 0xf 
 		
 		see section 8.6.23.53, Table 279. Description of CIU_AnalogTest bits on Page 185.
-        * references to https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
+		* references to https://www.nxp.com/docs/en/nxp/data-sheets/PN532_C1.pdf
 		'''
 		# 0x0    0000 Tristate
 		# 0x1    0001 DAC output: register CIU_TestDAC1[1]
