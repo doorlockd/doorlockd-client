@@ -20,7 +20,7 @@ class pn532Gpio():
 	# control gpio
 	gpio.gpio_on('p72')           # set p72 on   (high: 1/True)
 	gpio.gpio_off('p72')          # set p72 off  (low:  0/False)
-	gpio.gpio_tollge('p72')       # change value of p72
+	gpio.gpio_toggle('p72')       # change value of p72
 	gpio.gpio_get('p71')          # read value of p71 (boolean)
 
 	# configure 
