@@ -16,7 +16,7 @@ class Led(DoorlockdBaseClass, LedMethods):
 				pass 
 				
 			self.on = dummy
-			self.off = dymmy
+			self.off = dummy
 			
 
 		if pn532_gpio is None:
