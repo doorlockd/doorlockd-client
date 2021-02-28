@@ -3,36 +3,22 @@ from .Led import LedMethods
 from .UiLeds import UiLeds_4leds
 
 
-class dummyLed(LedMethods):
-	'''hardware: LED output GPIO control.'''
-	
-	def __init__(self, gpio_pin, config_name='led', hw_init=True):
-		self.gpio_pin = gpio_pin
-		self.config_name = config_name
-		
-		# if (hw_init):
-		# 	self.hw_init()
-		#
 
-	def hw_init(self):
-		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
-	
-	def on(self):
-		pass
-	
-	def off(self):
-		pass
 
 class Led(DoorlockdBaseClass, LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
-	def __new__(cls, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
-		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
-			return dummyLed(gpio_pin, config_name)
-			
-		return super(Led, cls).__new__(cls, *args, **kwargs)
 					
 	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
+		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
+			# let's make this Led a dummy:
+			def dummy(self):
+				pass 
+				
+			self.on = dummy
+			self.off = dymmy
+			
+
 		if pn532_gpio is None:
 			raise ValueError('argument pn532_gpio must be set to an instance of the pn532gpio class')
 
