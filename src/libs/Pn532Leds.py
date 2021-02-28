@@ -53,7 +53,7 @@ class Led(DoorlockdBaseClass, LedMethods):
 		
 		
 class UiLeds_4leds_Pn532(UiLeds_4leds):
-	config_name = 'ui_leds.4leds_pn532'
+	config_name = '4leds_pn532'
 	pn532gpio = None
 	#	[ui_leds.4leds_pn532]
 	# 	led1 = "p30"

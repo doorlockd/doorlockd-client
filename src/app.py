@@ -124,7 +124,7 @@ elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'):
 	dc.hw['rfidreader'] = RfidReaderNfcPy(start_thread=False)
 	
 	# check if PN532 leds are enabled:
-	if dc.config.get('ui_leds.4leds_pn532',{}).get('enabled', True) == True:
+	if dc.config.get('4leds_pn532',{}).get('enabled', False) == True:
 		from libs.Pn532Leds import UiLeds_4leds_Pn532
 		from libs.pn532gpio import pn532Gpio
 
