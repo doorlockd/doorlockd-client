@@ -12,8 +12,8 @@ class Led(DoorlockdBaseClass, LedMethods):
 	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
 			# let's make this Led a dummy:
-			self.on = lambda self: pass
-			self.off = lambda self: pass 
+			self.on = self.dummy
+			self.off = self.dummy 
 			
 
 		if pn532_gpio is None:
@@ -36,7 +36,8 @@ class Led(DoorlockdBaseClass, LedMethods):
 	def off(self):
 		self.pn532_gpio.gpio_off(self.gpio_pin)
 		
-		
+	def dummy(self):
+		pass	
 		
 class UiLeds_4leds_Pn532(UiLeds_4leds):
 	config_name = '4leds_pn532'
