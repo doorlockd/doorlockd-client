@@ -12,11 +12,8 @@ class Led(DoorlockdBaseClass, LedMethods):
 	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
 			# let's make this Led a dummy:
-			def dummy(self):
-				pass 
-				
-			self.on = dummy
-			self.off = dummy
+			self.on = lambda self: pass
+			self.off = lambda self: pass 
 			
 
 		if pn532_gpio is None:
