@@ -111,7 +111,6 @@ class hw12vOut(baseHardwareIO):
 		
 class hwLed(baseHardwareIO):
 	'''hardware: LED output GPIO control.'''
-	state = False # False|'PWM'|'GPIO'
 	
 	def __init__(self):
 		pass

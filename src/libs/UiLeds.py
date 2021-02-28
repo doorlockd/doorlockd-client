@@ -31,7 +31,6 @@ class UiLedsWrapper(DoorlockdBaseClass):
 			return UiLeds_none()
 			
 			
-
 		
 
 class UiLeds_none(DoorlockdBaseClass):
@@ -49,6 +48,8 @@ class UiLeds_none(DoorlockdBaseClass):
 		self.logger.info('exitting {}.'.format(self.config_name))
 		
 		pass
+	
+	
 	
 class UiLeds_4leds(DoorlockdBaseClass):
 	config_name = 'ui_leds.4leds'

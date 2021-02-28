@@ -50,35 +50,6 @@ class Led(hwLed, LedMethods):
 			self.hw_init()
 
 
-	def blink(self, duration=0.05):
-		self.on()
-		time.sleep(duration)
-		self.off()
-	
-	def short(self):
-		self.blink(0.1)
-		
-	def medium(self):
-		self.blink(0.3)
-		
-	def long(self):
-		self.blink(0.6)
-	
-	def signal(self):
-		'''show signal for 2.x seconds.'''
-		self.on()
-		time.sleep(0.6)
-		self.off()
-		time.sleep(0.3)
-		self.on()
-		time.sleep(0.6)
-		self.off()
-		time.sleep(0.3)
-		self.on()
-		time.sleep(0.6)
-		self.off()
-
-
 class DuoLed(LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
