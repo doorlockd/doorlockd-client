@@ -1,6 +1,6 @@
 from .base import DoorlockdBaseClass, dc
-from Led import LedMethods
-from UiLeds import UiLeds_4leds
+from .Led import LedMethods
+from .UiLeds import UiLeds_4leds
 
 
 class dummyLed(hwLed, LedMethods):
