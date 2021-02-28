@@ -74,10 +74,10 @@ class UiLeds_4leds_Pn532(UiLeds_4leds):
 	def hw_init(self):
 		self.logger.info('initializing {}.'.format(self.config_name))
 		# assign Leds ports (can be p3x/p7x or 'dummy' )
-		self.l1 = Led(self.config.get('led1', "p30"), 'led1', pn532_gpio=pn532_gpio)
-		self.l2 = Led(self.config.get('led2', "p31"), 'led2', pn532_gpio=pn532_gpio)
-		self.l3 = Led(self.config.get('led3', "p32"), 'led3', pn532_gpio=pn532_gpio)
-		self.l4 = Led(self.config.get('led4', "P33"), 'led4', pn532_gpio=pn532_gpio)
+		self.l1 = Led(self.config.get('led1', "p30"), 'led1', pn532_gpio=self.pn532_gpio)
+		self.l2 = Led(self.config.get('led2', "p31"), 'led2', pn532_gpio=self.pn532_gpio)
+		self.l3 = Led(self.config.get('led3', "p32"), 'led3', pn532_gpio=self.pn532_gpio)
+		self.l4 = Led(self.config.get('led4', "P33"), 'led4', pn532_gpio=self.pn532_gpio)
 		
 		# configure aux1 port:  
 		# ini config: aux = "0x[1-f]" 
