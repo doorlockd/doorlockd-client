@@ -26,10 +26,11 @@ class dummyLed(LedMethods):
 class Led(DoorlockdBaseClass, LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
-	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
+	def __new__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
 			return dummyLed(gpio_pin, config_name)
 					
+	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if pn532_gpio is None:
 			raise ValueError('argument pn532_gpio must be set to an instance of the pn532gpio class')
 
