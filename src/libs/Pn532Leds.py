@@ -3,7 +3,7 @@ from .Led import LedMethods
 from .UiLeds import UiLeds_4leds
 
 
-class dummyLed(hwLed, LedMethods):
+class dummyLed(LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
 	def __init__(self, gpio_pin, config_name='led', hw_init=True):
