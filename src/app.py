@@ -132,7 +132,7 @@ elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'):
 		pn532_gpio = pn532Gpio(dc.hw['rfidreader'].clf)
 		
 		# add the uileds to our hw dict:
-		dc.hw['uileds_pn532'] = UiLeds_4leds_Pn532(pn532_gpio=dc.pn532_gpio) 
+		dc.hw['uileds_pn532'] = UiLeds_4leds_Pn532(pn532_gpio=pn532_gpio) 
 		
 		
 # 
