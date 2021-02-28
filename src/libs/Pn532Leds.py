@@ -15,7 +15,7 @@ class dummyLed(LedMethods):
 		#
 
 	def hw_init(self):
-		pass
+		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
 	
 	def on(self):
 		pass
@@ -26,9 +26,11 @@ class dummyLed(LedMethods):
 class Led(DoorlockdBaseClass, LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
-	def __new__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
+	def __new__(cls, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
 			return dummyLed(gpio_pin, config_name)
+			
+		return super(Led, cls).__new__(cls, *args, **kwargs)
 					
 	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
 		if pn532_gpio is None:
@@ -43,7 +45,7 @@ class Led(DoorlockdBaseClass, LedMethods):
 		
 	def hw_init(self):
 		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
-		pass
+		
 		
 	def on(self):
 		self.pn532_gpio.gpio_on(self.gpio_pin)
