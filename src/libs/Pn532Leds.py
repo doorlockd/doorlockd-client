@@ -30,7 +30,7 @@ class Led(DoorlockdBaseClass, LedMethods):
 			self.hw_init()
 		
 	def hw_init(self):
-		self.pn532_gpio.cfg_gpio_set(self.gpio_pin, 0x3, self.cache_cfg_write) # 0x3 : 'Push/pull output'
+		self.pn532_gpio.cfg_gpio_set(self.gpio_pin, 0x3, self.no_cache_cfg) # 0x3 : 'Push/pull output'
 		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
 		
 		
