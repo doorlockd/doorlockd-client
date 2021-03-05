@@ -79,7 +79,7 @@ class pn532Gpio():
 		self._cfg = {'P3': {}, 'P7': {}}
 		
 		# read registers
-		result = clf.device.chipset.command(0x06, b'\xff\xfc\xff\xfd\xff\xf4\xff\xf5', 0.1)
+		result = self.clf.device.chipset.command(0x06, b'\xff\xfc\xff\xfd\xff\xf4\xff\xf5', 0.1)
 		self._cfg['P3']['A'] = result[0] # P3CFGA FCh Port 3 configuration
 		self._cfg['P3']['B'] = result[1] # P3CFGB FDh Port 3 configuration
 		self._cfg['P7']['A'] = result[2] # P7CFGA F4h Port 7 configuration

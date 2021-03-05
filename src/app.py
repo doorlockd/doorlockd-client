@@ -113,33 +113,32 @@ dc.logger.info('doorlockd starting up...')
 dc.hw = {}
 
 
-#
+# 
 # Hardware:  RFID Reader/extension board (init hardware but do not start thread for reading rfidtags)
 #
-if  (dc.config.get('rfid',{}).get('module','') == 'rc522'): 
-	dc.hw['rfidreader'] = RfidReaderRc522(start_thread=False)
-	# dc.hw['rfidreader'].start_thread()
-			
-elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'): 
-	dc.hw['rfidreader'] = RfidReaderNfcPy(start_thread=False)
-	
-	# check if PN532 leds are enabled:
-	if dc.config.get('4leds_pn532',{}).get('enabled', False) == True:
-		from libs.Pn532Leds import UiLeds_4leds_Pn532
-		from libs.pn532gpio import pn532Gpio
-
-		# initialze an PN532 GPIO class, using the nfcpy clf object 
-		pn532_gpio = pn532Gpio(dc.hw['rfidreader'].clf)
-		
-		# add the uileds to our hw dict:
-		dc.hw['uileds_pn532'] = UiLeds_4leds_Pn532(pn532_gpio=pn532_gpio) 
-		
-		
-# 
-# UI Leds 
-#
 if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
-	dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
+	#
+	if  (dc.config.get('rfid',{}).get('module','') == 'rc522'): 
+		dc.hw['rfidreader'] = RfidReaderRc522(start_thread=False)
+		# dc.hw['rfidreader'].start_thread()
+			
+	elif(dc.config.get('rfid',{}).get('module','') == 'nfcpy'): 
+		dc.hw['rfidreader'] = RfidReaderNfcPy(start_thread=False)
+	
+		# check if PN532 leds are enabled: 
+		if dc.config.get('4leds_pn532',{}).get('enabled', False) == True:
+			from libs.Pn532Leds import UiLeds_4leds_Pn532
+			from libs.pn532gpio import pn532Gpio
+
+			# initialze an PN532 GPIO class, using the nfcpy clf object 
+			pn532_gpio = pn532Gpio(dc.hw['rfidreader'].clf)
+		
+			# add the uileds to our hw dict:
+			dc.hw['uileds'] = UiLeds_4leds_Pn532(pn532_gpio=pn532_gpio) 
+		
+		else:
+			# UI Leds 
+			dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
 
 
 #

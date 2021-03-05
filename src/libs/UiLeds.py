@@ -123,10 +123,9 @@ class UiLeds_4leds(DoorlockdBaseClass):
 		self.l3.off()
 		self.l4.off()
 		
-	
 	def _ecb_rfid_comm_pulse(self, data):
 		self.l2.blink()
-
+	
 	def _ecb_rfid_comm_ready(self, date):
 		self.l2.on()
 
@@ -150,8 +149,6 @@ class UiLeds_4leds(DoorlockdBaseClass):
 
 	def _ecb_button2_pushed(self, date):
 		self.l3.blink()
-
-
 	
 	def selftest(self):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
