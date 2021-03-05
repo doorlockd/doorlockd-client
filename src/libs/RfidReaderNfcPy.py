@@ -131,10 +131,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			# hw error ??
 			# lets fix:
 			
-			# Calls close on nfc frontend
-			self.clf.close()
-			# reconnect:
-			self.hw_init()
+			# # Calls close on nfc frontend
+			# self.clf.close()
+			# # reconnect:
+			# self.hw_init()
 			
 		elif target is not None:
 			# TODO: (hwid)
