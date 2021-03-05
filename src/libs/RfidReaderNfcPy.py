@@ -110,7 +110,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			self.io_wait_for_tag_detected()
 		
 			dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
-			
+
+		# make sure we are stopped
+		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
+		
 
 	def io_wait_for_tag_detected(self):
 		'''start RFID reader and wait , callback_tag_detected() is run when a tag is detected. 
