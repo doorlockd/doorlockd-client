@@ -67,7 +67,7 @@ class pn532Gpio():
 	def command(self, *args, **kwargs):
 		# acquire lock for writing over TTY to pn53x
 		with self.clf.lock:
-			self.clf.device.chipset.command(*args, **kwargs)
+			return self.clf.device.chipset.command(*args, **kwargs)
 
 	def hw_read_state(self):
 		# ReadGPIO command = 0x0c
