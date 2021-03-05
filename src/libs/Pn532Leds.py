@@ -15,8 +15,8 @@ class Led(DoorlockdBaseClass, LedMethods):
 			self.on = self.dummy
 			self.off = self.dummy 
 			
-			# no_cache_cfg: set False if you config multiple Led, use pn532_gpio.hw_write_cfg() to write cfg
-			self.no_cache_cfg = no_cache_cfg
+		# no_cache_cfg: set False if you config multiple Led, use pn532_gpio.hw_write_cfg() to write cfg
+		self.no_cache_cfg = no_cache_cfg
 			
 
 		if pn532_gpio is None:
