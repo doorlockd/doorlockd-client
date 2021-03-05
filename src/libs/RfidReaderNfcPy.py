@@ -120,7 +120,8 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''
 		
 		# target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-		target = self.clf.connect(rdwr={'on-connect': lambda tag: False}, terminate=lambda: self.stop_loop)
+		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, iteration=1}, 
+									terminate=lambda: self.stop_loop)
 			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
@@ -167,7 +168,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.thread.join() # blocking wait for thread to stop.
 		
 		# # Calls close on nfc frontend
-		self.clf.close() # disabled , seems buggy
+		# self.clf.close() # disabled , seems buggy
 		
 
 		
