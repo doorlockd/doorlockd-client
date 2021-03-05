@@ -119,8 +119,8 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''start RFID reader and wait , callback_tag_detected() is run when a tag is detected. 
 		'''
 		
-		# target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, iterations: 2}, 
+		targets = ['106A', '106B', '212F', '424F'] # all supported by PN532
+		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, 'iterations': 1, 'targets': targets},
 									terminate=lambda: self.stop_loop)
 			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
@@ -168,7 +168,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.thread.join() # blocking wait for thread to stop.
 		
 		# # Calls close on nfc frontend
-		# self.clf.close() # disabled , seems buggy
+		self.clf.close() # disabled , seems buggy
 		
 
 		

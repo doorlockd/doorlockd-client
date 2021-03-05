@@ -343,7 +343,7 @@ class pn532Gpio():
 		cmd.append(0x63)
 		cmd.append(0x28) 
 		# combine aux1 and aux2 and write to hw:
-		cmd.append( aux2 << 4 | aux1 & 0x0f)
+		cmd.append( aux1 << 4 | aux2 & 0x0f)
 		
 		result = self.command(0x08, cmd, 0.1)
 				

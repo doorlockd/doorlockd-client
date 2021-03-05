@@ -77,6 +77,6 @@ class UiLeds_4leds_Pn532(UiLeds_4leds):
 		# ini config: aux = "0x[1-f]" 
 		aux1 = self.config.get('aux1', None)
 		if aux1 is not None:
-			self.pn532gpio.cfg_aux_set(aux1=int(aux1, 16))
+			self.pn532_gpio.cfg_aux_set(aux1=int(aux1, 16))
 		
 	
