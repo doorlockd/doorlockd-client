@@ -120,7 +120,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''
 		
 		# target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, iterations: 1}, 
+		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, iterations: 2}, 
 									terminate=lambda: self.stop_loop)
 			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
