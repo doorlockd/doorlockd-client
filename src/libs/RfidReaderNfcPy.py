@@ -166,7 +166,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.stop_thread() 
 		
 		# Calls close on nfc frontend
-		# self.clf.close() # disabled , seems buggy
+		self.clf.close() # disabled , seems buggy
 		
 
 		
