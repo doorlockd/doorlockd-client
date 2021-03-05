@@ -124,7 +124,7 @@ class pn532Gpio():
 		(field, mask) = self._addr[ port ]
 		
 		# get cfg if missing
-		if not hasattr(self._cfg, field):
+		if field in self._cfg:
 			self.hw_read_cfg()
 		
 		# At maximum 4 different controllable modes can be supported. These modes are defined with the following bits:
@@ -161,7 +161,7 @@ class pn532Gpio():
 
 
 		# get cfg if missing
-		if not hasattr(self._cfg, field):
+		if field in self._cfg:
 			self.hw_read_cfg()
 
 		if pxcfga:
@@ -355,7 +355,7 @@ class pn532Gpio():
 		some debug overview , handy when using bpython cli interface.
 		"""
 		# get cfg if missing
-		if not hasattr(self._cfg, 'P3'):
+		if 'P3' in self._cfg:
 			self.hw_read_cfg()
 		
 		# read current IO values
