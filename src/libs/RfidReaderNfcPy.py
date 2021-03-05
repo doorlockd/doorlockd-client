@@ -160,10 +160,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling clf.close() ')
 		
 		# stop internal thread
-		self.stop_thread()
+		self.stop_thread() 
 		
 		# Calls close on nfc frontend
-		self.clf.close()
+		# self.clf.close() # disabled , seems buggy
 		
 
 		

@@ -9,11 +9,14 @@ class Led(DoorlockdBaseClass, LedMethods):
 	'''hardware: LED output GPIO control.'''
 	
 					
-	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None):
+	def __init__(self, gpio_pin, config_name='led', hw_init=True, pn532_gpio=None, no_cache_cfg=True):
 		if gpio_pin == 'dummy' or gpio_pin == 'aux1':
 			# let's make this Led a dummy:
 			self.on = self.dummy
 			self.off = self.dummy 
+			
+			# no_cache_cfg: set False if you config multiple Led, use pn532_gpio.hw_write_cfg() to write cfg
+			self.no_cache_cfg = no_cache_cfg
 			
 
 		if pn532_gpio is None:
@@ -27,6 +30,7 @@ class Led(DoorlockdBaseClass, LedMethods):
 			self.hw_init()
 		
 	def hw_init(self):
+		self.pn532_gpio.gpio.cfg_gpio_set(self.gpio_pin, 0x3, self.cache_cfg_write) # 0x3 : 'Push/pull output'
 		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
 		
 		
@@ -65,6 +69,9 @@ class UiLeds_4leds_Pn532(UiLeds_4leds):
 		self.l2 = Led(self.config.get('led2', "p31"), 'led2', pn532_gpio=self.pn532_gpio)
 		self.l3 = Led(self.config.get('led3', "p32"), 'led3', pn532_gpio=self.pn532_gpio)
 		self.l4 = Led(self.config.get('led4', "P33"), 'led4', pn532_gpio=self.pn532_gpio)
+		
+		# write cfg to hardware.
+		self.pn532_gpio.hw_write_cfg()
 		
 		# configure aux1 port:  
 		# ini config: aux = "0x[1-f]" 
