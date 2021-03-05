@@ -161,7 +161,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 
 
 	def hw_exit(self):
-		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling clf.close() ')
+		self.logger.debug('cleanup ' + self.__class__.__name__+ ': calling stop.thread & clf.close() ')
 		
 		# stop internal thread
 		self.stop_thread() 
