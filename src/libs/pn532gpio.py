@@ -63,9 +63,15 @@ class pn532Gpio():
 		if (hw_read_state):
 			self.hw_read_state()
 
+
+	def self.command(self, *args, **kwargs):
+		# acquire lock for writing over TTY to pn53x
+		with self.clf.lock:
+			self.clf.device.chipset.command(*args, **kwargs)
+
 	def hw_read_state(self):
 		# ReadGPIO command = 0x0c
-		raw_state =  self.clf.device.chipset.command(0x0c, b'', 0.1)
+		raw_state =  self.command(0x0c, b'', 0.1)
 		self._state['P3'] = raw_state[0]
 		self._state['P7'] = raw_state[1]
 		# self._state['I0I1'] = raw_state[2] 
@@ -79,7 +85,7 @@ class pn532Gpio():
 		self._cfg = {'P3': {}, 'P7': {}}
 		
 		# read registers
-		result = self.clf.device.chipset.command(0x06, b'\xff\xfc\xff\xfd\xff\xf4\xff\xf5', 0.1)
+		result = self.command(0x06, b'\xff\xfc\xff\xfd\xff\xf4\xff\xf5', 0.1)
 		self._cfg['P3']['A'] = result[0] # P3CFGA FCh Port 3 configuration
 		self._cfg['P3']['B'] = result[1] # P3CFGB FDh Port 3 configuration
 		self._cfg['P7']['A'] = result[2] # P7CFGA F4h Port 7 configuration
@@ -107,7 +113,7 @@ class pn532Gpio():
 		cmd.append(0xf5) 
 		cmd.append(self._cfg['P7']['B'])
 		
-		result = self.clf.device.chipset.command(0x08, cmd, 0.1)
+		result = self.command(0x08, cmd, 0.1)
 		
 		
 	def cfg_gpio_get(self, port):
@@ -187,7 +193,7 @@ class pn532Gpio():
 		
 	def commit(self):
 		# WriteGPIO command = 0x0e
-		result = self.clf.device.chipset.command(0x0e, bytearray([self._state['P3'], self._state['P7']]), 0.1)
+		result = self.command(0x0e, bytearray([self._state['P3'], self._state['P7']]), 0.1)
 		
 		# reset 'change' bit
 		self._state['P3'] &= ~0x80
@@ -270,7 +276,7 @@ class pn532Gpio():
 		parameter (str) "aux1" | "aux2" | "raw"
 		"""
 		# read registers
-		result = self.clf.device.chipset.command(0x06, b'\x63\x28', 0.1)
+		result = self.command(0x06, b'\x63\x28', 0.1)
 		
 		if(aux == 'raw'):
 			# return raw result, both aux1 and aux2 
@@ -339,7 +345,7 @@ class pn532Gpio():
 		# combine aux1 and aux2 and write to hw:
 		cmd.append( aux2 << 4 | aux1 & 0x0f)
 		
-		result = self.clf.device.chipset.command(0x08, cmd, 0.1)
+		result = self.command(0x08, cmd, 0.1)
 				
 		
 	#

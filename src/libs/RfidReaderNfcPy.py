@@ -22,6 +22,9 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 	stop_loop = True		# tag_detect loop
 	thread = None			# thread object
 	
+	bool_reader	= True		# read NFC tag , set to False to disable reader.
+	
+	
 	
 	def __init__(self, start_thread=True):
 		
@@ -108,11 +111,8 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		while not self.stop_loop:
 			dc.e.raise_event('rfid_ready') # when rfid starts detecting
 			self.io_wait_for_tag_detected()
-		
 			dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 
-		# make sure we are stopped
-		dc.e.raise_event('rfid_stopped') # when rfid is stopped detecting
 		
 
 	def io_wait_for_tag_detected(self):
@@ -120,7 +120,7 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		'''
 		
 		# target = self.clf.sense(RemoteTarget('106A'), RemoteTarget('106B'), RemoteTarget('212F'))
-		target = self.clf.connect(rdwr={'on-connect': lambda tag: False})
+		target = self.clf.connect(rdwr={'on-connect': lambda tag: False}, terminate=lambda: self.stop_loop)
 			
 		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
 		
@@ -131,10 +131,10 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 			# hw error ??
 			# lets fix:
 			
-			# # Calls close on nfc frontend
-			# self.clf.close()
-			# # reconnect:
-			# self.hw_init()
+			# Calls close on nfc frontend
+			self.clf.close()
+			# reconnect:
+			self.hw_init()
 			
 		elif target is not None:
 			# TODO: (hwid)
@@ -164,8 +164,9 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		
 		# stop internal thread
 		self.stop_thread() 
+		self.thread.join() # blocking wait for thread to stop.
 		
-		# Calls close on nfc frontend
+		# # Calls close on nfc frontend
 		self.clf.close() # disabled , seems buggy
 		
 

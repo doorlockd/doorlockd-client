@@ -31,7 +31,7 @@ class Solenoid(hw12vOut, baseTriggerAction):
 		'''open the door, turn Solenoid on for self.time seconds. '''
 		self.trigger_begin()
 
-		# do we block ot wait in a new thread
+		# do we block or wait in a new thread
 		if wait:
 			time.sleep(self.time_wait)
 			self.trigger_end()
