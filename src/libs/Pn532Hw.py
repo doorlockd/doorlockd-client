@@ -79,4 +79,55 @@ class UiLeds_4leds_Pn532(UiLeds_4leds):
 		if aux1 is not None:
 			self.pn532_gpio.cfg_aux_set(aux1=int(aux1, 16))
 		
+
+class Pn532Button(DoorlockdBaseClass):
+	'''hardware: Button input class.'''
+	counter = 0
 	
+					
+	def __init__(self, config_name='button', hw_init=True, pn532_gpio=None, no_cache_cfg=False, trigger_action='not set'):			
+		# no_cache_cfg: set False if you config multiple Led, use pn532_gpio.hw_write_cfg() to write cfg
+		self.no_cache_cfg = no_cache_cfg
+			
+
+		# read trigger_action from config or use the hardcoded default from the init argument.
+		self.trigger_action = self.config.get('trigger_action', trigger_action)
+
+		if pn532_gpio is None:
+			raise ValueError('argument pn532_gpio must be set to an instance of the pn532gpio class')
+
+		# read gpio_pin from config
+		self.gpio_pin = self.config.get('pin', 'p72')
+		
+		self.config_name = config_name
+		self.pn532_gpio = pn532_gpio
+		
+		if (hw_init):
+			self.hw_init()
+		
+	def hw_init(self):
+		self.pn532_gpio.cfg_gpio_set(self.gpio_pin, 0x2, self.no_cache_cfg) # 0x2 : 'input'
+		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
+		
+		# set event detect
+		self.pn532_gpio.add_event_detect(gpio_port, value, self.trigger)
+		
+		
+	@property
+	def status(self):
+		if self.invert_status:
+			return(not bool(self.pn532_gpio.cfg_gpio_get(self.gpio_pin))
+		else:
+			return(bool(self.pn532_gpio.cfg_gpio_get(self.gpio_pin))
+		
+		
+		
+
+	def trigger(self):		
+		# raise button push event
+		dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button?_pushed when button is pushed
+		
+		# raise configured trigger_action event:
+		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button
+		self.counter = self.counter + 1
+				
