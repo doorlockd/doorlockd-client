@@ -9,6 +9,8 @@
 import threading
 import time
 
+import logging
+log = logging.getLogger(__name__)
 
 class pn532Gpio():
 	"""
@@ -75,10 +77,28 @@ class pn532Gpio():
 	def hw_read_state(self):
 		# ReadGPIO command = 0x0c
 		raw_state =  self.command(0x0c, b'', 0.1)
+
+		# b'\x00\x00'
+		xor_event_detect = {'P3': 0x00,'P7': 0x00}
+		
+		# check rising/falling changes if we have any event_detect callbacks:
+		if(len(self._event_detect_list) != 0):
+			# check for changes ( event_detect_mask AND old_value XOR new_value )
+			xor_event_detect['P3'] = self._event_detect_mask['P3'] & (self._state['P3'] ^ raw_state[0]);
+			xor_event_detect['P7'] = self._event_detect_mask['P7'] & (self._state['P7'] ^ raw_state[1]);
+
+			# any faling/rising events?:
+			if(xor_event_detect !=  {'P3': 0x00,'P7': 0x00}):
+				self._handle_event_detected(xor_event_detect, {'P3': raw_state[0],'P7': raw_state[1]} )
+
+			
+		# update cache:
 		self._state['P3'] = raw_state[0]
 		self._state['P7'] = raw_state[1]
 		# self._state['I0I1'] = raw_state[2] 
-				
+
+
+			
 	#
 	# gpio config functions:
 	#
@@ -356,28 +376,66 @@ class pn532Gpio():
 	_event_detect_list = []
 	_event_detect_thread = None
 	_event_detect_wait = 0.2
+	_event_detect_mask = {'P3': 0x00,'P7': 0x00}
 	
 	
 	def add_event_detect(self, gpio_port, value, callback):
+		"""
+		Add event callback for rising high/falling low value (true/false)
+		"""
 		event = {}
 		event['gpio_port'] = gpio_port
 		event['value'] = value
 		event['callback'] = callback
 		
+		# add event callback to list
 		self._event_detect_list.append(event)
+		
+		# add bit mask to _event_detect_mask
+		# lookup port in addr[], get state byte and bit position value
+		(field, mask) = self._addr[ gpio_port ]
+		# set bit position value to 1
+		self._event_detect_mask[field] |= mask
 		
 		# start thread if needed, never starte or 1st added to list
 		if(self._event_detect_thread == None or len(self._event_detect_list) == 1):
 			self._event_detect_loop_start()
 	
-	def remove_event_detect(self,gpio_port, value, callback):
-		event = {}
-		event['gpio_port'] = gpio_port
-		event['value'] = value
-		event['callback'] = callback
+	def remove_event_detect(self,gpio_port, value=None, callback=None):
+		"""Remove event_detect callback events.
+		"""
 
-		self._event_detect_list.remove(event)
+		if value is not None and callback is not None:
+			# match everything
+			event = {}
+			event['gpio_port'] = gpio_port
+			event['value'] = value
+			event['callback'] = callback
+						
+			# remove callback from list
+			self._event_detect_list.remove(event)
 		
+		else:
+			# use None as joker '*'
+			for event in self._event_detect_list:
+				if event['gpio_port'] == gpio_port:
+					if event['value'] == value or value is None:
+						if event['callback'] == callback or callback is None:
+							# we have a match, let's remove event callback list
+							self._event_detect_list.remove(event)
+			
+		# do we need our event_detect_mask?
+		for event in self._event_detect_list:
+			if event['gpio_port'] == gpio_port:
+				# yes we still need it, 
+				return
+				
+		# remove bit mask from _event_detect_mask
+		# lookup port in addr[], get state byte and bit position value
+		(field, mask) = self._addr[ gpio_port ]
+		# set bit position value to 0
+		self._event_detect_mask[field] &= ~mask
+
 	
 	def _event_detect_loop_start(self):
 		self._event_detect_thread = threading.Thread(target=self._event_detect_run, args=())
@@ -387,23 +445,35 @@ class pn532Gpio():
 				
 	def _event_detect_run(self):
 		
-		while (len(self._event_detect_list) != 0) :
+		while (len(self._event_detect_list) != 0):
 			# wait x seconds for each run
 			time.sleep(self._event_detect_wait)
 						
-			# update GPIO cache
+			# update GPIO cache, this will detect and handle rising/falling bits.
 			self.hw_read_state()
 			
-			# check each entry in event_detect_list
-			for event in self._event_detect_list:
-				if(event['value'] == self.gpio_get(event['gpio_port'], no_cache=True)):
-					# we have a match
-					event['callback']()
-		
-		
-		# so we are about to stop this thread:
+		# self._event_detect_list[] has become 0 lenght,
+		# so we are about to stop this thread, let's remove ourself:
 		self._event_detect_thread = None
 		
+	def _handle_event_detected(self, xor_event_detect, raw_state):
+		# log.debug("_handle_event_detected {0} xor_state[{1:08b}], raw_state[{2:08b}]".format( 'P3', xor_event_detect['P3'], raw_state['P3'] ))
+		# log.debug("_handle_event_detected {0} xor_state[{1:08b}], raw_state[{2:08b}]".format( 'P7', xor_event_detect['P7'], raw_state['P7'] ))
+		
+		# itterate event_detect 
+		# do we need our event_detect_mask?
+		for event in self._event_detect_list:
+			gpio_port = event['gpio_port']
+			
+			# lookup port in addr[], get state byte and bit position value
+			(field, mask) = self._addr[ gpio_port ]
+			# True if  bit position value = 1
+			if(xor_event_detect[field] | ~ mask & 255 == 255):
+				# True if new value match event value
+				if(event['value'] == (raw_state[field] | ~ mask & 255 == 255)):
+					# call callback in new thread:
+					log.debug("_handle_event_detected: start callback for {}, value {}".format(gpio_port, event['value']))
+					threading.Thread(target=event['callback'], args=()).start()
 		
 	
 	
