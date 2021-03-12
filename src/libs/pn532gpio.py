@@ -6,6 +6,9 @@
 # Using nfcpy to communicate with PN532.
 #
 
+import threading
+import time
+
 
 class pn532Gpio():
 	"""
@@ -346,8 +349,64 @@ class pn532Gpio():
 		cmd.append( aux1 << 4 | aux2 & 0x0f)
 		
 		result = self.command(0x08, cmd, 0.1)
-				
+	
+	#
+	# Input Event detect loop
+	#
+	_event_detect_list = []
+	_event_detect_thread = None
+	_event_detect_wait = 0.2
+	
+	
+	def add_event_detect(self, gpio_port, value, callback):
+		event = {}
+		event['gpio_port'] = gpio_port
+		event['value'] = value
+		event['callback'] = callback
 		
+		self._event_detect_list.append(event)
+		
+		# start thread if needed, never starte or 1st added to list
+		if(self._event_detect_thread == None or len(self._event_detect_list) == 1):
+			self._event_detect_loop_start()
+	
+	def remove_event_detect(self,gpio_port, value, callback):
+		event = {}
+		event['gpio_port'] = gpio_port
+		event['value'] = value
+		event['callback'] = callback
+
+		self._event_detect_list.remove(event)
+		
+	
+	def _event_detect_loop_start(self):
+		self._event_detect_thread = threading.Thread(target=self._event_detect_run, args=())
+		self._event_detect_thread.daemon = True	# Daemonize thread
+		self._event_detect_thread.start()		# Start the execution
+
+				
+	def _event_detect_run(self):
+		
+		while (len(self._event_detect_list) != 0) :
+			# wait x seconds for each run
+			time.sleep(self._event_detect_wait)
+						
+			# update GPIO cache
+			self.hw_read_state()
+			
+			# check each entry in event_detect_list
+			for event in self._event_detect_list:
+				if(event['value'] == self.gpio_get(event['gpio_port'], no_cache=True)):
+					# we have a match
+					event['callback']()
+		
+		
+		# so we are about to stop this thread:
+		self._event_detect_thread = None
+		
+		
+	
+	
 	#
 	# Debug and helper functions:
 	#
@@ -385,3 +444,5 @@ class pn532Gpio():
 					p,
 					v,
 					t, self.GPIO_TYPE[t] ))
+					
+					
