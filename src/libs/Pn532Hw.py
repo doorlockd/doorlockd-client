@@ -115,13 +115,7 @@ class Pn532Button(DoorlockdBaseClass):
 		
 	@property
 	def status(self):
-		if self.invert_status:
-			return(not bool(self.pn532_gpio.cfg_gpio_get(self.gpio_pin))
-		else:
-			return(bool(self.pn532_gpio.cfg_gpio_get(self.gpio_pin))
-		
-		
-		
+		return self.pn532_gpio.cfg_gpio_get(self.gpio_pin)
 
 	def trigger(self):		
 		# raise button push event
