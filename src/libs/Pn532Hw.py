@@ -110,7 +110,7 @@ class Pn532Button(DoorlockdBaseClass):
 		self.logger.info('initializing {} on gpio pin PN532:{:s}.'.format(self.config_name, str(self.gpio_pin)))
 		
 		# set event detect
-		self.pn532_gpio.add_event_detect(gpio_port, value, self.trigger)
+		self.pn532_gpio.add_event_detect(self.gpio_pin, False, self.trigger)
 		
 		
 	@property
