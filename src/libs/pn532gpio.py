@@ -378,7 +378,7 @@ class pn532Gpio():
 		print("bin   P7CFGB   P7 {0:08b}".format(self._cfg['P7']['B']))
 		
 		
-		for p in ['p30', 'p31', 'p32', 'p33', 'p34', 'p35', 'p71', 'p71']:
+		for p in ['p30', 'p31', 'p32', 'p33', 'p34', 'p35', 'p71', 'p72']:
 			v = str(self.gpio_get(p))
 			t = self.cfg_gpio_get(p)
 			print ("GPIO port {} value {:5s} config: {}: {} ".format(

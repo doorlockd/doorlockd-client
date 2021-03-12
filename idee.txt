@@ -78,6 +78,13 @@ type B ...
 /*
  * stappen plan
  */
+[ ]: GPIO PN532 
+[ ]: hw RS485 (balanced serial communicatie) (@matthijs)
+[ ]: lezen en schrijven van Tag /target chip
+[ ]: central db backend.
+
+
+
 ### beta release 0.2:
 [x] cleanup hardware page
 [x] cleanup debug page ()
