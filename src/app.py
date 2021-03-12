@@ -142,8 +142,8 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 			from libs.Pn532Hw import Pn532Button
 			from libs.pn532gpio import pn532Gpio
 
-			# Hardware:  Button2, default functionality is doorbell: trigger_action = ring_buzzer 
-			dc.hw['button2'] = Pn532Button('button2', trigger_action='ring_buzzer', pn532_gpio=pn532_gpio)
+			# Hardware:  Button x, default functionality is doorbell: trigger_action = ring_buzzer 
+			dc.hw['button x'] = Pn532Button('button x', trigger_action='ring_buzzer', pn532_gpio=pn532_gpio)
 		
 		
 #
