@@ -111,6 +111,8 @@ dc.logger.info('doorlockd starting up...')
 # initilize hardware container
 #
 dc.hw = {}
+# array to put our buttons:
+dc.hw['buttons'] = []
 
 
 # 
@@ -131,10 +133,11 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 			from libs.pn532gpio import pn532Gpio
 
 			# initialze an PN532 GPIO class, using the nfcpy clf object 
-			pn532_gpio = pn532Gpio(dc.hw['rfidreader'].clf)
+			if 'pn532_gpio' not in dc.hw:
+				dc.hw['pn532_gpio'] = pn532Gpio(dc.hw['rfidreader'].clf)
 		
 			# add the uileds to our hw dict:
-			dc.hw['uileds'] = UiLeds_4leds_Pn532(pn532_gpio=pn532_gpio) 
+			dc.hw['uileds'] = UiLeds_4leds_Pn532(pn532_gpio=dc.hw['pn532_gpio']) 
 			
 
 		# check if PN532 leds are enabled: 
@@ -142,15 +145,19 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 			from libs.Pn532Hw import Pn532Button
 			from libs.pn532gpio import pn532Gpio
 
+			# initialze an PN532 GPIO class, using the nfcpy clf object 
+			if 'pn532_gpio' not in dc.hw:
+				dc.hw['pn532_gpio'] = pn532Gpio(dc.hw['rfidreader'].clf)
+
 			# Hardware:  Button x, default functionality is doorbell: trigger_action = ring_buzzer 
-			dc.hw['button x'] = Pn532Button('button x', trigger_action='ring_buzzer', pn532_gpio=pn532_gpio)
+			dc.hw['buttons'].append(Pn532Button('button_pn532', trigger_action='ring_buzzer', pn532_gpio=dc.hw['pn532_gpio']))
 		
 		
-#
-# UI Leds 
-#
-if('uileds' not in dc.hw):
-	dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
+	#
+	# UI Leds 
+	#
+	if('uileds' not in dc.hw):
+		dc.hw['uileds'] = UiLedsWrapper() # will return the configured UiLeds Object
 
 
 #
@@ -191,9 +198,24 @@ db = Orator(app)
 #
 # handle CTRL-C / stop signal
 #
+
 def signal_handler_stop(signal, frame):
 	dc.logger.info('stopping by sigint or sigterm (ctrl-c or systemd stop)')
+	# stop main services:
+	for item in ['rfidreader']:
+		if item in dc.hw:
+			dc.logger.debug('exiting {}...'.format(item))
+			dc.hw[ item ].stop_thread()
 
+	# stop buttons:
+	if 'buttons' in dc.hw:
+		for button in dc.hw['buttons']:
+			dc.logger.debug('exiting {}...'.format(button.config_name))
+			button.hw_exit()
+	 
+	# todo: stop flask 
+
+	# stop and exit the rest:
 	while dc.hw:
 		# get item of hw list
 		(hw_name, hw_obj) = dc.hw.popitem()
@@ -207,6 +229,7 @@ def signal_handler_stop(signal, frame):
 
 	dc.logger.info('exit after proper shutdown..')
 	sys.exit(0)
+
 
 
 def signal_handler_reload(signal, frame):
@@ -249,13 +272,12 @@ if(dc.config.get('doorlockd',{}).get('enable_hardware',True)):
 	# 
 	# Hardware:  Button1, default functionality is intercom: trigger_action = open_door 
 	#
-	dc.hw['button1'] = Button('button1', trigger_action='open_door')
+	dc.hw['buttons'].append(Button('button1', trigger_action='open_door'))
 
 	# 
 	# Hardware:  Button2, default functionality is doorbell: trigger_action = ring_buzzer 
 	#
-	if('button2' not in dc.hw):
-		dc.hw['button2'] = Button('button2', trigger_action='ring_buzzer')
+	dc.hw['buttons'].append(Button('button2', trigger_action='ring_buzzer'))
 
 	#
 	# Hardware:  RFID Reader  (hardware already initialized, ready to start RFID scanner)
@@ -283,8 +305,12 @@ if(dc.config.get('doorlockd',{}).get('enable_webserver',True)):
 	if(dc.config.get('doorlockd',{}).get('enable_hardware',True)): 
 		rest_api_models.create_api_for_object(dc.hw['solenoid'], 'schema/schema.hw.solenoid.json', '/api/hw/solenoid', app)
 		rest_api_models.create_api_for_object(dc.hw['buzzer'], 'schema/schema.hw.buzzer.json', '/api/hw/buzzer', app)
-		rest_api_models.create_api_for_object(dc.hw['button1'], 'schema/schema.hw.button.json', '/api/hw/button1', app)
-		rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
+		
+		# buttons:
+		for button in dc.hw['buttons']:
+			rest_api_models.create_api_for_object(button, 'schema/schema.hw.button.json', '/api/hw/{}'.format(button.config_name), app)
+
+		# rest_api_models.create_api_for_object(dc.hw['button2'], 'schema/schema.hw.button.json', '/api/hw/button2', app)
 		rest_api_models.create_api_for_object(dc.hw['rfidreader'], 'schema/schema.hw.rfidreader.json', '/api/hw/rfidreader', app)
 		rest_api_models.create_api_for_object(dc.hw['automated_actions'], 'schema/schema.hw.automated_actions.json', '/api/hw/automated_actions', app)
 
