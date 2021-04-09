@@ -134,5 +134,5 @@ class Pn532Button(DoorlockdBaseClass):
 	def hw_exit(self):
 		'''exit/de-initialize gpio port.'''
 		self.logger.info('exitting {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
-		
+		#
 		self.pn532_gpio.remove_event_detect(self.gpio_pin)
