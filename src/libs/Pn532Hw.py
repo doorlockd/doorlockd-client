@@ -115,13 +115,24 @@ class Pn532Button(DoorlockdBaseClass):
 		
 	@property
 	def status(self):
-		return self.pn532_gpio.cfg_gpio_get(self.gpio_pin)
+		return self.pn532_gpio.gpio_get(self.gpio_pin)
+
 
 	def trigger(self):		
 		# raise button push event
-		dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button?_pushed when button is pushed
+		# dc.e.raise_event('{}_pushed'.format(self.config_name)) # raise button?_pushed when button is pushed
+		dc.e.raise_event('button_pushed') # raise button?_pushed when button is pushed
+		
+		# raise configured trigger_action + _button_pushed event:
+		# dc.e.raise_event("{}_button_pushed".format(self.trigger_action)) # raise configured trigger_action + button_pushed for this Button
 		
 		# raise configured trigger_action event:
 		dc.e.raise_event(self.trigger_action) # raise configured trigger_action for this Button
 		self.counter = self.counter + 1
 				
+
+	def hw_exit(self):
+		'''exit/de-initialize gpio port.'''
+		self.logger.info('exitting {} on gpio pin {:s}.'.format(self.config_name, str(self.gpio_pin)))
+		
+		self.pn532_gpio.remove_event_detect(self.gpio_pin)

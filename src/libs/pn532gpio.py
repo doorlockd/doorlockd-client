@@ -475,7 +475,19 @@ class pn532Gpio():
 					log.debug("_handle_event_detected: start callback for {}, value {}".format(gpio_port, event['value']))
 					threading.Thread(target=event['callback'], args=()).start()
 		
-	
+	#
+	# cleanup 
+	#
+	def hw_exit(self):
+		# close thread, remove all events
+		self._event_detect_list = []
+		self._event_detect_mask = {'P3': 0x00,'P7': 0x00}
+		
+		# join thread to wait for stop:
+		threading.join(self._event_detect_thread)
+		
+		
+		
 	
 	#
 	# Debug and helper functions:

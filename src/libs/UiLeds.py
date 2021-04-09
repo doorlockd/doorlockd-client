@@ -93,8 +93,7 @@ class UiLeds_4leds(DoorlockdBaseClass):
 		dc.e.subscribe('rfid_access_allowed', self._ecb_rfid_access)
 		dc.e.subscribe('solenoid_open', self._ecb_solenoid_open)
 		dc.e.subscribe('solenoid_close', self._ecb_solenoid_close)
-		dc.e.subscribe('button1_pushed', self._ecb_button1_pushed)
-		dc.e.subscribe('button2_pushed', self._ecb_button2_pushed)
+		dc.e.subscribe('button_pushed', self._ecb_button_pushed)
 		
 	def hw_init(self):
 		self.logger.info('initializing {}.'.format(self.config_name))
@@ -144,11 +143,10 @@ class UiLeds_4leds(DoorlockdBaseClass):
 	def _ecb_solenoid_close(self, date):
 		self.l4.off()
 
-	def _ecb_button1_pushed(self, date):
+	def _ecb_button_pushed(self, date):
 		self.l3.blink()
 
-	def _ecb_button2_pushed(self, date):
-		self.l3.blink()
+
 	
 	def selftest(self):
 		for ln in ['l1', 'l2', 'l3', 'l4']:
