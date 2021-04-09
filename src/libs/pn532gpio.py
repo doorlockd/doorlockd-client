@@ -484,7 +484,8 @@ class pn532Gpio():
 		self._event_detect_mask = {'P3': 0x00,'P7': 0x00}
 		
 		# join thread to wait for stop:
-		threading.join(self._event_detect_thread)
+		if self._event_detect_thread:
+			self._event_detect_thread.join()
 		
 		
 		

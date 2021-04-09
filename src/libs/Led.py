@@ -50,6 +50,7 @@ class Led(hwLed, LedMethods):
 			self.hw_init()
 
 
+
 class DuoLed(LedMethods):
 	'''hardware: LED output GPIO control.'''
 	

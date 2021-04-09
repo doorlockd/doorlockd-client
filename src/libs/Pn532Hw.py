@@ -43,6 +43,10 @@ class Led(DoorlockdBaseClass, LedMethods):
 	def dummy(self):
 		pass	
 		
+	# disabled some methods:
+	def hw_exit(self):
+		pass	
+		
 class UiLeds_4leds_Pn532(UiLeds_4leds):
 	config_name = '4leds_pn532'
 	pn532gpio = None

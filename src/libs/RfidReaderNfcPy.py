@@ -85,6 +85,8 @@ class RfidReaderNfcPy(DoorlockdBaseClass):
 		self.stop_loop = True
 		self.logger.info('stop_thread {:s}'.format(self.log_name))
 		
+		# join thread to wait for stop:
+		self.thread.join()
 		
 		 
 	def callback_tag_detected(self, hwid):
