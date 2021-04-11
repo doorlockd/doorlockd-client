@@ -1,4 +1,4 @@
-from cleo import Command
+from cleo import Command, Output
 
 import sys
 sys.path.append("..")
@@ -50,12 +50,18 @@ class FixRemoveChecksumByteCommand(Command):
 					# remove checksum byte
 					hwid_new = hwid_old[0:11] # first 11 chars
 				
-					# update db:
-					tag.hwid = hwid_new
-					done = tag.save()
+					try:
+						# update db:
+						tag.hwid = hwid_new
+						done = str(tag.save())
+						# self.line(done, verbosity=Output.VERBOSITY_VERBOSE)
+						
+					except Exception as e:
+						done = "Failed: {}".format(repr(e))
+						# self.line(done, verbosity=Output.VERBOSITY_VERBOSE)
 
 					# display in table
-					data.append([model, hwid_old, hwid_new, str(done)])
+					data.append([model, hwid_old, hwid_new, done])
 
 		# result footer
 		data.append(self.table_separator())
