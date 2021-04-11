@@ -25,11 +25,12 @@ class pn532Gpio():
 	# control gpio
 	gpio.gpio_on('p72')           # set p72 on   (high: 1/True)
 	gpio.gpio_off('p72')          # set p72 off  (low:  0/False)
-	gpio.gpio_toggle('p72')       # change value of p72
+	gpio.gpio_invert('p72')       # change value of p72
+	gpio.gpio_set('p72', True)    # set value of p72 (high: 1/True)
 	gpio.gpio_get('p71')          # read value of p71 (boolean)
 
 	# configure 
-	gpio.cfg_gpio_set('p71', 2)   # set p71 as GPIO_TYPE 2: input (High Impedance)
+	gpio.cfg_gpio_set('p71', gpio.INPUT)   # set p71 as GPIO_TYPE 2: input (High Impedance)
 	gpio.cfg_gpio_get('p72')      # get gpio config for p72, see cfg_gpio_get() for details. 	
 	gpio.cfg_aux_set(aux1=0xb)    # set AUX1 to 'low' see comments or datasheet/PN532 for all options.
 	gpio.cfg_aux_get('aux2')      # get AUX2 config.
@@ -58,6 +59,10 @@ class pn532Gpio():
 	
 	# reference for cfg_gpio_set() / cfg_gpio_get()
 	GPIO_TYPE = ['Open drain', 'Quasi Bidirectional', 'input', 'Push/pull output']
+	OPEN_DRAIN = 0
+	QUASI_BIDIRECTIONAL = 1
+	INPUT = 2
+	OUTPUT = 3
 	
 	
 	def __init__(self, clf, hw_read_state=False):
@@ -148,6 +153,8 @@ class pn532Gpio():
 			1: Quasi Bidirectional, 
 			2: input, 
 			3: Push/pull output
+		
+		see pn532Gpio.GPIO_TYPE[(int)]
 		"""
 		# lookup port in addr[], get state byte and bit position value
 		(field, mask) = self._addr[ port ]
@@ -173,11 +180,11 @@ class pn532Gpio():
 	def cfg_gpio_set(self, port, gpio_type, write=True):
 		""" 
 		gpio_type: int(0 ... 3)
-		0: Open drain, 
-		1: Quasi Bidirectional, 
-		2: input, 
-		3: Push/pull output
-		
+		pn532Gpio.OPEN_DRAIN               0: Open drain
+		pn532Gpio.QUASI_BIDIRECTIONAL      1: Quasi Bidirectional
+		pn532Gpio.INPUT                    2: input
+		pn532Gpio.OUTPUT                   3: Push/pull output	
+				
 		use write=False if you have more changes, use hw_write_cfg() to write changes to hardware.
 		"""
 		# lookup port in addr[], get state byte and bit position value
@@ -259,10 +266,10 @@ class pn532Gpio():
 			self.commit()
 		
 		
-	def gpio_toggle(self, port, commit=True):
+	def gpio_invert(self, port, commit=True):
 		"""
-		toggle GPIO , turn off when on and visa versa.
-		example: gpio_toggle('p33') 
+		invert GPIO value, turn off when on and visa versa.
+		example: gpio_invert('p33') 
 		
 		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
@@ -276,6 +283,19 @@ class pn532Gpio():
 		# commit
 		if(commit):
 			self.commit()
+
+	def gpio_set(self, port, value, commit=True):
+		"""
+		set GPIO port to bool(value)
+		example: gpio_set('p33', True) 
+
+		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
+		"""
+		if value:
+			self.gpio_on(port, commit)
+		else: 
+			self.gpio_off(port, commit)
+
 
 	def gpio_get(self, port, no_cache=True):
 		""" return True/False if GPIO port is 1/0  """
