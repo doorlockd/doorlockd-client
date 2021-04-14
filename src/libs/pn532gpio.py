@@ -12,6 +12,7 @@ import time
 import logging
 log = logging.getLogger(__name__)
 
+
 class pn532Gpio():
 	"""
 	GPIO interface to the PN532 rfid device, connected using nfcpy.
@@ -69,17 +70,31 @@ class pn532Gpio():
 		# set Contact Less Frontend. PN532
 		self.clf = clf
 		
+		# lock for self._state
+		self._state_lock = threading.Lock()
+		
 		# read current state from hardware
 		if (hw_read_state):
-			self.hw_read_state()
+			with self._state_lock:
+				self.hw_read_state()
 
 
-	def command(self, *args, **kwargs):
+	def command(self, *args, **kwargs):			
 		# acquire lock for writing over TTY to pn53x
 		with self.clf.lock:
 			return self.clf.device.chipset.command(*args, **kwargs)
-
+		
+		
 	def hw_read_state(self):
+		"""Read IO state of all ports into ._state[] and detect any RISING/FALING edge events.
+		Use release_lock=True if this is only executed for event_detection and no lock is needed.
+		
+		
+		this will obtain a lock on .state[], normaly it will be released by .commit().
+		"""
+		if not self._state_lock.locked():
+			raise RuntimeError('Need lock on self._state_lock for .hw_read_state().')
+		
 		# ReadGPIO command = 0x0c
 		raw_state =  self.command(0x0c, b'', 0.1)
 
@@ -101,7 +116,6 @@ class pn532Gpio():
 		self._state['P3'] = raw_state[0]
 		self._state['P7'] = raw_state[1]
 		# self._state['I0I1'] = raw_state[2] 
-
 
 			
 	#
@@ -222,6 +236,9 @@ class pn532Gpio():
 	#
 		
 	def commit(self):
+		if not self._state_lock.locked():
+			raise RuntimeError('Need lock on self._state_lock for .commit().')
+			
 		# WriteGPIO command = 0x0e
 		result = self.command(0x0e, bytearray([self._state['P3'], self._state['P7']]), 0.1)
 		
@@ -229,85 +246,78 @@ class pn532Gpio():
 		self._state['P3'] &= ~0x80
 		self._state['P7'] &= ~0x80
 		
-	def gpio_on(self, port, commit=True):
+	def gpio_on(self, port):
 		"""
 		set GPIO port on		
 		example: gpio_on('p33') 
+		"""	
+		with self._state_lock:	
+			# lookup port in addr[], get state byte and bit position value
+			(field, mask) = self._addr[ port ]
+			# set bit position value to 1
+			self._state[field] |= mask
+			# update/change bit to 1
+			self._state[field] |= 0x80
 		
-		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
-		"""
-		# lookup port in addr[], get state byte and bit position value
-		(field, mask) = self._addr[ port ]
-		# set bit position value to 1
-		self._state[field] |= mask
-		# update/change bit to 1
-		self._state[field] |= 0x80
-		
-		# commit
-		if(commit):
+			# commit
 			self.commit()
 		
-	def gpio_off(self, port, commit=True):
+	def gpio_off(self, port):
 		"""
 		set GPIO port off
 		example: gpio_off('p33') 
-
-		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
-		# lookup port in addr[], get state byte and bit position value
-		(field, mask) = self._addr[ port ]
-		# set bit position value to 0
-		self._state[field] &= ~mask
-		# update/change bit to 1
-		self._state[field] |= 0x80
+		with self._state_lock:
+			# lookup port in addr[], get state byte and bit position value
+			(field, mask) = self._addr[ port ]
+			# set bit position value to 0
+			self._state[field] &= ~mask
+			# update/change bit to 1
+			self._state[field] |= 0x80
 		
-		# commit
-		if(commit):
+			# commit
 			self.commit()
 		
 		
-	def gpio_invert(self, port, commit=True):
+	def gpio_invert(self, port):
 		"""
 		invert GPIO value, turn off when on and visa versa.
 		example: gpio_invert('p33') 
+		"""		
+		with self._state_lock:
+			# lookup port in addr[], get state byte and bit position value
+			(field, mask) = self._addr[ port ]
+			# set bit position value to 1
+			self._state[field] ^= mask
+			# update/change bit to 1
+			self._state[field] |= 0x80
 		
-		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
-		"""
-		# lookup port in addr[], get state byte and bit position value
-		(field, mask) = self._addr[ port ]
-		# set bit position value to 1
-		self._state[field] ^= mask
-		# update/change bit to 1
-		self._state[field] |= 0x80
-		
-		# commit
-		if(commit):
+			# commit
 			self.commit()
 
-	def gpio_set(self, port, value, commit=True):
+	def gpio_set(self, port, value):
 		"""
 		set GPIO port to bool(value)
 		example: gpio_set('p33', True) 
-
-		Use commit=False if you have more GPIO updates, use commit() to write changes to harware. 
 		"""
 		if value:
-			self.gpio_on(port, commit)
+			self.gpio_on(port)
 		else: 
-			self.gpio_off(port, commit)
+			self.gpio_off(port)
 
 
-	def gpio_get(self, port, no_cache=True):
+	def gpio_get(self, port):
 		""" return True/False if GPIO port is 1/0  """
-		
-		# read current IO values
-		if(no_cache):
+		with self._state_lock:
+			# read current IO values
 			self.hw_read_state()
 		
-		# lookup port in addr[], get state byte and bit position value
-		(field, mask) = self._addr[ port ]
-		# return True if bit is set to 1
-		return(self._state[field] | ~ mask & 255 == 255)
+			# lookup port in addr[], get state byte and bit position value
+			(field, mask) = self._addr[ port ]
+			# return True if bit is set to 1
+			value = self._state[field] | ~ mask & 255 == 255
+				
+		return value
 
 	#
 	# get/set AUX1, AUX2 registers
@@ -470,7 +480,8 @@ class pn532Gpio():
 			time.sleep(self._event_detect_wait)
 						
 			# update GPIO cache, this will detect and handle rising/falling bits.
-			self.hw_read_state()
+			with self._state_lock:
+				self.hw_read_state()
 			
 		# self._event_detect_list[] has become 0 lenght,
 		# so we are about to stop this thread, let's remove ourself:
@@ -518,7 +529,7 @@ class pn532Gpio():
 		print("DEBUG: P3 {0:08b}, P7 {1:08b}".format(self._state['P3'], self._state['P7']))
 		
 
-	def debug_info(self, no_cache=False):
+	def debug_info(self, ):
 		"""
 		some debug overview , handy when using bpython cli interface.
 		"""
@@ -527,17 +538,18 @@ class pn532Gpio():
 			self.hw_read_cfg()
 		
 		# read current IO values
-		if(no_cache):
-			self.hw_read_state()
-			self.hw_read_cfg()
+		self.hw_read_cfg()
 		
-		print("bin   ReadGPIO P3 {0:08b}".format(self._state['P3']))
-		print("bin   P3CFGA   P3 {0:08b}".format(self._cfg['P3']['A']))
-		print("bin   P3CFGB   P3 {0:08b}".format(self._cfg['P3']['B']))
+		with self._state_lock:			
+			self.hw_read_state()
+		
+			print("bin   ReadGPIO P3 {0:08b}".format(self._state['P3']))
+			print("bin   P3CFGA   P3 {0:08b}".format(self._cfg['P3']['A']))
+			print("bin   P3CFGB   P3 {0:08b}".format(self._cfg['P3']['B']))
 
-		print("bin   ReadGPIO P7 {0:08b}".format(self._state['P7']))
-		print("bin   P7CFGA   P7 {0:08b}".format(self._cfg['P7']['A']))
-		print("bin   P7CFGB   P7 {0:08b}".format(self._cfg['P7']['B']))
+			print("bin   ReadGPIO P7 {0:08b}".format(self._state['P7']))
+			print("bin   P7CFGA   P7 {0:08b}".format(self._cfg['P7']['A']))
+			print("bin   P7CFGB   P7 {0:08b}".format(self._cfg['P7']['B']))
 		
 		
 		for p in ['p30', 'p31', 'p32', 'p33', 'p34', 'p35', 'p71', 'p72']:
