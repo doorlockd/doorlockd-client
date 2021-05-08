@@ -13,4 +13,4 @@ waitress==1.4.3
 # Werkzeug==1.0.0
 pi-rc522==2.2.1
 # for testing: Flask-Cors
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
