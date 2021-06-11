@@ -3,7 +3,6 @@
 Adafruit-BBIO==1.2.0
 Flask==1.1.1
 flask-orator==0.2.0
-jsonpatch==1.25
 orator==0.9.9
 # pendulum==1.5.1
 pyaml==16.12.2
@@ -14,7 +13,7 @@ waitress==1.4.3
 # Werkzeug==1.0.0
 # pi-rc522==2.2.1
 # for testing: Flask-Cors
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 jsonpatch==1.25
 jsonpointer==2.0
 jsonschema==3.2.0
