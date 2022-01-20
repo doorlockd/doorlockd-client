@@ -43,6 +43,13 @@ copy and edit incase you use filebased and wish to use logrotate logfiles.
 
 	install -m 644 logrotate.d.doorlockd /etc/logrotate.d/doorlockd
 
+## setup database:
+To initialize an empty database use the `orator-cli.py` command:
+
+	./orator_cli.py migrate
+	Are you sure you want to proceed with the migration?  (yes/no) [no] y
+	
+
 
 ## create admin user
 Create, list or update admin user using admin-cli:
@@ -62,13 +69,6 @@ And you will be prompted for a new password.
 Generate secret for jwt_token config.
 
 	./admin-cli.py gen:secret
-
-## setup database:
-To initialize an empty database use the `orator-cli.py` command:
-
-	./orator_cli.py migrate
-	Are you sure you want to proceed with the migration?  (yes/no) [no] y
-	
 
 ## run
 Enable debug mode to see what happens, run on commandline:
