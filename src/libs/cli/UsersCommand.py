@@ -9,7 +9,7 @@ from models import *
 def connect_db():
 	# init db with correct config and env.
 	from libs.data_container import data_container as dc
-	dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+	dc.config_overwrite = {'doorlockd': {'enable_modules': False, 'enable_webserver': False,}}
 	from app import db
 
 

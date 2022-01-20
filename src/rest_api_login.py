@@ -123,8 +123,13 @@ class Token(object):
 		
 		# token refresh permisions 
 		p['refresh'] = refresh
-		
+				
+		# note: old version of JWT returns Bytes -> .decode(utf-8) 
 		token = jwt.encode(p, Token.secret, algorithm='HS256').decode('utf-8')
+		
+		if hasattr(token, 'decode'):
+			token = token  
+		
 		return(token)
 		
 	@staticmethod

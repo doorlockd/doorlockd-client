@@ -36,17 +36,6 @@ class pn532Gpio():
 	gpio.cfg_aux_set(aux1=0xb)    # set AUX1 to 'low' see comments or datasheet/PN532 for all options.
 	gpio.cfg_aux_get('aux2')      # get AUX2 config.
 	"""
-	clf = None
-
-	# _state[field] = value    	#  bit values  0x08  0x40  0x20  0x10  0x08  0x04  0x02  0x01
-	_state = {'P3': b'\x00'[0],	#  bits: [change=1, None,  P35,  P34,  P33,  P32,  P31,  P30]
-	          'P7': b'\x00'[0]}	#  bits: [change=1, None, None, None, None,  P72,  P71, None]
-
-	# The field P3 contains the state of the GPIO located on the P3 port
-	# The field P7 contains the state of the GPIO located on the P7 port
-
-	# register dictionary, see hw_read_cfg() how it's populated
-	_cfg = {} 
 	
 	# lookup dictionary with portname = [field, bit possition]
 	_addr = {'p30': ['P3', 0x01],
@@ -66,10 +55,23 @@ class pn532Gpio():
 	OUTPUT = 3
 	
 	
-	def __init__(self, clf, hw_read_state=False):
+	def __init__(self, clf, hw_read_state=True, hw_read_cfg=True):
 		# set Contact Less Frontend. PN532
 		self.clf = clf
 		
+		#    _state[field] = value      	#  bit values  0x08  0x40  0x20  0x10  0x08  0x04  0x02  0x01
+		self._state = {'P3': b'\x00'[0],	#  bits: [change=1, None,  P35,  P34,  P33,  P32,  P31,  P30]
+		               'P7': b'\x00'[0]}	#  bits: [change=1, None, None, None, None,  P72,  P71, None]
+
+		# The field P3 contains the state of the GPIO located on the P3 port
+		# The field P7 contains the state of the GPIO located on the P7 port
+
+		# register dictionary, see hw_read_cfg() how it's populated
+		if hw_read_cfg:
+			self.hw_read_cfg()
+		else:
+			self._cfg = {} 
+				
 		# lock for self._state
 		self._state_lock = threading.Lock()
 		
@@ -124,14 +126,16 @@ class pn532Gpio():
 
 	def hw_read_cfg(self):
 		# initialize P3 and P7 dict
-		self._cfg = {'P3': {}, 'P7': {}}
+		_cfg = {'P3': {}, 'P7': {}}
 		
 		# read registers
 		result = self.command(0x06, b'\xff\xfc\xff\xfd\xff\xf4\xff\xf5', 0.1)
-		self._cfg['P3']['A'] = result[0] # P3CFGA FCh Port 3 configuration
-		self._cfg['P3']['B'] = result[1] # P3CFGB FDh Port 3 configuration
-		self._cfg['P7']['A'] = result[2] # P7CFGA F4h Port 7 configuration
-		self._cfg['P7']['B'] = result[3] # P7CFGB F5h Port 7 configuration
+		_cfg['P3']['A'] = result[0] # P3CFGA FCh Port 3 configuration
+		_cfg['P3']['B'] = result[1] # P3CFGB FDh Port 3 configuration
+		_cfg['P7']['A'] = result[2] # P7CFGA F4h Port 7 configuration
+		_cfg['P7']['B'] = result[3] # P7CFGB F5h Port 7 configuration
+
+		self._cfg = _cfg
 
 	def hw_write_cfg(self):
 		# WriteRegister: 
@@ -191,13 +195,15 @@ class pn532Gpio():
 		# return value 0...4 [0: Open drain, 1: Quasi Bidirectional, 2: input, 3: Push/pull output]
 		return((int(pxcfga) * 1) + (int(pxcfgb) * 2))
 		
-	def cfg_gpio_set(self, port, gpio_type, write=True):
+	def cfg_gpio_set(self, port, gpio_type, value=None, write=True):
 		""" 
 		gpio_type: int(0 ... 3)
 		pn532Gpio.OPEN_DRAIN               0: Open drain
 		pn532Gpio.QUASI_BIDIRECTIONAL      1: Quasi Bidirectional
 		pn532Gpio.INPUT                    2: input
 		pn532Gpio.OUTPUT                   3: Push/pull output	
+		
+		value: value for output. 	None=leave hardware default,  True/1,  False/0
 				
 		use write=False if you have more changes, use hw_write_cfg() to write changes to hardware.
 		"""
@@ -228,8 +234,11 @@ class pn532Gpio():
 			# set bit position value to 0
 			self._cfg[ field ]['B'] &= ~ mask
 			
-		if(write):
+		if write:
 			self.hw_write_cfg()
+			
+		if value is not None:
+			self.gpio_set(port, value)	
 			
 	#
 	# gpio control functions
@@ -529,6 +538,25 @@ class pn532Gpio():
 		print("DEBUG: P3 {0:08b}, P7 {1:08b}".format(self._state['P3'], self._state['P7']))
 		
 
+	def debug_event_detect(self):
+		"""
+		some debug overview on de the event_detect loop and configured callbacks
+		"""
+		print("DEBUG: number of event_detect callbacks: {}".format(len(self._event_detect_list)))
+		print("DEBUG: raw self._event_detect_mask: ", self._event_detect_mask)
+
+		print("DEBUG: event detect mask P3: {0:08b}".format(self._event_detect_mask.get('P3', 0)))
+		print("DEBUG: event detect mask P7: {0:08b}".format(self._event_detect_mask.get('P7', 0)))
+		# if self._event_detect_mask.get('P7', None) is not None:
+		# 	print("DEBUG: event detect mask P7: {1:08b}".format(self._event_detect_mask['P7']))
+		
+		# print("DEBUG: raw _event_detect_list:", self._event_detect_list)
+		for event_info in self._event_detect_list:
+			print("..  gpio_port={} value={} callback={}".format(event_info['gpio_port'], event_info['value'], event_info['callback']))
+			
+		print("DEBUG: raw self._event_detect_thread :", self._event_detect_thread)
+		
+		
 	def debug_info(self, ):
 		"""
 		some debug overview , handy when using bpython cli interface.

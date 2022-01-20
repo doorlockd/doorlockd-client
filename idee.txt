@@ -52,16 +52,31 @@ minimal doorlockd + web api:
 		/api/users/				[*]
 		/api/changelog/*/ 		[*]
 
+	# #
+	# # API HW
+	# #
+	# 	/api/hw/solenoid			{ status = false|true }
+	# 	/api/hw/buzzer 				{ status = false|true }
+	# 	/api/hw/button1				{ status = false|true } (read-only ?)
+	# 	/api/hw/button2				{ status = false|true } (read-only ?)
+	# 	/api/hw/rfidreader			{ status = false|true } (on/off)
+	# 	/api/hw/automated_actions 	{ status=false|true; trigger_actions=['delay1s','solenoid']}
+	# 								# (actions: buzzer|solenoid|delay1s|...)
+	### hw api discontinued 
+	
 	#
-	# API HW
+	# API Event hooks:
 	#
-		/api/hw/solenoid			{ status = false|true }
-		/api/hw/buzzer 				{ status = false|true }
-		/api/hw/button1				{ status = false|true } (read-only ?)
-		/api/hw/button2				{ status = false|true } (read-only ?)
-		/api/hw/rfidreader			{ status = false|true } (on/off)
-		/api/hw/automated_actions 	{ status=false|true; trigger_actions=['delay1s','solenoid']} 
-									# (actions: buzzer|solenoid|delay1s|...)
+	'''simplified and less exposed event hook api'''
+	
+	/api/hooks/--user-defined-name--	[POST] { will emit user defined event }
+	
+	# #
+	# # idea API State hooks
+	# #
+	# /api/hooks/--user-defined-name--	[GET] { will show current state }
+	
+	
 /*
  * Rfid tag types
  */
@@ -78,11 +93,47 @@ type B ...
 /*
  * stappen plan
  */
-[ ]: GPIO PN532 
-[ ]: hw RS485 (balanced serial communicatie) (@matthijs)
-[ ]: lezen en schrijven van Tag /target chip
-[ ]: central db backend.
+[x]: GPIO PN532 
 
+[x]: GPIO Wrapper implementeren
+[x]: config parser, + simple test : test output module (led), test input module (sleep aan /sleep uit)
+[x]: GPIO Wrapper add limit_direction.
+[x]: UILed4 module (check Solenoid module type. or abort)
+[x]: RFID ready change event -> state (ui4led might start later)
+[x]: AdaFruit -> event spawn in thread.
+[x]: ModuleManager: paralel starting modules
+[x]: os+ => upgrade debian for newer python for libgpiod.
+[x]: GPIO Wrapper , interface change (str)pin --> (obj)port. 
+[x]: libgpiod -> https://www.acmesystems.it/libgpiod (BBB: https://elinux.org/Beagleboard:Cape_Expansion_Headers )
+[x]:"gpiod": detect event = loop/wait .. howto kill thread?. | (thread deamon modus) | kan ik port release doen (lost niet op?).
+	# - sig_solution_event.py :
+	# 	signal.signal(signal.SIGUSR1, lambda signum, frame: None)
+	# 	signal.pthread_kill(t.ident, signal.SIGUSR1)
+		
+	- of : event_detect() -> EventObject 
+		def stop(self):
+		 - self.wait = False
+		 - request_line.release() 
+		// [ THIS IS THE SOLUTION ]
+	
+[x]	"gpiod": init output value high? (solenoid) --> use default_val = 0
+
+
+[ ]: TODO: bbb$> ln -s config_v2-bbb.ini config_v2.ini 
+[x]: TODO rockpi-s -> JWT ?? | fixed old/new version = Bytes/str 
+[x]: pn532 timeout ==> error ?? , break .. dummy , whatever 
+[ ]: cleanup and push to github
+[ ]: central db.
+[ ]: lezen en schrijven van Tag /target chip
+
+[ ]: Flask -> module (??) Web.py | or not and run app in flask wsgi 
+[ ]: hw RS485 (balanced serial communicatie) (@matthijs)
+[ ]: central db backend.
+[ ]: update pyJWT (to 2.3.0)
+
+
+####### RockPi-S
+info: https://wiki.radxa.com/RockpiS/hardware/gpio
 
 
 ### beta release 0.2:

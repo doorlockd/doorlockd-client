@@ -28,6 +28,9 @@ def get_unverified_current_uid():
 	
 	# get payload from jwt token 
 	payload = jwt.decode(token, verify=False)
+	# NOTE: jwt new version gives jwt.exceptions.InvalidSignatureError: Signature verification failed  
+	# solution: pip3 install PyJWT==1.7.1
+	# future update note: "verify=False" --> options = {'verify_signature': False}
 	
 	if 'uid' in payload:
 		# print ("Found uid in payload ", payload)

@@ -2,10 +2,11 @@
 #
 
 from libs.data_container import data_container as dc
-dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+# dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+dc.config_overwrite = {'doorlockd': {'enable_modules': False, 'enable_webserver': False,}}
 
-
-from app import db
+# TODO app / app_v2
+from app_v2 import db
 
 if __name__ == '__main__':
     db.cli.run()

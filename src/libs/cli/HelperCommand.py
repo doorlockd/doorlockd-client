@@ -4,7 +4,7 @@ from cleo import Command
 # sys.path.append("..")
 #
 # from libs.data_container import data_container as dc
-# dc.config_overwrite = {'doorlockd': {'enable_hardware': False, 'enable_webserver': False,}}
+# dc.config_overwrite = {'doorlockd': {'enable_modules': False, 'enable_webserver': False,}}
 #
 # from app import db
 # from models import *
