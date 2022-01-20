@@ -1,0 +1,16 @@
+[Unit]
+Description=Doorlockd listning for RFID tags en controlling the door's solenoid
+After=network.target
+
+[Service]
+Type=simple
+# Another Type option: forking
+User=root
+WorkingDirectory=/opt/doorlockd/
+ExecStart=/opt/doorlockd/doorlockd
+Restart=on-failure
+# Other Restart options: or always, on-abort, etc
+
+[Install]
+WantedBy=multi-user.target
+

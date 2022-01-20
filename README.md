@@ -38,6 +38,11 @@ In order to get a login token, use the `./login.py`, or simply configure the use
 	# or use git tracked file:
 	# ln -s systemd.doorlockd.service /etc/systemd/system/doorlockd.service
 
+### install logrotate
+copy and edit incase you use filebased and wish to use logrotate logfiles.
+
+	install -m 644 logrotate.d.doorlockd /etc/logrotate.d/doorlockd
+
 
 ## create admin user
 Create, list or update admin user using admin-cli:
