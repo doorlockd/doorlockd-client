@@ -63,6 +63,12 @@ Generate secret for jwt_token config.
 
 	./admin-cli.py gen:secret
 
+## setup database:
+To initialize an empty database use the `orator-cli.py` command:
+
+	./orator_cli.py migrate
+	Are you sure you want to proceed with the migration?  (yes/no) [no] y
+	
 
 ## run
 Enable debug mode to see what happens, run on commandline:
