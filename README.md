@@ -20,9 +20,9 @@ when needed set file permissions
 	sudo groupadd gpiod
 	sudo usermod -G --append gpiod $USER
 
-	sudo echo '# udev rules for gpio port access through libgpiod 
-	SUBSYSTEM=="gpio", KERNEL=="gpiochip[0-4]", GROUP="gpiod", MODE="0660"' > /etc/udev/rules.d/60-gpiod.rules
-
+	echo '# udev rules for gpio port access through libgpiod 
+	SUBSYSTEM=="gpio", KERNEL=="gpiochip[0-4]", GROUP="gpiod", MODE="0660"' | sudo tee /etc/udev/rules.d/60-gpiod.rules
+	
 ### config.ini
 Copy defaults form `config-default.ini` and save tham as `config.ini`.
 In order to get a login token, use the `./login.py`, or simply configure the username + password in `config.ini`.
