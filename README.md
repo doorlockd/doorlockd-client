@@ -32,7 +32,7 @@ In order to get a login token, use the `./login.py`, or simply configure the use
 
 	install -m 644 systemd.doorlockd.service /etc/systemd/system/doorlockd.service
 	systemctl daemon-reload
-	systemctl enable brandmeldbot
+	systemctl enable doorlockd
 
 
 	# or use git tracked file:
