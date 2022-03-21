@@ -9,7 +9,7 @@ pyaml==16.12.2
 PyJWT==1.7.1
 simplejson==3.17.0
 toml==0.10.0
-waitress==1.4.3
+waitress==2.1.1
 # Werkzeug==1.0.0
 pi-rc522==2.2.1
 # for testing: Flask-Cors
