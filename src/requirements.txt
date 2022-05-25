@@ -6,7 +6,7 @@ jsonpatch==1.25
 orator==0.9.9
 # pendulum==1.5.1
 pyaml==16.12.2
-PyJWT==1.7.1
+PyJWT==2.4.0
 simplejson==3.17.0
 toml==0.10.0
 waitress==1.4.3
