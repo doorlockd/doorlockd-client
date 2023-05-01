@@ -1,6 +1,6 @@
 # backpack==0.1
 # cleo==0.8.0
-Flask==1.1.1
+Flask==2.3.2
 flask-orator==0.2.0
 jsonpatch==1.25
 orator==0.9.9
