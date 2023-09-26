@@ -1,0 +1,11 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# General
+.DS_Store
+
+
+# Django Backend 
+db.sqlite3
