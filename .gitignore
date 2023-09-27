@@ -8,4 +8,9 @@ __pycache__/
 
 
 # Django Backend 
+SECRET.key
 db.sqlite3
+
+
+# lock-clinet/app.py
+config.ini

@@ -1,0 +1,83 @@
+
+<html>
+<head>
+    <title>Access overview</title>
+</head>
+<body>
+<style>
+.stripe {
+    color: grey;
+    text-decoration: line-through;
+}
+
+
+.access {
+    background-color: green;
+}
+.noaccess {
+    background-color: red;;
+}
+
+.access.stripe {
+    background-color: rgb(158, 190, 158);
+}
+.noaccess.stripe {
+    background-color: rgb(255, 180, 180);
+}
+
+
+.center {
+    text-align: center;
+}
+.vertical_text {
+    transform: rotate(-90deg);
+    height: 12em;
+    max-width: 1em ;
+    white-space: nowrap;
+}
+.head_left {
+    text-align: right;
+}
+
+.out_of_sync {
+    font-style: italic;
+    color: rgb(59, 59, 59);
+    /* content: "&#9888;"; */
+    /* content: " ! "; */
+}
+</style>
+
+<h1> access matrix </h1>
+
+
+
+
+
+<table>
+    <tr>
+        <th>  </th>
+        {% for lock in locks %}
+        <th class="vertical_text {% if lock.is_enabled is False %} stripe {% endif %}  {% if lock.is_out_of_sync %} out_of_sync {% endif %}"><a href="{% url 'details_lock' lock.id %}">🔗</a> {{ lock.name }}</th>
+        {% endfor %}
+    </tr>
+
+
+    
+    {% for person in persons %}
+   <tr>
+    <th class="head_left {% if person.is_enabled is False %} stripe {% endif %} {% if person.check_any_out_of_sync %} out_of_sync {% endif %}">{{ person.name }} <a href="{% url 'details_person' person.id %}"> 🔗</a> </th>
+
+        {% for lock in locks %}
+        <td class="{% if lock.is_enabled is False or person.is_enabled is False %} stripe {% endif %} {% if person in lock.custom_all_persons %} access {% else %} noaccess {% endif %}  center"> {% if person in lock.custom_all_persons %} x {% else %} o {% endif %}</td>
+        {% endfor %}
+
+    {% endfor %}
+    </tr>
+
+</table>
+<pre>
+    x: has access
+    o: no access
+</pre>
+
+</html></body>

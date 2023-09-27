@@ -1,0 +1,145 @@
+Learn:
+[ ]: https client certificate + server certificate check. (super secure) see: /Users/diederik/Werkmap/cert/ wih CA or without ?
+[ ]: unittests
+[ ]:
+
+
+
+Todo:
+[x]: reove unwanted endpoints, add admin user access to endpoints.
+[ ]: person details page (overview of groups,locks with access and time restrictions)
+[ ]: lock details page (overview of groups,persons/keys with access and time restrictions)
+[x]: SSL CLient Cert authentication in NinjaAPI (ninja.security.base)
+[x]: long_poll (replace token auth with SSL Client Cert)
+[x]: remove token auth.
+[x]: document and create flow for SSL certificate create proces + fingerprint configuration.
+[x]: move backend -> doorlock-backend codebase ( ../.. )
+[x]: move client --> doorlock-client codebase (/Users/diederik/Werkmap/doorlockd-beta_nfcpy/src)
+
+[x]: post create SSL cert, show cert to copy/paste into backend admin .
+[ ]: update api code to "-beta_nfcpy" 
+[ ]: ??discard long_poll meganism ?? 
+
+[x]: HTTPS client certificate ( 
+     + proces:
+     + client cert create 
+     + server cert create 
+     + pub-key / fingerprint store in db
+     + authenticate using fingerprint/pub-key
+     ) 
+
+
+[ ]: long_pull_events in Jinji api ??
+[ ]: fix is_object_related_out_of_sync
+[x]: fix double count #keys * #groups .annotate(key_count=Count('key')): Fix: Count('...', distinct=True)
+[x]: help: cannot delete Lock(), 'FOREIGN KEY constraint failed'
+
+API client:
+[ ]: idea: keys in sqlitedb: key.hwid, rule.* ( for quicker lookup, persistence, harder to sync+build)
+[ ]: idea: stats in sqlitedb: easier to condense values., easier sync  ( when timestamp_end < time_now)
+[ ]: not existing key in stats_log ( error from backend? )
+
+[-]: tutorial make unittest  https://docs.djangoproject.com/en/4.0/intro/tutorial05/  
+[x]: learn factory-boy :-)
+[ ]: make unittest: create view test for authorisation + security tests.
+[ ]: events? ( post-update, )
+[x]: create "lock config hwid sync", "unkown hwid", "last seen hwid", model/table 
+      "lock config hwid sync":
+      - lock_id
+      - sync_time 
+      - last_seen
+      - keys = json.dumps([hwid,hwid...]); 
+[x]: model save KeyLastSeen to db.
+[ ]: Websocket: channnels ?
+
+[ ]: idee: -> is up_to_date ? Lock.? Person.? User.? ... (of heb ik dat al gemaakt?)
+
+[x]: Ninja api:
+[ ]: Token bearer Auth ->: unique Lock.token -> 
+     update: url /api/sync-lock/keys.sync 
+
+
+[ ]: unit test access scenario +Groups
+[x]: fix UnknownKeys -> lock ==> lockname not binded, not unique
+[ ]: last_seen + unknown_keys : future timestamps ? (+ local_clock_utc voor delta t als clock niet sync is)
+
+unit test tips [ parameterized, factoryboy ]
+ * https://pypi.org/project/parameterized/
+ * https://factoryboy.readthedocs.io/en/stable/
+
+
+bugs:
+[=]: Uniqe e-mail / username | decided to skip for now , NO unique e-mail., just unique username.
+[ ]: form POST data (api control)
+
+#
+# NOTE: last_seen + precision (for privacy)
+#
+doorlock: 
+ conf -> precision = p        # (time period in seconds)
+ log -> timestamp_start  = t  
+ log -> timestamp_end    = t
+
+  t - t % p + p = end_timestamp of this precision window. (aka moment to push to server)
+  push (timestamp_start, timestamp_end)
+server:
+ update "most recent" timestamp_start 
+ update "most recent" timestamp_end
+  
+ 
+
+
+
+#
+# api:
+#
+
+/api/...
+
+#
+# push and get hwid config
+#
+POST /api/lock/sync.keys 
+ <- json = {'keys': [..., ..., ]}
+ <- http auth: Bearer {lock.token} # Lock() will be retrieved from token.
+ -> {'disabled': None, 'keys': [..,..] ,'synchronized': None}
+
+response: 
+200:{'keys': [..., ..., ] }         # list of keys (hardware ids)
+    {'disabled': true, 'keys': []}  # empty list of keys
+    
+401:{'error': $message }
+
+
+
+
+#
+# push UnknownKeys :
+#
+POST /api/sync/$lockname/unknown_keys.push <- json 
+http post: {'secret': $secret, keys: [] }
+     json: [{'hwid': $hwid, 'created_at': $created_at, 'last_seen': $date, 'counter': $num}]
+  # 
+  # -> insert (*) or update ('last_seen': $date (#if newer), 'counter': SUM($num, counter)) where (lock_id=lock.id, hwid=hwid)
+  #
+
+#
+# push last seen hardware id's
+# 
+POST /api/sync/$lockname/keys_last_seen.push <- json 
+http post: {'secret': $secret, keys: [] }
+     json: [{'hwid': $hwid, 'last_seen_start': $timestamp1, 'last_seen_end': $timestamp2 } ]
+  # 
+  # -> update if (last_seen_start ) is newer : ('last_seen_start': $timestamp}) where key.hwid = hwid
+  #            if (last_seen_end   ) is newer : ('last_seen_end':   $timestamp}) where key.hwid = hwid
+
+
+Views:
+# 
+Generic display views
+     DetailView
+     ListView (tables2)
+     
+
+# 
+#

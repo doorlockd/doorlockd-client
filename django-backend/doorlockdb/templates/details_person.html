@@ -1,0 +1,46 @@
+<h1>
+{{ person }}
+</h1>
+<code></code><a href="{% url 'details_person' person.id %}">link {{ person }}</a></code>
+
+
+<pre>
+id: {{ person.id }}
+name: {{ person.name }}
+e-mail: {{ person.email }}
+info: {{ person.info }}
+is_enabled: {{ person.is_enabled }}
+access: {{ person.access.all }}
+my_keys: {{ person.my_keys.all }}
+</pre>
+
+<code>
+<h3>Locks:</h3>
+{% for lock in person.access.all %}
+<li>{{ lock.name }}, {{ lock.is_enabled }}, {{ lock.description }}</li>
+{% endfor %}
+
+<h3>Groups:</h3>
+{% for group in person.group_set.all %}
+<li>{{ group.name }}, {{ group.is_enabled }}, {{ group.description }} [ {% for lock in group.access.all %} {{ lock.name }} {% endfor %} ] </li>
+{% endfor %}
+
+
+<h3>Keys:</h3>
+{% for key in person.my_keys.all %}
+    <li><code>{{ key.hwid }}</code> {{ key.is_enabled }}, {{key.logkeylastseen.counter}} = {{ key.logkeylastseen.last_seen_start|date:"Y-m-d H:m:s"  }}/{{ key.logkeylastseen.last_seen_end|date:"Y-m-d H:m:s" }}   </li>
+{% endfor %}
+
+
+
+{% if person.check_any_out_of_sync %}
+<h3>Out of sync:</h3>
+
+{{ person.check_any_out_of_sync }}
+{% endif %}
+
+</code>
+
+<br >
+
+<code> <i>It is now {% now "Y-m-d H:m:s" %}</i></code>
