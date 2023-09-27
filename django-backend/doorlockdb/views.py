@@ -48,24 +48,7 @@ def auth_by_client_ssl(request):
     # return (client_cert)
 
 def index(request):
-    data = {}
-
-    data['check '] = auth_by_client_ssl(request)
-
-    response_text = "data:\n"
-
-    data['request.is_secure()'] = request.is_secure()
-    data['request.body'] = request.body
-    data['request.scheme'] = request.scheme
-    data['request.method'] = request.method
-    for m in request.META:
-        data[f'request.META {m}'] = request.META[m]
-    
-    
-
-    for key in data: 
-        response_text += f"{key} - {data[key]}\n" 
-    return HttpResponse(f"<pre>Hello, world. You're at the doorlockdb index.\n{response_text}</pre>")
+    return HttpResponse(f"Doorlockd <a href=\"/admin\">admin</a>.\n")
 
 def generator_poll_events(lock):
     # get Sync object from db

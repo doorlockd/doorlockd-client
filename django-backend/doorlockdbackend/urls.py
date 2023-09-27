@@ -17,14 +17,17 @@ from django.contrib import admin
 # from django.urls import path
 from django.urls import include, path
 
+from doorlockdb.views import index
 
 urlpatterns = [
-    # debug toolbar:
+   # debug toolbar:
     path('__debug__/', include('debug_toolbar.urls')),
 
     path('doorlockdb/', include('doorlockdb.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
+
+    path('', index, name='home'),
 ]
 
 

@@ -3,9 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    # ex: /doorlockdb/sync/<lock_name>/<step>
-
     # long pull
     path('api/lock/<str:lock_name>/long_poll_events', views.api_poll_events, name='api_poll_events'),
 
