@@ -335,17 +335,24 @@ class BackendApi():
 		def auto_sync_target(self, event):
 			"""threading target"""
 	
-			logger.info("DEBUG: start auto_sync_target")
+			logger.info("LOOP: start auto_sync_target")
 			while(not event.is_set()):
+				# sync keys
 				self.api_sync()
+
+				# try sync last_seen and unknown_keys
+				self.log_stats.try_sync()
+			
+				# sleep until next auto_sync_loop
 				time.sleep(self.auto_sync_secs)
-	
-			logger.info("DEBUG: auto_sync_target stopped!")	
+				logger.debug(f"auto sync loop sleeps for {self.auto_sync_secs} seconds.")	
+
+			logger.info("LOOP: auto_sync_target stopped!")	
 	
 		def auto_long_poll_sync_target(self, event):
 			"""threading target"""
 	
-			logger.debug("DEBUG: start auto_long_poll_sync_target")
+			logger.info("LONGPOLL: start auto_long_poll_sync_target")
 			while(not event.is_set()):
 				# do an initial sync when needed :
 				if not self.synchronized:
@@ -359,7 +366,7 @@ class BackendApi():
 					event.wait(timeout=60) # use event.wait instead of time.sleep.
 					
 			
-			logger.debug("DEBUG: auto_long_poll_sync_target stopped!")	
+			logger.info("LONGPOLL: auto_long_poll_sync_target stopped!")	
 		
 		methods={}
 		methods['LONGPOLL'] = auto_long_poll_sync_target
