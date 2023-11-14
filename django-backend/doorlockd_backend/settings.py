@@ -145,7 +145,7 @@ INTERNAL_IPS = [
 ]
 
 # server SSL Certificate file
-SERVER_SSL_CERTIFICATE = '/opt/local/etc/nginx/cert.pem'
+SERVER_SSL_CERTIFICATE = '/etc/ssl/certs/ssl-cert-snakeoil.pem'
 
 
 # finally grab the SECRET KEY
