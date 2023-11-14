@@ -1,4 +1,4 @@
-"""doorlockdbackend URL Configuration
+"""doorlockd_backend URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/4.0/topics/http/urls/
@@ -17,13 +17,13 @@ from django.contrib import admin
 # from django.urls import path
 from django.urls import include, path
 
-from doorlockdb.views import index
+from apps.doorlockdb.views import index
 
 urlpatterns = [
    # debug toolbar:
     path('__debug__/', include('debug_toolbar.urls')),
 
-    path('doorlockdb/', include('doorlockdb.urls')),
+    path('doorlockdb/', include('apps.doorlockdb.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
 
@@ -32,5 +32,5 @@ urlpatterns = [
 
 
 # add Ninj API
-from doorlockdb.api import api
+from apps.doorlockdb.api import api
 urlpatterns.append(path("api/", api.urls))

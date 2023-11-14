@@ -14,7 +14,7 @@ python3 manage.py migrate
 
 # run models
 python3 manage.py shell
-#. from doorlockdb.models import Person, Group, Key, Lock
+#. from apps.doorlockdb.models import Person, Group, Key, Lock
 
 # create user:
 python3 manage.py createsuperuser

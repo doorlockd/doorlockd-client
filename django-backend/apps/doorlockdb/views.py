@@ -6,7 +6,7 @@ from faulthandler import is_enabled
 # from tkinter import E
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 
-from doorlockdb.model_forms import PersonForm
+from apps.doorlockdb.model_forms import PersonForm
 from .models import *
 from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render

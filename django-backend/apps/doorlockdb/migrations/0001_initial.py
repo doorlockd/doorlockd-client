@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import doorlockdb.models
+import apps.doorlockdb.models
 
 
 class Migration(migrations.Migration):
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=32, unique=True)),
                 ('description', models.CharField(blank=True, max_length=200)),
                 ('is_enabled', models.BooleanField(default=True)),
-                ('token', models.CharField(default=doorlockdb.models.random_token, max_length=200, unique=True)),
+                ('token', models.CharField(default=apps.doorlockdb.models.random_token, max_length=200, unique=True)),
             ],
         ),
         migrations.CreateModel(

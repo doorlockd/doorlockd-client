@@ -3,7 +3,7 @@
 import factory 
 from .import models 
 import random
-# from doorlockdb.models import *
+# from apps.doorlockdb.models import *
 
 
 def seed_persons(x_pers=9, x_keys=2):

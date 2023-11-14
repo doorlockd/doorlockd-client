@@ -3,4 +3,4 @@ from django.apps import AppConfig
 
 class DoorlockdbConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'doorlockdb'
+    name = 'apps.doorlockdb'
