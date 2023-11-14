@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
-from os.path import join, normpath
+from os.path import join, normpath, dirname
+from os import makedirs
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -155,6 +156,7 @@ except IOError:
         from django.utils.crypto import get_random_string
         chars = 'abcdefghijklmnopqrstuvwxyz0123456789!$%&()=+-_'
         SECRET_KEY = get_random_string(50, chars)
+        makedirs(dirname(SECRET_FILE), exist_ok=True)
         with open(SECRET_FILE, 'w') as f:
             f.write(SECRET_KEY)
     except IOError:
