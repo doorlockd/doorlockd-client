@@ -28,6 +28,7 @@ SECRET_FILE = normpath(join(BASE_DIR, 'run', 'SECRET.key'))
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = False
 # DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', '192.168.2.16']
@@ -35,7 +36,6 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'apps.doorlockdb',
-    # debug_toolbar:
-    # "debug_toolbar",
     "django_tables2",    
 ]
 
@@ -57,11 +55,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # debug_toolbar:
-    # "debug_toolbar.middleware.DebugToolbarMiddleware",
-    
-
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('debug_toolbar')
+
+    # Debug toolbar must be as early as possible, but after things that encode,
+    # such as gzip (which we do not use currently, so inserting at the start is
+    # probably good enough).
+    MIDDLEWARE.insert(0, 'debug_toolbar.middleware.DebugToolbarMiddleware')
 
 ROOT_URLCONF = 'doorlockd_backend.urls'
 
