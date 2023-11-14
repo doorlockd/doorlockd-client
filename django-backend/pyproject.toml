@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "doorlockd-backend"
+version = "0.1.0"
+description = ""
+authors = ["Diederik Hamelink"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+django = "^4.2.7"
+django-tables2 = "^2.6.0"
+django-ninja = "^0.22.2"
+gunicorn = "^21.2.0"
+
+
+[tool.poetry.group.dev.dependencies]
+django-debug-toolbar = "^4.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
