@@ -14,8 +14,6 @@ import datetime
 import hashlib
 
 import logging
-
-from pyrsistent import l
 logger = logging.getLogger(__name__)
 
 
