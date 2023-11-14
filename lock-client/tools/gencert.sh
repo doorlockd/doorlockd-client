@@ -4,8 +4,12 @@
 # Create client certificate 
 #
 
-# get filename
-read -p "Enter certificate filename (*.pem): " outfile
+if [ -n "$1" ]; then
+	outfile="$1"
+else
+	# get filename
+	read -p "Enter certificate filename (*.pem): " outfile
+fi
 
 #
 # add .pem if missing.
