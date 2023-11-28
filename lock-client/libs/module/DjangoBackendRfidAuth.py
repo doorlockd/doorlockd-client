@@ -380,7 +380,7 @@ class BackendApi():
 			
 		with self.lock:
 			# are we already running?
-			if hasattr(self, 'auto_sync_thread') and self.auto_sync_thread.isAlive():
+			if hasattr(self, 'auto_sync_thread') and self.auto_sync_thread.is_alive():
 				return self.auto_sync_thread
 
 			self.auto_sync_event.clear()
