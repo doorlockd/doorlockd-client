@@ -33,38 +33,38 @@ class IOChip(interface.IOChip):
 		# parse port name:
 		(chip_name, line_number) = port.pin.split(' ', 1)
 
+		if not chip_name.startswith('/dev/'):
+			chip_name = '/dev/' + chip_name
+
 		# gpiod logic:
 		port.gpiod_chip = gpiod.Chip(chip_name)
-		port.gpiod_line = port.gpiod_chip.get_line(int(line_number))		
+		port.gpiod_line = int(line_number)
+
+		port.has_input = True
 
 		if direction == IO.INPUT:
-			# setup INPUT
-			# disabled DEBUG testing
-			port.gpiod_line.request(consumer=consumer, type=gpiod.LINE_REQ_DIR_IN)
-			
-			# set identity:
-			port.has_input = True
 			port.has_output = False
+			direction = gpiod.line.Direction.INPUT
 	
 		if direction == IO.OUTPUT:
-			# # setup OUTPUT, let's asume default value should be 0
-			# port.gpiod_line.request(consumer=consumer, type=gpiod.LINE_REQ_DIR_OUT, default_val=0)
-			port.gpiod_line.request(consumer=consumer, type=gpiod.LINE_REQ_DIR_OUT, default_vals=[0]) 
-			
-			# set identity:
-			port.has_input = True
 			port.has_output = True
+			direction = gpiod.line.Direction.OUTPUT
 			
-					
+		config = {port.gpiod_line: gpiod.LineSettings(direction=direction)}
+		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		
 	def input(self, port):
 		# do whatever you do to get input value for 'pin':
-		return port.gpiod_line.get_value()
+		return port.gpiod_request.get_value(port.gpiod_line)
 		
 
 	def output(self, port, value):
 		# do whatever you do to set output value for 'pin':
-		port.gpiod_line.set_value(value)
+		if value:
+			v = gpiod.line.Value.ACTIVE
+		else:
+			v = gpiod.line.Value.INACTIVE
+		port.gpiod_request.set_value(port.gpiod_line, v)
 
 	def add_event_detect(self, port, edge, callback):
 		# get or init GpiodEventDetectBus
@@ -83,7 +83,7 @@ class IOChip(interface.IOChip):
 	def cleanup(self, port=None):
 		if port:
 			# release gpio line.
-			port.gpiod_line.release()
+			port.gpiod_request.release()
 			port.gpiod_chip.close()
 			
 			# one specific pin
@@ -196,36 +196,29 @@ class GpiodEventDetectBus:
 			# start _run in new thread:
 			self.thread = threading.Thread(target=self._run, daemon=True)
 			self.thread.start()
-		
 
 	def _run(self):
-		# parse port name:
-		(chip_name, line_number) = self.port.pin.split(' ', 1)
-
-		# gpiod logic:
-		gpiod_chip = gpiod.Chip(chip_name)
-		self.gpiod_line = gpiod_chip.get_line(int(line_number))
-		
 		# consumer
 		consumer = sys.argv[0]
 		
 		# update our gpiod_line:
-		self.port.gpiod_line.release() # release
-		self.port.gpiod_line.request(consumer=consumer, type=gpiod.LINE_REQ_EV_BOTH_EDGES)
-		self.gpiod_line = self.port.gpiod_line # link line from port object.
+		self.port.gpiod_request.release() # release
+		config = {self.port.gpiod_line: gpiod.LineSettings(edge_detection=gpiod.line.Edge.BOTH)}
+		self.port.gpiod_request = self.port.gpiod_chip.request_lines(config=config, consumer=consumer)
+		self.gpiod_request = self.port.gpiod_request # link request from port object.
 
 		logger.debug("event detect loop starting for pin '{}'.".format(self.port.pin))
 
 		# run main detect loop 
 		while self.wait:
-			if self.gpiod_line.event_wait(1) and self.wait:
-				event = self.gpiod_line.event_read()
+			if self.gpiod_request.wait_edge_events(1) and self.wait:
+				(event,) = self.gpiod_request.read_edge_events(max_events=1)
 				
-				if event.type == gpiod.LineEvent.RISING_EDGE:
+				if event.event_type == event.Type.RISING_EDGE:
 					 for callback in self.bus_rising:
 						 callback()
 
-				if event.type == gpiod.LineEvent.FALLING_EDGE:
+				if event.event_type == event.Type.FALLING_EDGE:
 					 for callback in self.bus_falling:
 						 callback()
 						 
@@ -237,7 +230,7 @@ class GpiodEventDetectBus:
 		logger.debug("event detect loop stoppped for pin '{}'.".format(self.port.pin))
 
 		with self.lock:
-			self.gpiod_line.release()
+			self.gpiod_request.release()
 
 			# do we really need to stop?
 			if self.wait is not True:
