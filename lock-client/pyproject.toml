@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "doorlockd-client"
+version = "0.1.0"
+description = ""
+authors = ["Diederik Hamelink"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<4.0"
+pyaml = "^23.9.7"
+simplejson = "^3.19.2"
+toml = "^0.10.2"
+nfcpy = {git = "https://github.com/matthijskooijman/nfcpy.git", rev = "doorlockd"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
