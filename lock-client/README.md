@@ -9,4 +9,4 @@
  - see `config-default.ini` for examples.
 
 ### Run
- - `poetry run app.py`
+ - `poetry run ./app.py`
