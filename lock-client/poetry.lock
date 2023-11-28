@@ -147,7 +147,7 @@ files = [
 
 [[package]]
 name = "nfcpy"
-version = "1.0.3"
+version = "1.0.4"
 description = "Python module for Near Field Communication."
 optional = false
 python-versions = ">=2.6"
@@ -163,8 +163,8 @@ pyserial = "*"
 [package.source]
 type = "git"
 url = "https://github.com/matthijskooijman/nfcpy.git"
-reference = "doorlockd"
-resolved_reference = "419223038bd0584692062a9f7ee8a8f69732d8a7"
+reference = "v1.0.4+doorlockd"
+resolved_reference = "68296e4aa79f2eb6b55c60dc51462f00a6f85b73"
 
 [[package]]
 name = "pyaml"
@@ -424,4 +424,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "87877b05cc2bdf9d2ca016cdedef2dbcf030063ae6c9e324e6f941436a4a9cfb"
+content-hash = "12f5d9cf289468d5ae172f0e8954ae45defc3b9670325d4f4c51deea1d9d2cbf"

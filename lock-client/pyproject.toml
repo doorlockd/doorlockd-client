@@ -11,7 +11,7 @@ python = ">=3.8,<4.0"
 pyaml = "^23.9.7"
 simplejson = "^3.19.2"
 toml = "^0.10.2"
-nfcpy = {git = "https://github.com/matthijskooijman/nfcpy.git", rev = "doorlockd"}
+nfcpy = {git = "https://github.com/matthijskooijman/nfcpy.git", rev = "v1.0.4+doorlockd"}
 requests = "^2.31.0"
 
 
