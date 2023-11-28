@@ -1,8 +1,0 @@
-pyaml==16.12.2
-simplejson==3.17.0
-toml==0.10.0
-nfcpy @ git+https://github.com/matthijskooijman/nfcpy.git@doorlockd
-
-#
-#gpiod: apt-get install python3-libgpiod
-#
