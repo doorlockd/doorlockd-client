@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
+
 # support ctrl-c 
+import os
 import signal
 
 # global data_container
@@ -50,20 +52,6 @@ try:
 		
 except FileNotFoundError:
 	sys.exit("Config file 'config.ini' is missing.")
-	
-# overwrite config (can for example be set when imported from an cli script)
-if(hasattr( dc, 'config_overwrite')):	
-	for section in dc.config_overwrite.keys():
-		
-		# add section when missing
-		if dc.config.get(section,False):
-			dc.config[section] = {}
-		
-		for key, value in dc.config_overwrite[section].items():
-			print("overwrite config: ['{}'] {} = ".format(section, key), value)
-			dc.config[section][key] = value
-			
-
 
 
 #
@@ -114,8 +102,6 @@ def abort_app(data):
 	# hackish but it works
 	dc.logger.info('sending abort signal SIGTERM to self. (Exit value={})'.format(dc.exit_value))
 	
-	import os
-	import signal
 	os.kill(os.getpid(), signal.SIGTERM)
 
 dc.e.subscribe('abort_app', abort_app)
@@ -134,23 +120,28 @@ from libs.Module import ModuleManager
 
 dc.module = ModuleManager()
 
-if(dc.config.get('doorlockd',{}).get('enable_modules',True)):
 
-	# initialize all modules 
-	dc.module.load_all(dc.config.get('module', {}))
-
-	# setup all loaded modules
-	dc.module.do_all('setup')
-
-	# enable all loaded modules
-	dc.module.do_all('enable')
 
 
 #
 # main loop
 #
+def main():
+	
+	if(dc.config.get('doorlockd',{}).get('enable_modules',True)):
+
+		# initialize all modules 
+		dc.module.load_all(dc.config.get('module', {}))
+
+		# setup all loaded modules
+		dc.module.do_all('setup')
+
+		# enable all loaded modules
+		dc.module.do_all('enable')
+
+	print("doorlockd started.")
+	# app_exit()
 
 
-print("doorlockd started.")
-
-# app_exit()
+if __name__ == '__main__':
+	main()
