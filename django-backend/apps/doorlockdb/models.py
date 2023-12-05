@@ -470,7 +470,11 @@ class Helpers:
             raise cls.ErrorClientSSLCert("no client certificate found (HTTP_X_SSL_RAW_CERT missing)")
     
         try:
-            return Lock.objects.get(certificate=client_cert)
+            lock = Lock.objects.get(certificate=client_cert)
+            # update last_seen timestamp
+            SyncLockKeys.objects.filter(lock=lock).update(last_seen=datetime.datetime.now())
+            return lock
+
         except Lock.DoesNotExist as e:
             raise cls.ErrorClientSSLCert(f"Client SSL Certificate is unkown ({e})")
 
@@ -642,7 +646,7 @@ class Helpers:
 class SyncLockKeys(models.Model):
     lock = models.OneToOneField('Lock', on_delete=models.CASCADE, primary_key=True)
     config_time = models.DateTimeField(blank=True, null=True, default=None)
-    last_seen = models.DateTimeField(blank=True, null=True, default=None)
+    last_seen = models.DateTimeField(blank=True, null=True, default=None) # last authenitcated 
 
     last_sync_keys = models.DateTimeField(blank=True, null=True, default=None)
     last_log_unknownkeys = models.DateTimeField(blank=True, null=True, default=None)
