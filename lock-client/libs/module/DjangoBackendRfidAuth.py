@@ -209,7 +209,7 @@ class _FingerprintAdapter(requests.adapters.HTTPAdapter):
 #
 class BackendApi():
 	
-	def __init__(self, lockname, api_url, offline_file=None, background_sync_method='LONGPOLL', log_unknownkeys=True, log_stats_precision=0, log_sync_interval=None, server_ssl_fingerprint=None, client_ssl_cert=None):
+	def __init__(self, lockname, api_url, offline_file=None, background_sync_method='LOOP', log_unknownkeys=True, log_stats_precision=0, log_sync_interval=None, server_ssl_fingerprint=None, client_ssl_cert=None):
 		self.lockname = lockname
 		self.lock_disabled = True #None
 		self.synchronized = False
