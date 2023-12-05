@@ -344,7 +344,7 @@ class BackendApi():
 				self.log_stats.try_sync()
 			
 				# sleep until next auto_sync_loop
-				time.sleep(self.auto_sync_secs)
+				event.wait(timeout=self.auto_sync_secs) # use event.wait instead of time.sleep.
 				logger.debug(f"auto sync loop sleeps for {self.auto_sync_secs} seconds.")	
 
 			logger.info("LOOP: auto_sync_target stopped!")	
