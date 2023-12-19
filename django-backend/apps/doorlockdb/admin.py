@@ -63,6 +63,7 @@ class LockAdmin(admin.ModelAdmin):
 class PersonAdmin(admin.ModelAdmin):
     list_display = ("name", "email", "is_enabled", "key_count", "group_count","last_seen_start", "last_seen_end",'oops')
     list_filter = ("is_enabled", "personsgroup", "personsgroup__access_groups", "personsgroup__access_groups__locks")
+    filter_horizontal = ("personsgroup",)
     
     inlines = [ KeysInline]
     actions = (make_is_enabled_true, make_is_enabled_false)
@@ -93,6 +94,7 @@ class PersonAdmin(admin.ModelAdmin):
 class PersonGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "is_enabled", "persons_count")
     list_filter = ("is_enabled",)
+    filter_horizontal = ("access_groups", )
     actions = (make_is_enabled_true, make_is_enabled_false)
 
     def get_queryset(self, request):
@@ -185,6 +187,7 @@ class AccessRulesetAdmin(admin.ModelAdmin):
 class AccesGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "rules")
     list_filter = ("locks","rules")
+    filter_horizontal = ("locks",)
 
 
 class SyncLockKeysAdmin(admin.ModelAdmin):
