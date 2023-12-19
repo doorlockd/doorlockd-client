@@ -184,7 +184,7 @@ class State:
 
 	
 
-	def wait_for(self, match_value):
+	def wait_for(self, match_value, timeout=-1):
 		'''Wait until value becomes 'match_value', then continue executing again.'''
 		# create lock in variable
 		my_lock = threading.Lock()
@@ -196,7 +196,7 @@ class State:
 		e = self.subscribe( lambda v: v == match_value and my_lock.locked() and my_lock.release() )
 		
 		# now wait until this lock is released by this lamda match callback, and we can acquire it again
-		my_lock.acquire()
+		my_lock.acquire(timeout=timeout)
 		
 		# nice: done waiting, we are here now 
 		

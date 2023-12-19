@@ -118,14 +118,20 @@ class Solenoid(module.BaseModule):
 			self.io_output_permanent_open_ui_led.cleanup()
 		
 	def action_callback(self, data={}):
-		# get lock
-		# if self.io_output.input():
+		"""
+		Open Solenoid for self.time_wait seconds.
+		"""
+		if self.permanent_open_state.value:
+			logger.info("open solenoid ignored: (permanent open)")
+			self.state.wait_for(False, self.time_wait) # block this thread for x seconds or when solenoid is closed
+			return
+
 		if self.state.value:
 			logger.info("open solenoid ignored: (already open)")
 			self.state.wait_for(False) # block this thread until solenoid is closed
 			return
 
-		# log
+		# Open solenoid for x seconds:
 		logger.info("open solenoid (time_wait: %.2f seconds)", self.time_wait)
 		self.state.value = True		# open solenoid
 		time.sleep(self.time_wait)	# wait
