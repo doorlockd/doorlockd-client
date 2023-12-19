@@ -23,6 +23,12 @@ class Solenoid(module.BaseModule):
 		self.time_wait  = float(config.get('time_wait', 2.4))
 
 		self.state = State(value=False)
+
+		# permanent open:
+		self.allow_permanent_open = bool(config.get('allow_permanent_open', False))
+		self.event_name_toggle_permanent_open = str(config.get('event_toggle_permanent_open', 'toggle_permanent_open'))
+		self.permanent_open_state = State(value=False)
+		self.io_output_name_permanent_open_ui_led = config.get('io_output_permanent_open_ui_led', None)
 		
 		# # TEST:
 		# self.state.subscribe(lambda v: print("New Solenoid State value: ", v))
@@ -37,6 +43,13 @@ class Solenoid(module.BaseModule):
 			logger.exception('Failed setup Module %s', self.__class__.__name__)
 			dc.e.raise_event('abort_app', wait=True)
 		
+		# if not None
+		if self.io_output_name_permanent_open_ui_led:
+			try:
+				self.io_output_permanent_open_ui_led = dc.io_port[self.io_output_name_permanent_open_ui_led]
+			except Exception:
+				logger.exception('Failed setup Module %s', self.__class__.__name__)
+				dc.e.raise_event('abort_app', wait=True)
 
 	def enable(self):
 		# enable module
@@ -58,6 +71,19 @@ class Solenoid(module.BaseModule):
 				
 		# connect event to our callback
 		self.event = dc.e.subscribe(self.event_name, self.action_callback)
+
+		# permanent_open: connect event to our callback
+		self.event_toggle_permanent_open = dc.e.subscribe(self.event_name_toggle_permanent_open, self.toggle_permament_open_callback )
+
+		# permanent_open ui_led
+		if hasattr(self, 'io_output_permanent_open_ui_led'):
+			try:
+				self.io_output_permanent_open_ui_led.setup(IO.OUTPUT)
+				self.io_output_permanent_open_ui_led.output(IO.LOW)
+			except Exception:
+				logger.exception('Failed enable Module %s', self.__class__.__name__)
+				dc.e.raise_event('abort_app', wait=True)
+
 		
 			
 	def disable(self):
@@ -66,6 +92,9 @@ class Solenoid(module.BaseModule):
 		if self.event:
 			self.event.cancel()
 		
+		if self.event_toggle_permanent_open:
+			self.event_toggle_permanent_open.cancel()
+
 		# set output low
 		self.state.value = False
 
@@ -75,6 +104,9 @@ class Solenoid(module.BaseModule):
 		if hasattr(self, 'io_output') and self.io_output.has_output:
 			self.io_output.output(IO.LOW)
 
+		if hasattr(self, 'io_output_permanent_open_ui_led') and self.io_output_permanent_open_ui_led.has_output:
+			self.io_output_permanent_open_ui_led.output(IO.LOW)
+
 			
 	def teardown(self):
 		# de-setup module
@@ -82,8 +114,10 @@ class Solenoid(module.BaseModule):
 		if hasattr(self, 'io_output'):
 			self.io_output.cleanup()
 		
+		if hasattr(self, 'io_output_permanent_open_ui_led'):
+			self.io_output_permanent_open_ui_led.cleanup()
 		
-	def action_callback(self, data={}):		
+	def action_callback(self, data={}):
 		# get lock
 		# if self.io_output.input():
 		if self.state.value:
@@ -95,7 +129,25 @@ class Solenoid(module.BaseModule):
 		logger.info("open solenoid (time_wait: %.2f seconds)", self.time_wait)
 		self.state.value = True		# open solenoid
 		time.sleep(self.time_wait)	# wait
-		self.state.value = False	# close solenoid
+		self.state.value = self.permanent_open_state.value # close solenoid/switch to permanent state.
 		
+
+	def toggle_permament_open_callback(self, data={}):
+		# only switch config setting on if your hardware supports pemanent_open:
+		if not self.allow_permanent_open:
+			logger.warn("allow_permanent_open disabled: toggle permanent open/close is disabled.")
+			return
+
+		# switch state:
+		self.permanent_open_state.value = not self.permanent_open_state.value
+		logger.info(f"permanent_open_state switched to {self.permanent_open_state.value}.")
+
+		# set UI LED if defined
+		if hasattr(self, 'io_output_permanent_open_ui_led') and self.io_output_permanent_open_ui_led.has_output:
+			self.io_output_permanent_open_ui_led.output(self.permanent_open_state.value)
+
+		# sync hardware:
+		self.state.value = self.permanent_open_state.value
+		logger.info(f"hardware synced to new permanent_state {self.state.value}.")
 
 
