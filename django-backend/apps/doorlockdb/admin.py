@@ -91,11 +91,15 @@ class PersonAdmin(admin.ModelAdmin):
         # return checkAnyOutOfSync(obj)
 
 
+class PersonGroupMemberInline(admin.TabularInline):
+    model = Person.personsgroup.through
+
 class PersonGroupAdmin(admin.ModelAdmin):
     list_display = ("name", "is_enabled", "persons_count")
     list_filter = ("is_enabled",)
     filter_horizontal = ("access_groups", )
     actions = (make_is_enabled_true, make_is_enabled_false)
+    inlines = (PersonGroupMemberInline,)
 
     def get_queryset(self, request):
         queryset = super(PersonGroupAdmin, self).get_queryset(request)
