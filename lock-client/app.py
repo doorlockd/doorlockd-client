@@ -18,32 +18,6 @@ dc.io_port = {} # dc.io_port
 import toml
 import logging
 	
-#
-# exit
-#
-
-dc.exit_value = 0 # set exit value
-
-def app_exit():
-	dc.logger.info('start exit')
-
-	if hasattr(dc, 'module'):
-		# setup all loaded modules
-		# dc.module.disable_all()
-		dc.module.do_all('disable')		
-	
-		# enable all loaded modules
-		# dc.module.teardown_all()
-		dc.module.do_all('teardown')		
-
-	dc.logger.info('exit after proper shutdown.. (Exit value={})'.format(dc.exit_value))
-	# sys.exit(0)
-	sys.exit(dc.exit_value)
-
-
-signal.signal(signal.SIGINT, lambda signal, frame: app_exit())
-signal.signal(signal.SIGTERM, lambda signal, frame: app_exit())
-
 
 
 # Read Config settings 
@@ -94,21 +68,6 @@ from libs.Events import Events
 dc.e = Events()
 
 
-
-# add abort event
-def abort_app(data):
-	dc.exit_value = 1
-	
-	# hackish but it works
-	dc.logger.info('sending abort signal SIGTERM to self. (Exit value={})'.format(dc.exit_value))
-	
-	os.kill(os.getpid(), signal.SIGTERM)
-
-dc.e.subscribe('abort_app', abort_app)
-
-
-
-
 #
 # Parse config modules:
 #
@@ -121,7 +80,20 @@ from libs.Module import ModuleManager
 dc.module = ModuleManager()
 
 
+#
+# set handle_excepthook to handle all uncaught exceptions in threads 
+#
+def handle_excepthook(argv):
+	dc.module.abort(f'Uncought exception caught with excepthook.', argv.exc_value)
 
+import threading
+threading.excepthook = handle_excepthook
+
+#
+# exit -> abort()
+#
+signal.signal(signal.SIGINT, lambda signal, frame: dc.module.abort('Exit: got sigint'))
+signal.signal(signal.SIGTERM, lambda signal, frame: dc.module.abort('Exit: got sigterm'))
 
 #
 # main loop
@@ -129,18 +101,37 @@ dc.module = ModuleManager()
 def main():
 	
 	if(dc.config.get('doorlockd',{}).get('enable_modules',True)):
+		try:
+			# initialize all modules 
+			dc.module.load_all(dc.config.get('module', {}))
 
-		# initialize all modules 
-		dc.module.load_all(dc.config.get('module', {}))
+			# setup all loaded modules
+			dc.module.do_all('setup')
 
-		# setup all loaded modules
-		dc.module.do_all('setup')
+			# enable all loaded modules
+			dc.module.do_all('enable')
 
-		# enable all loaded modules
-		dc.module.do_all('enable')
+			# we are up and running
+			logger.info("doorlockd started.")
 
-	print("doorlockd started.")
-	# app_exit()
+			# wait for abort_event
+			dc.module.abort_event.wait()
+
+		except Exception as e:
+			logger.warning(e)
+
+		# start exit 
+		dc.logger.info('start exit.')
+
+		# disable all loaded modules
+		dc.module.do_all('disable')		
+	
+		# teardown all loaded modules
+		dc.module.do_all('teardown')		
+
+		# done
+		dc.logger.info('exit after proper shutdown.')
+
 
 
 if __name__ == '__main__':

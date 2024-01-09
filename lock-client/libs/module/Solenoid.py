@@ -34,30 +34,19 @@ class Solenoid(module.BaseModule):
 		# self.state.subscribe(lambda v: print("New Solenoid State value: ", v))
 		
 		self.event = None
+		self.event_toggle_permanent_open = None
 		
 	def setup(self):
 		# grab io_port from dc.io_port
-		try:
-			self.io_output = dc.io_port[self.io_output_name]
-		except Exception:
-			logger.exception('Failed setup Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
+		self.io_output = dc.io_port[self.io_output_name]
 		
 		# if not None
 		if self.io_output_name_permanent_open_ui_led:
-			try:
-				self.io_output_permanent_open_ui_led = dc.io_port[self.io_output_name_permanent_open_ui_led]
-			except Exception:
-				logger.exception('Failed setup Module %s', self.__class__.__name__)
-				dc.e.raise_event('abort_app', wait=True)
+			self.io_output_permanent_open_ui_led = dc.io_port[self.io_output_name_permanent_open_ui_led]
 
 	def enable(self):
 		# enable module
-		try:
-			self.io_output.setup(IO.OUTPUT)
-		except Exception:
-			logger.exception('Failed enable Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
+		self.io_output.setup(IO.OUTPUT)
 
 		if self.io_output.input():
 			# note, some GPIO libs will pull value LOW on setup. this message is here just incase we catch this:
@@ -77,12 +66,8 @@ class Solenoid(module.BaseModule):
 
 		# permanent_open ui_led
 		if hasattr(self, 'io_output_permanent_open_ui_led'):
-			try:
-				self.io_output_permanent_open_ui_led.setup(IO.OUTPUT)
-				self.io_output_permanent_open_ui_led.output(IO.LOW)
-			except Exception:
-				logger.exception('Failed enable Module %s', self.__class__.__name__)
-				dc.e.raise_event('abort_app', wait=True)
+			self.io_output_permanent_open_ui_led.setup(IO.OUTPUT)
+			self.io_output_permanent_open_ui_led.output(IO.LOW)
 
 		
 			

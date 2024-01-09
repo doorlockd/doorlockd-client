@@ -27,12 +27,7 @@ class PN532(module.BaseModule):
 		# initilialize pn532
 		# config path + device
 		# usb[:vendor[:product]] / usb[:bus[:device]] / tty:port:driver / com:port:driver / udp[:host][:port]
-		try:
-			self.clf = nfc.ContactlessFrontend(config.get('path', 'ttyS2:pn532'))
-		except Exception:
-			logger.exception('Failed to connect to PN532')
-			dc.e.raise_event('abort_app', wait=True)
-
+		self.clf = nfc.ContactlessFrontend(config.get('path', 'ttyS2:pn532'))
 
 		# RFID
 		if config.get('rfid_enabled', False):
@@ -134,10 +129,8 @@ class RfidReader:
 		
 		if target is False:
 			# let's see how often this happens:
-			logger.info("Some error occured (target==False),  targe=" + str(target))
-			dc.e.raise_event('abort_app', wait=True)
-
-			# raise Exception ('lost connection with PN532 -- ??? --')
+			# logger.info("clf.connect returned False, maybe lost connection.")
+			raise Exception('clf.connect returned False, maybe lost connection.')
 
 			# hw error ??			
 			# lets fix:
@@ -147,7 +140,6 @@ class RfidReader:
 			# self.hw_init()
 			
 		elif target is not None:
-			# TODO: (hwid)
 			self.event_bus.raise_event('rfid_comm_pulse') # when there is any RFID communication
 			self.event_bus.raise_event('rfid_comm_ready') # when there is any RFID communication
 			logger.debug("HWID: " + str(target))
@@ -179,7 +171,6 @@ class RfidReader:
 		
 		'''
 		logger.debug('{:s} callback_tag_detected({:s}).'.format('PN532 RFiD Reader', str(hwid)))
-		# raise NotImplementedError('method callback_tag_detected not implemented')
 
 	def callback_tag_detected(self, target):
 		# print("DEBUG: ", target)

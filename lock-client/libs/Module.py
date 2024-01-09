@@ -55,7 +55,7 @@ class BaseModule:
 class ModuleManager:
 	modules = {}
 	_base_path = 'libs.module.'
-
+	abort_event = threading.Event()
 
 	def load_all(self, configs):
 		t=[] # list of threads
@@ -77,7 +77,6 @@ class ModuleManager:
 			# wait untill all threads are finished
 			for thread in t:
 				thread.join()
-
 				
 	
 	def load_mod(self, mod_name, mod_type, mod_config):
@@ -100,8 +99,11 @@ class ModuleManager:
 	def do(self, module, task):
 		'''module: index key of self.module[] , task: setup/enable/disable/teardown '''
 		logger.info('{} module {} {}...'.format(task, self.modules[module].__class__.__name__, module))
-		getattr(self.modules[module], task)() # call method on module
-		
+		try:
+			getattr(self.modules[module], task)() # call method on module
+		except Exception as e:
+			self.abort(f'Uncaught exception in {module} during {task}', exception=e)
+
 		
 	def do_all(self, task):
 		'''task: setup/enable/disable/teardown '''
@@ -118,6 +120,19 @@ class ModuleManager:
 		# wait untill all threads are finished
 		for thread in t:
 			thread.join()
+
+		# abort_event is_set, some exception(s) occured, raise exception 
+		if self.abort_event.is_set() and task not in ('disable', 'teardown'):
+			raise Exception(f'abort_event is set, exception occured during {task}.')
+			
+	def abort(self, mesg, exception=None):
+		if exception:
+			logger.warning(f'abort(): {mesg} exception={exception}', exc_info=exception)
+		else:
+			logger.warning(f'abort(): {mesg}')
+
+		self.abort_event.set()
+
 
 		
 	# def setup_all(self):

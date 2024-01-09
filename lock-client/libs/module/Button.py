@@ -28,25 +28,16 @@ class Button(module.BaseModule):
 
 	def setup(self):
 		# grab io_port from dc.io_port
-		try:
-			self.io_input = dc.io_port[self.io_input_name]
-		except Exception:
-			logger.exception('Failed setup Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
-		
+		self.io_input = dc.io_port[self.io_input_name]		
 
 	def enable(self):
 		# enable module
-		try:
-			self.io_input.setup(IO.INPUT)
-		
-			# EDGE event
-			self.io_input.add_event_detect(IO.EDGE_FALLING, lambda : self.events.raise_event('pressed', {}) or dc.e.raise_event(self.event_name, {}) )
+		self.io_input.setup(IO.INPUT)
+	
+		# EDGE event
+		self.io_input.add_event_detect(IO.EDGE_FALLING, lambda : self.events.raise_event('pressed', {}) or dc.e.raise_event(self.event_name, {}) )
 
-		except Exception:
-			logger.exception('Failed enable Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
-				
+			
 			
 	def disable(self):
 		# disable module

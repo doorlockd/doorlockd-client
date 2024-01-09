@@ -14,45 +14,33 @@ class Buzzer(module.BaseModule):
 	def __init__(self, config={}):
 		super().__init__(config)
 
-		try:
-			# initialize myself 
-			self.io_output_name = config['io_output']
-		
-			# event
-			self.event_name  = config.get('event', 'buzz_buzzer')
-			self.event = None
+		# initialize myself 
+		self.io_output_name = config['io_output']
+	
+		# event
+		self.event_name  = config.get('event', 'buzz_buzzer')
+		self.event = None
 
-			self.melody = config.get('melody', '-... --.. --..') # bzz 
+		self.melody = config.get('melody', '-... --.. --..') # bzz 
+	
+		# lock
+		self.lock = threading.Lock()
 		
-			# lock
-			self.lock = threading.Lock()
-			
-		except Exception:
-			logger.exception('Failed init Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
 			
 		
 		
 	def setup(self):
 		# grab io_port from dc.io_port
-		try:
-			self.io_output = dc.io_port[self.io_output_name]
-		except Exception:
-			logger.exception('Failed setup Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
+		self.io_output = dc.io_port[self.io_output_name]
+
 
 	def enable(self):
 		# enable module
-		try:
-			self.io_output.setup(IO.OUTPUT)		
-		
-			# connect event to our callback
-			self.event = dc.e.subscribe(self.event_name, self.action_callback)
+		self.io_output.setup(IO.OUTPUT)		
+	
+		# connect event to our callback
+		self.event = dc.e.subscribe(self.event_name, self.action_callback)
 
-		except Exception:
-			logger.exception('Failed enable Module %s', self.__class__.__name__)
-			dc.e.raise_event('abort_app', wait=True)
-			
 	def disable(self):
 		# disable module
 		# cancel event 
