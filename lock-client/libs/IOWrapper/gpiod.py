@@ -83,8 +83,10 @@ class IOChip(interface.IOChip):
 	def cleanup(self, port=None):
 		if port:
 			# release gpio line.
-			port.gpiod_request.release()
-			port.gpiod_chip.close()
+			if hasattr(port, 'gpiod_request'):
+				port.gpiod_request.release()
+			if hasattr(port, 'gpiod_chip'):
+				port.gpiod_chip.close()
 			
 			# one specific pin
 			if hasattr(port, 'gpiod_events'):
