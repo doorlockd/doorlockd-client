@@ -67,31 +67,29 @@ class Buzzer(module.BaseModule):
 			## wait 
 			# self.lock.acquire() and self.lock.release()
 			return
-		
-		# log
-		logger.info("buzz buzzer (melody: '%s')", self.melody)
-		
-		# play notes:
-		#  '.' = short
-		#  '_' = long
-		#  ' ' = pause
-		for note in self.melody:
-			if note == ' ':
-				time.sleep(0.2)
-			if note == '/':
-				time.sleep(0.5)
-			if note == '.':
-				self.io_output.output(IO.HIGH)
-				time.sleep(0.1)
-				self.io_output.output(IO.LOW)
-				time.sleep(0.1)
-			if note == '-':
-				self.io_output.output(IO.HIGH)
-				time.sleep(0.3)
-				self.io_output.output(IO.LOW)
-				time.sleep(0.1)
+		try:
+			# log
+			logger.info("buzz buzzer (melody: '%s')", self.melody)
 
-		# release lock
-		self.lock.release()
-
-				
+			# play notes:
+			#  '.' = short
+			#  '_' = long
+			#  ' ' = pause
+			for note in self.melody:
+				if note == ' ':
+					time.sleep(0.2)
+				if note == '/':
+					time.sleep(0.5)
+				if note == '.':
+					self.io_output.output(IO.HIGH)
+					time.sleep(0.1)
+					self.io_output.output(IO.LOW)
+					time.sleep(0.1)
+				if note == '-':
+					self.io_output.output(IO.HIGH)
+					time.sleep(0.3)
+					self.io_output.output(IO.LOW)
+					time.sleep(0.1)
+		finally:
+			# release lock
+			self.lock.release()
