@@ -124,53 +124,16 @@ class RfidReader:
 		targets = ['106A', '106B', '212F', '424F'] # all supported by PN532
 		target = self.clf.connect(rdwr={'on-connect': lambda tag: False, 'iterations': 1, 'targets': targets},
 									terminate=lambda: self.stop_loop)
-			
-		# dc.e.raise_event('rfid_comm_pulse') # when there is any RFID communication
-		
 		if target is False:
 			# let's see how often this happens:
 			# logger.info("clf.connect returned False, maybe lost connection.")
 			raise Exception('clf.connect returned False, maybe lost connection.')
-
-			# hw error ??			
-			# lets fix:
-			# # Calls close on nfc frontend
-			# self.clf.close()
-			# # reconnect:
-			# self.hw_init()
-			
 		elif target is not None:
 			self.event_bus.raise_event('rfid_comm_pulse') # when there is any RFID communication
 			self.event_bus.raise_event('rfid_comm_ready') # when there is any RFID communication
 			logger.debug("HWID: " + str(target))
-			
-			# print("debug test type: ", type(target))
-			# print("debug test id..: ", str(target.identifier))
-			# print("debug test hexs: ", hwid2hexstr(target.identifier))
-			
-			# 
+
 			self.callback_tag_detected(target)
-			
-			# track statistics
-			# self.counter = self.counter + 1
-			
-		# else:
-		# 	# error?
-		# 	dc.e.raise_event('rfid_comm_error') # when there is any RFID communication error
-		# 	logger.debug('Error ' + self.__class__.__name__+ ': error return by clf.sense() :')
-			
-	def callback_tag_detected2(self, hwid):
-		'''Overwrite this callback method with your own.
-			
-		def callback_tag_detected(hwid):
-			# hwid = [255,255,255,255]
-		
-			# lookup hwid in db
-			# if has_access:
-			# 	solenoid.trigger()
-		
-		'''
-		logger.debug('{:s} callback_tag_detected({:s}).'.format('PN532 RFiD Reader', str(hwid)))
 
 	def callback_tag_detected(self, target):
 		# print("DEBUG: ", target)
@@ -185,7 +148,6 @@ class RfidReader:
 			
 			# global event: 
 			dc.e.raise_event(self.event, {}, wait=True) # raise configured trigger_action for rfid_action
-			# self.counter = self.counter + 1
 			
 		else:
 			logger.info('hwid ({:s}) access denied.'.format(hwid_str))
