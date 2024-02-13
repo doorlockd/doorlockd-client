@@ -24,17 +24,24 @@ class GPIOD(module.BaseModule):
 			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s)", k, 
 						config['io_export'][k]['port'],
 						config['io_export'][k].get('limit_direction', None), 
-						config['io_export'][k].get('active_low', False))
+						config['io_export'][k].get('active_low', False)),
+						config['io_export'][k].get('bias', False))
 										
 			port = config['io_export'][k]['port']
 			
+			# translate limit_direction into IO.* enum value
 			limit_direction = config['io_export'][k].get('limit_direction', None)
 			if limit_direction is not None:
 				limit_direction = getattr(IO, limit_direction)
 
 			active_low = config['io_export'][k].get('active_low', False)
+
+			# translate bias into IO.* enum value
+			bias = config['io_export'][k].get('bias', None)
+			if bias is not None:
+				bias = getattr(IO, bias)
 			
-			dc.io_port[k] = io_gpiod.Port(port, limit_direction=limit_direction, active_low=active_low)
+			dc.io_port[k] = io_gpiod.Port(port, limit_direction=limit_direction, active_low=active_low, bias=bias)
 
 	def setup(self):
 		#setup module

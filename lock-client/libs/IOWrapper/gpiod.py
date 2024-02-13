@@ -24,7 +24,11 @@ class IOPort(interface.IOPort):
 class IOChip(interface.IOChip):
 	__io_port_class = IOPort # you need this line , so it will call the above IOPort class
 	
-	def setup(self, port,  direction, *args, **kwargs):
+	def __init__(self, *args, bias, **kargs):
+		self.bias = bias
+		super().__init__(*args, **kwargs)
+	
+	def setup(self, port, direction, bias):
 		"""setup as INPUT: 0/OUTPUT: 1"""
 
 		# consumer
@@ -49,8 +53,19 @@ class IOChip(interface.IOChip):
 		if direction == IO.OUTPUT:
 			port.has_output = True
 			direction = gpiod.line.Direction.OUTPUT
-			
-		config = {port.gpiod_line: gpiod.LineSettings(direction=direction)}
+		
+		# pull_up/pull_down
+		if self.bias == IO.PULL_UP:
+			bias = gpiod.line.Bias.PULL_UP
+		elif self.bias == IO.PULL_DOWN:
+			bias = gpiod.line.Bias.PULL_DOWN			
+		else:
+			bias = gpiod.line.Bias.DISABLED
+		
+		logger.debug(f"Bias: {bias} for {port}")
+		
+		
+		config = {port.gpiod_line: gpiod.LineSettings(direction=direction, bias=bias)}
 		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		
 	def input(self, port):
