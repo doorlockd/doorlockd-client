@@ -139,7 +139,9 @@ class State:
 	@value.setter
 	def value(self, value):
 		# don't do anything when value is the same
+		self.set(value)
 		
+	def set(self, value):
 		with self.lock:
 			if self._value is value:
 				return 

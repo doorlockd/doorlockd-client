@@ -107,10 +107,10 @@ class UILed4(module.BaseModule):
 		
 		# solenoid
 		if self.mod_solenoid is not None:
-			assert hasattr(self.mod_solenoid, 'state') and isinstance(self.mod_solenoid.state, State), "[ui4led] solenoid: configured module is not compatible. (state)"
-			self.s.append(self.mod_solenoid.state.subscribe(lambda value: self.io_led4.output(value)))
+			assert hasattr(self.mod_solenoid, 'state_open') and isinstance(self.mod_solenoid.state_open, State), "[ui4led] solenoid: configured module is not compatible. (state)"
+			self.s.append(self.mod_solenoid.state_open.subscribe(lambda value: self.io_led4.output(value)))
 			# test:
-			# self.s.append(self.mod_solenoid.state.subscribe(lambda value: print("(state event uiled4) new solenoid value:", value, self.mod_solenoid.state.value)))
+			# self.s.append(self.mod_solenoid.state_open.subscribe(lambda value: print("(state event uiled4) new solenoid value:", value, self.mod_solenoid.state.value)))
 			
 		# RFID
 		if self.mod_rfid is not None:
