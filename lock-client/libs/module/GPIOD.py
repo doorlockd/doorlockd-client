@@ -24,9 +24,9 @@ class GPIOD(module.BaseModule):
 			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s)", k, 
 						config['io_export'][k]['port'],
 						config['io_export'][k].get('limit_direction', None), 
-						config['io_export'][k].get('active_low', False)),
+						config['io_export'][k].get('active_low', False),
 						config['io_export'][k].get('bias', False))
-										
+
 			port = config['io_export'][k]['port']
 			
 			# translate limit_direction into IO.* enum value
