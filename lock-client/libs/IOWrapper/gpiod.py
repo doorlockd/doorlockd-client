@@ -24,7 +24,7 @@ class IOPort(interface.IOPort):
 class IOChip(interface.IOChip):
 	__io_port_class = IOPort # you need this line , so it will call the above IOPort class
 	
-	def setup(self, port,  direction):
+	def setup(self, port,  direction, *args, **kwargs):
 		"""setup as INPUT: 0/OUTPUT: 1"""
 
 		# consumer

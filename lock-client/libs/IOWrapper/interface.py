@@ -33,7 +33,7 @@ class IOPort(object):
 		# invert input/output value | edge_detect if True
 		self.active_low = active_low # we can easily use "self.active_low != normal"
 
-	def setup(self, direction):
+	def setup(self, direction, *args, **kwargs):
 		"""setup as INPUT: 0 / OUTPUT: 1."""
 		
 		# check limit_direction
@@ -41,7 +41,7 @@ class IOPort(object):
 			raise Exception("this IOPort can not become '{}', it is limited to '{}'".format(direction, self.limit_direction))
 
 		# setup on io_chip
-		self.io_chip.setup(self, direction)
+		self.io_chip.setup(self, direction,  *args, **kwargs)
 		return(self)
 		
 	def cleanup(self):
@@ -106,7 +106,7 @@ class IOChip:
 	def output(self, port, value):
 		raise NotImplementedError()
 	
-	def setup(self, port, direction):
+	def setup(self, port, direction, *args, **kwargs):
 		raise NotImplementedError()
 		
 	def cleanup(self, port=None):
