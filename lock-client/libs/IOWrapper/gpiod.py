@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 # https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
 
 class IOPort(interface.IOPort):
-	def __init__(self, *args, bias, **kargs):
+	def __init__(self, *args, bias, **kwargs):
 		self.bias = bias
 		super().__init__(*args, **kwargs)
 	
