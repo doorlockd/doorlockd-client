@@ -60,7 +60,7 @@ class IOChip(interface.IOChip):
 		else:
 			bias = gpiod.line.Bias.DISABLED
 		
-		logger.debug(f"Bias: {bias} for {port}")
+		logger.debug(f"Bias: {bias} for {port.pin}")
 		
 		
 		config = {port.gpiod_line: gpiod.LineSettings(direction=direction, bias=bias)}

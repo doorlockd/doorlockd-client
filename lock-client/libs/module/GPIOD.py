@@ -25,7 +25,7 @@ class GPIOD(module.BaseModule):
 						config['io_export'][k]['port'],
 						config['io_export'][k].get('limit_direction', None), 
 						config['io_export'][k].get('active_low', False),
-						config['io_export'][k].get('bias', False))
+						config['io_export'][k].get('bias', None))
 
 			port = config['io_export'][k]['port']
 			
