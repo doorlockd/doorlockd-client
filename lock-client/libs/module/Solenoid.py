@@ -1,7 +1,6 @@
 import libs.Module as module
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
-import time
 from libs.Events import State
 
 logger = dc.logger
@@ -10,6 +9,7 @@ logger = dc.logger
 
 
 class Solenoid(module.BaseModule):
+	state_vars = ['state_open']
 	
 	def __init__(self, config={}):
 		super().__init__(config)
@@ -18,11 +18,12 @@ class Solenoid(module.BaseModule):
 		self.io_output_name = config['io_output']
 
 		# event
-		self.event_name  = config.get('event', 'open_solenoid')
+		self.event_name = config.get('event', 'open_solenoid')
+		self.cancel_event_name = config.get('cancel_event', 'cancel_open_solenoid')
 
 		self.time_wait  = float(config.get('time_wait', 2.4))
 
-		self.state = State(value=False)
+		self.state_open = State(value=False)
 
 		# permanent open:
 		self.allow_permanent_open = bool(config.get('allow_permanent_open', False))
@@ -31,7 +32,7 @@ class Solenoid(module.BaseModule):
 		self.io_output_name_permanent_open_ui_led = config.get('io_output_permanent_open_ui_led', None)
 		
 		# # TEST:
-		# self.state.subscribe(lambda v: print("New Solenoid State value: ", v))
+		# self.state_open.subscribe(lambda v: print("New Solenoid State value: ", v))
 		
 		self.event = None
 		self.event_toggle_permanent_open = None
@@ -54,12 +55,14 @@ class Solenoid(module.BaseModule):
 			logger.warning("!!! Solenoid was open on startup (this might show up by error)) !!!, io_output=%s", self.io_output_name)
 
 		# connect IO port to our state value
-		# self.state = False -> self.io_output.output(IO.LOW)
-		# self.state = True  -> self.io_output.output(IO.HIGH)
-		self.state.set_logic( lambda v: bool(self.io_output.output(v) or v) )
+		# self.state_open = False -> self.io_output.output(IO.LOW)
+		# self.state_open = True  -> self.io_output.output(IO.HIGH)
+		self.state_open.set_logic( lambda v: bool(self.io_output.output(v) or v) )
 				
-		# connect event to our callback
-		self.event = dc.e.subscribe(self.event_name, self.action_callback)
+		# connect event to our open callback
+		self.event_open = dc.e.subscribe(self.event_name, self.action_open_callback)
+		# connect event to our cancel open callback
+		self.event_cancel_open = dc.e.subscribe(self.cancel_event_name, self.action_cancel_open_callback)
 
 		# permanent_open: connect event to our callback
 		self.event_toggle_permanent_open = dc.e.subscribe(self.event_name_toggle_permanent_open, self.toggle_permament_open_callback )
@@ -74,17 +77,20 @@ class Solenoid(module.BaseModule):
 	def disable(self):
 		# disable module
 		# cancel event 
-		if self.event:
-			self.event.cancel()
+		if self.event_open:
+			self.event_open.cancel()
+
+		if self.event_cancel_open:
+			self.event_cancel_open.cancel()
 		
 		if self.event_toggle_permanent_open:
 			self.event_toggle_permanent_open.cancel()
 
 		# set output low
-		self.state.value = False
+		self.state_open.value = False
 
 		# cancel state logic:
-		self.state.set_logic(None)
+		self.state_open.set_logic(None)
 		
 		if hasattr(self, 'io_output') and self.io_output.has_output:
 			self.io_output.output(IO.LOW)
@@ -102,26 +108,38 @@ class Solenoid(module.BaseModule):
 		if hasattr(self, 'io_output_permanent_open_ui_led'):
 			self.io_output_permanent_open_ui_led.cleanup()
 		
-	def action_callback(self, data={}):
+	def action_open_callback(self, data={}):
 		"""
 		Open Solenoid for self.time_wait seconds.
 		"""
 		if self.permanent_open_state.value:
 			logger.info("open solenoid ignored: (permanent open)")
-			self.state.wait_for(False, self.time_wait) # block this thread for x seconds or when solenoid is closed
+			self.state_open.wait_for(False, self.time_wait) # block this thread for x seconds or when solenoid is closed
 			return
 
-		if self.state.value:
+		if self.state_open.value:
 			logger.info("open solenoid ignored: (already open)")
-			self.state.wait_for(False) # block this thread until solenoid is closed
+			self.state_open.wait_for(False) # block this thread until solenoid is closed
 			return
 
 		# Open solenoid for x seconds:
 		logger.info("open solenoid (time_wait: %.2f seconds)", self.time_wait)
-		self.state.value = True		# open solenoid
-		time.sleep(self.time_wait)	# wait
-		self.state.value = self.permanent_open_state.value # close solenoid/switch to permanent state.
-		
+		# open solenoid
+		self.state_open.value = True
+		# wait time wait. or when solenoid open is canceled
+		self.state_open.wait_for(False, self.time_wait)
+		# close solenoid or return to permanent state.
+		self.state_open.value = self.permanent_open_state.value
+
+	def action_cancel_open_callback(self, data={}):
+		"""
+		Cancel Open Solenoid.
+		"""
+		# close solenoid or return to permanent state.
+		logger.info(f"cancel open solenoid. state_open = {self.state_open.value}, permanent_open_state = {self.permanent_open_state.value}")
+		if self.state_open.value:		
+			self.state_open.value = self.permanent_open_state.value
+
 
 	def toggle_permament_open_callback(self, data={}):
 		# only switch config setting on if your hardware supports pemanent_open:
@@ -138,7 +156,7 @@ class Solenoid(module.BaseModule):
 			self.io_output_permanent_open_ui_led.output(self.permanent_open_state.value)
 
 		# sync hardware:
-		self.state.value = self.permanent_open_state.value
-		logger.info(f"hardware synced to new permanent_state {self.state.value}.")
+		self.state_open.value = self.permanent_open_state.value
+		logger.info(f"hardware synced to new permanent_state {self.state_open.value}.")
 
 
