@@ -21,7 +21,7 @@ class GPIOD(module.BaseModule):
 		#
 		# 
 		for k in config['io_export'].keys():
-			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s)", k, 
+			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s, bias=%s)", k, 
 						config['io_export'][k]['port'],
 						config['io_export'][k].get('limit_direction', None), 
 						config['io_export'][k].get('active_low', False),
