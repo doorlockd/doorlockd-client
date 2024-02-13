@@ -18,15 +18,13 @@ logger = logging.getLogger(__name__)
 # https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
 
 class IOPort(interface.IOPort):
-	pass
+	def __init__(self, *args, bias, **kargs):
+		self.bias = bias
+		super().__init__(*args, **kwargs)
 	
 	
 class IOChip(interface.IOChip):
 	__io_port_class = IOPort # you need this line , so it will call the above IOPort class
-	
-	def __init__(self, *args, bias, **kargs):
-		self.bias = bias
-		super().__init__(*args, **kwargs)
 	
 	def setup(self, port, direction, bias):
 		"""setup as INPUT: 0/OUTPUT: 1"""
@@ -55,9 +53,9 @@ class IOChip(interface.IOChip):
 			direction = gpiod.line.Direction.OUTPUT
 		
 		# pull_up/pull_down
-		if self.bias == IO.PULL_UP:
+		if port.bias == IO.PULL_UP:
 			bias = gpiod.line.Bias.PULL_UP
-		elif self.bias == IO.PULL_DOWN:
+		elif port.bias == IO.PULL_DOWN:
 			bias = gpiod.line.Bias.PULL_DOWN			
 		else:
 			bias = gpiod.line.Bias.DISABLED
