@@ -54,16 +54,17 @@ class IOChip(interface.IOChip):
 		
 		# pull_up/pull_down
 		if port.bias == IO.PULL_UP:
-			bias = gpiod.line.Bias.PULL_UP
+			bias = 'PULL_UP' # bias = gpiod.line.Bias.PULL_UP
 		elif port.bias == IO.PULL_DOWN:
-			bias = gpiod.line.Bias.PULL_DOWN			
+			bias = 'PULL_DOWN'
 		else:
-			bias = gpiod.line.Bias.DISABLED
+			bias = 'DISABLED'
 		
 		logger.debug(f"Bias: {bias} for {port.pin}")
 		
 		
 		config = {port.gpiod_line: gpiod.LineSettings(direction=direction, bias=bias)}
+		logger.debug(f"Bias: {port.pin}, {str(config)}")
 		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		
 	def input(self, port):
