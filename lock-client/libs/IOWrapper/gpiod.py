@@ -18,13 +18,15 @@ logger = logging.getLogger(__name__)
 # https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
 
 class IOPort(interface.IOPort):
-	pass
+	def __init__(self, *args, bias, **kwargs):
+		self.bias = bias
+		super().__init__(*args, **kwargs)
 	
 	
 class IOChip(interface.IOChip):
 	__io_port_class = IOPort # you need this line , so it will call the above IOPort class
 	
-	def setup(self, port,  direction):
+	def setup(self, port, direction):
 		"""setup as INPUT: 0/OUTPUT: 1"""
 
 		# consumer
@@ -49,8 +51,20 @@ class IOChip(interface.IOChip):
 		if direction == IO.OUTPUT:
 			port.has_output = True
 			direction = gpiod.line.Direction.OUTPUT
-			
-		config = {port.gpiod_line: gpiod.LineSettings(direction=direction)}
+		
+		# pull_up/pull_down
+		if port.bias == IO.PULL_UP:
+			bias = gpiod.line.Bias.PULL_UP
+		elif port.bias == IO.PULL_DOWN:
+			bias = gpiod.line.Bias.PULL_DOWN			
+		else:
+			bias = gpiod.line.Bias.DISABLED
+		
+		# saving line_settings kwars for when chaning event_detect lines
+		port.line_settings_kwargs = dict(direction=direction, bias=bias)
+		config = {port.gpiod_line: gpiod.LineSettings(**port.line_settings_kwargs)}
+		logger.debug(f"gpiod config: {port.pin}, {str(config)}")
+		
 		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		
 	def input(self, port):
@@ -205,7 +219,8 @@ class GpiodEventDetectBus:
 		
 		# update our gpiod_line:
 		self.port.gpiod_request.release() # release
-		config = {self.port.gpiod_line: gpiod.LineSettings(edge_detection=gpiod.line.Edge.BOTH)}
+		config = {self.port.gpiod_line: gpiod.LineSettings(**self.port.line_settings_kwargs, edge_detection=gpiod.line.Edge.BOTH)}
+		logger.debug(f"gpiod config: {self.port.pin}, {str(config)}")
 		self.port.gpiod_request = self.port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		self.gpiod_request = self.port.gpiod_request # link request from port object.
 
