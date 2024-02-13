@@ -115,7 +115,7 @@ class HbwVoordeurLogic:
 			# idee voor later: eventueel als# !nachtslotschootdetectie && dagslotschootdetectie => notificatie aan
 			# self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.io_ui_nachtslotschootnotificatie.output(IO.LOW) )
 			# self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.io_ui_nachtslotschootnotificatie.output(IO.HIGH) )
-			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_nachtslotschootnotificatie.output(not v))
+			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_nachtslotschootnotificatie.output(v))
 			logger.info(f"ui_nachtslotschootnotificatie enabled on '{self.io_ui_nachtslotschootnotificatie_name}'.")
 
 
@@ -127,7 +127,7 @@ class HbwVoordeurLogic:
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.io_ui_deuropenknopbacklight.output(IO.LOW) )
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.io_ui_deuropenknopbacklight.output(IO.HIGH) )
 			# not handle bar detect = True && not solenoid open = True
-			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_deuropenknopbacklight.output( (not v) and (not self.solenoid.state_open )))
+			self.state_dagslotschootdetectie.subscribe(lambda v: self.io_ui_deuropenknopbacklight.output( (not v) and (not self.solenoid.state_open )))
 			logger.info(f"ui_deuropenknopbacklight enabled on '{self.io_ui_deuropenknopbacklight_name}'.")
 
 
