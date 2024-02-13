@@ -127,7 +127,7 @@ class HbwVoordeurLogic:
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.io_ui_deuropenknopbacklight.output(IO.LOW) )
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.io_ui_deuropenknopbacklight.output(IO.HIGH) )
 			# not handle bar detect = True && not solenoid open = True
-			self.state_dagslotschootdetectie.subscribe(lambda v: self.io_ui_deuropenknopbacklight.output( (not v) and (not self.solenoid.state_open )))
+			self.state_dagslotschootdetectie.subscribe(lambda v: self.io_ui_deuropenknopbacklight.output( not v and (not self.solenoid.state_open.value )))
 			logger.info(f"ui_deuropenknopbacklight enabled on '{self.io_ui_deuropenknopbacklight_name}'.")
 
 
