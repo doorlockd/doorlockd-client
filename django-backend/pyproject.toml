@@ -7,7 +7,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-django = "^4.2.7"
+django = "^4.2.10"
 django-tables2 = "^2.6.0"
 django-ninja = "^0.22.2"
 gunicorn = "^21.2.0"
