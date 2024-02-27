@@ -1,6 +1,7 @@
 from . import interface 
 from .. import IOWrapper as IO
 import gpiod
+import datetime
 
 import sys
 import threading
@@ -18,8 +19,9 @@ logger = logging.getLogger(__name__)
 # https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
 
 class IOPort(interface.IOPort):
-	def __init__(self, *args, bias, **kwargs):
+	def __init__(self, *args, bias, debounce_us, **kwargs):
 		self.bias = bias
+		self.debounce_us = debounce_us
 		super().__init__(*args, **kwargs)
 	
 	
@@ -59,9 +61,12 @@ class IOChip(interface.IOChip):
 			bias = gpiod.line.Bias.PULL_DOWN			
 		else:
 			bias = gpiod.line.Bias.DISABLED
+
+		# debounce_period in microseconds.
+		debounce_period=datetime.timedelta(microseconds=port.debounce_us)
 		
 		# saving line_settings kwars for when chaning event_detect lines
-		port.line_settings_kwargs = dict(direction=direction, bias=bias)
+		port.line_settings_kwargs = dict(direction=direction, bias=bias, debounce_period=debounce_period)
 		config = {port.gpiod_line: gpiod.LineSettings(**port.line_settings_kwargs)}
 		logger.debug(f"gpiod config: {port.pin}, {str(config)}")
 		

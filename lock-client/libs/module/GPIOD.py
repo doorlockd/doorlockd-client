@@ -21,11 +21,12 @@ class GPIOD(module.BaseModule):
 		#
 		# 
 		for k in config['io_export'].keys():
-			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s, bias=%s)", k, 
+			logger.info("export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s, bias=%s, debounce_us=%s)", k, 
 						config['io_export'][k]['port'],
 						config['io_export'][k].get('limit_direction', None), 
 						config['io_export'][k].get('active_low', False),
-						config['io_export'][k].get('bias', None))
+						config['io_export'][k].get('bias', None),
+						int(config['io_export'][k].get('debounce_us', 0)))
 
 			port = config['io_export'][k]['port']
 			
@@ -41,7 +42,10 @@ class GPIOD(module.BaseModule):
 			if bias is not None:
 				bias = getattr(IO, bias)
 			
-			dc.io_port[k] = io_gpiod.Port(port, limit_direction=limit_direction, active_low=active_low, bias=bias)
+			# debounce_period in microseconds
+			debounce_us = int(config['io_export'][k].get('debounce_us', 0))
+			
+			dc.io_port[k] = io_gpiod.Port(port, limit_direction=limit_direction, active_low=active_low, bias=bias, debounce_us=debounce_us)
 
 	def setup(self):
 		#setup module
