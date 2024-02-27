@@ -60,11 +60,11 @@ class IOChip(interface.IOChip):
 		else:
 			bias = gpiod.line.Bias.DISABLED
 		
-		logger.debug(f"Bias: {bias} for {port.pin}")
+		# saving line_settings kwars for when chaning event_detect lines
+		port.line_settings_kwargs = dict(direction=direction, bias=bias)
+		config = {port.gpiod_line: gpiod.LineSettings(**port.line_settings_kwargs)}
+		logger.debug(f"gpiod config: {port.pin}, {str(config)}")
 		
-		
-		config = {port.gpiod_line: gpiod.LineSettings(direction=direction, bias=bias)}
-		logger.debug(f"Bias: {port.pin}, {str(config)}")
 		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		
 	def input(self, port):
@@ -219,7 +219,8 @@ class GpiodEventDetectBus:
 		
 		# update our gpiod_line:
 		self.port.gpiod_request.release() # release
-		config = {self.port.gpiod_line: gpiod.LineSettings(edge_detection=gpiod.line.Edge.BOTH)}
+		config = {self.port.gpiod_line: gpiod.LineSettings(**self.port.line_settings_kwargs, edge_detection=gpiod.line.Edge.BOTH)}
+		logger.debug(f"gpiod config: {self.port.pin}, {str(config)}")
 		self.port.gpiod_request = self.port.gpiod_chip.request_lines(config=config, consumer=consumer)
 		self.gpiod_request = self.port.gpiod_request # link request from port object.
 
