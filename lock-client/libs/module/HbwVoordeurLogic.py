@@ -31,7 +31,8 @@ class HbwVoordeurLogic:
 		# initialize myself 
 		self.io_dagslotschootdetectie_name  = config.get('io_dagslotschootdetectie', False)
 		self.io_nachtslotschootdetectie_name  = config.get('io_nachtslotschootdetectie', False)
-		self.io_ui_nachtslotschootnotificatie_name = config.get('io_ui_nachtslotschootnotificatie', False)
+		self.io_ui_nachtslotschootnotificatie_open_name = config.get('io_ui_nachtslotschootnotificatie_open', False)
+		self.io_ui_nachtslotschootnotificatie_close_name = config.get('io_ui_nachtslotschootnotificatie_close', False)
 		self.io_ui_deuropenknopbacklight_name = config.get('io_ui_deuropenknopbacklight', False)
 
 		# # external events:
@@ -58,13 +59,13 @@ class HbwVoordeurLogic:
 		# options:
 		self.enable_cancelopensolenoid_on_dooropened = config.get('enable_cancelopensolenoid_on_dooropened', True)
 
-
 	def setup(self):
-		# grab io_port from dc.io_port
-		self.io_dagslotschootdetectie  = dc.io_port.get(self.io_dagslotschootdetectie_name, None)	
-		self.io_nachtslotschootdetectie = dc.io_port.get(self.io_nachtslotschootdetectie_name, None)
-		self.io_ui_nachtslotschootnotificatie = dc.io_port.get(self.io_ui_nachtslotschootnotificatie_name, None)
-		self.io_ui_deuropenknopbacklight = dc.io_port.get(self.io_ui_deuropenknopbacklight_name, None)
+		# grab io_port from dc.io_port or set None when name is not defined.
+		self.io_dagslotschootdetectie = dc.io_port[self.io_dagslotschootdetectie_name] if self.io_dagslotschootdetectie_name else None
+		self.io_nachtslotschootdetectie = dc.io_port[self.io_nachtslotschootdetectie_name] if self.io_nachtslotschootdetectie_name else None
+		self.io_ui_nachtslotschootnotificatie_open = dc.io_port[self.io_ui_nachtslotschootnotificatie_open_name] if self.io_ui_nachtslotschootnotificatie_open_name else None
+		self.io_ui_nachtslotschootnotificatie_close = dc.io_port[self.io_ui_nachtslotschootnotificatie_close_name] if self.io_ui_nachtslotschootnotificatie_close_name else None
+		self.io_ui_deuropenknopbacklight = dc.io_port[self.io_ui_deuropenknopbacklight_name] if self.io_ui_deuropenknopbacklight_name else None
 
 		# grab module by name
 		self.solenoid = dc.module.get(self.solenoid_name)
@@ -78,11 +79,14 @@ class HbwVoordeurLogic:
 		#
 		if self.io_nachtslotschootdetectie:
 			self.io_nachtslotschootdetectie.setup(IO.INPUT)
-			self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : dc.e.raise_event(self.event_door_opened_name) )
+			self.state_nachtslotschootdetectie.set(self.io_nachtslotschootdetectie.input()) # set initial value , better to do after setting edge_events, but this works for now.
+			
+			self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING,  lambda : dc.e.raise_event(self.event_door_opened_name) )
 			# self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : dc.e.raise_event(self.event_door_closed_name) )
 			logger.info(f"nachtslotschootdetectie on '{self.io_nachtslotschootdetectie_name}' enabled, emiting event '{self.event_door_opened_name}'/'{self.event_door_closed_name}'")
 			self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.state_nachtslotschootdetectie.set(True))
 			self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.state_nachtslotschootdetectie.set(False))
+			# self.state_nachtslotschootdetectie.set(self.io_nachtslotschootdetectie.input()) # RequestReleasedError()
 			logger.info(f"nachtslotschootdetectie on '{self.io_nachtslotschootdetectie_name}' enabled, On self.state_nachtslotschootdetectie")
 
 
@@ -91,32 +95,38 @@ class HbwVoordeurLogic:
 		#
 		if self.io_dagslotschootdetectie:
 			self.io_dagslotschootdetectie.setup(IO.INPUT)
+			self.state_dagslotschootdetectie.set(self.io_dagslotschootdetectie.input()) # set initial value , better to do after setting edge_events, but this works for now.
+			
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : dc.e.raise_event(self.event_doorhandle_opened_name) )
 			# self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : dc.e.raise_event(self.event_doorhandle_closed_name) )
 			# logger.info(f"dagslotschootdetectie on '{self.io_dagslotschootdetectie_name}' enabled, emiting events '{self.event_doorhandle_opened_name}'/'{self.event_doorhandle_closed_name}'")
 
 			self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.state_dagslotschootdetectie.set(True))
 			self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.state_dagslotschootdetectie.set(False))
+			# self.state_dagslotschootdetectie.set(self.io_dagslotschootdetectie.input()) # RequestReleasedError()
 			logger.info(f"dagslotschootdetectie on '{self.io_dagslotschootdetectie_name}' enabled, On self.state_dagslotschootdetectie")
+
 
 		# 
 		# init Outputs
 		#
-		if self.io_ui_nachtslotschootnotificatie:
-			self.io_ui_nachtslotschootnotificatie.setup(IO.OUTPUT)
+		if self.io_ui_nachtslotschootnotificatie_open:
+			self.io_ui_nachtslotschootnotificatie_open.setup(IO.OUTPUT)
+		if self.io_ui_nachtslotschootnotificatie_close:
+			self.io_ui_nachtslotschootnotificatie_close.setup(IO.OUTPUT)
 		if self.io_ui_deuropenknopbacklight:
 			self.io_ui_deuropenknopbacklight.setup(IO.OUTPUT)
 
-
+		
 		#
 		# functie 1: Warschuwings LED op nachtslot schootdetectie.
 		#			
-		if self.io_ui_nachtslotschootnotificatie:
-			# idee voor later: eventueel als# !nachtslotschootdetectie && dagslotschootdetectie => notificatie aan
-			# self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : self.io_ui_nachtslotschootnotificatie.output(IO.LOW) )
-			# self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : self.io_ui_nachtslotschootnotificatie.output(IO.HIGH) )
-			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_nachtslotschootnotificatie.output(v))
-			logger.info(f"ui_nachtslotschootnotificatie enabled on '{self.io_ui_nachtslotschootnotificatie_name}'.")
+		if self.io_ui_nachtslotschootnotificatie_open:
+			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_nachtslotschootnotificatie_open.output(v))
+			logger.info(f"ui_nachtslotschootnotificatie_open enabled on '{self.io_ui_nachtslotschootnotificatie_open_name}'.")
+		if self.io_ui_nachtslotschootnotificatie_close:
+			self.state_nachtslotschootdetectie.subscribe(lambda v: self.io_ui_nachtslotschootnotificatie_close.output(not v))
+			logger.info(f"ui_nachtslotschootnotificatie_close enabled on '{self.io_ui_nachtslotschootnotificatie_close_name}'.")
 
 
 		#
@@ -150,8 +160,10 @@ class HbwVoordeurLogic:
 			self.subscription_dooropened_cancelsolenoid.cancel()
 
 		# set output low
-		if self.io_ui_nachtslotschootnotificatie:
-			self.io_ui_nachtslotschootnotificatie.output(IO.LOW)
+		if self.io_ui_nachtslotschootnotificatie_open:
+			self.io_ui_nachtslotschootnotificatie_open.output(IO.LOW)
+		if self.io_ui_nachtslotschootnotificatie_close:
+			self.io_ui_nachtslotschootnotificatie_close.output(IO.LOW)
 
 		# remove event_detect
 		if self.io_nachtslotschootdetectie:
@@ -164,7 +176,9 @@ class HbwVoordeurLogic:
 			self.io_dagslotschootdetectie.cleanup()
 		if self.io_nachtslotschootdetectie:
 			self.io_nachtslotschootdetectie.cleanup()
-		if self.io_ui_nachtslotschootnotificatie:
-			self.io_ui_nachtslotschootnotificatie.cleanup()
+		if self.io_ui_nachtslotschootnotificatie_open:
+			self.io_ui_nachtslotschootnotificatie_open.cleanup()
+		if self.io_ui_nachtslotschootnotificatie_close:
+			self.io_ui_nachtslotschootnotificatie_close.cleanup()
 		if self.io_ui_deuropenknopbacklight:
 			self.io_ui_deuropenknopbacklight.cleanup()
