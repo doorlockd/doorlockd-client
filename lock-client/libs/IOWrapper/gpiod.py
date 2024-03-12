@@ -1,4 +1,4 @@
-from . import interface 
+from . import interface
 from .. import IOWrapper as IO
 import gpiod
 import datetime
@@ -9,6 +9,7 @@ import threading
 
 # logger = dc.logger
 import logging
+
 logger = logging.getLogger(__name__)
 
 #
@@ -18,258 +19,264 @@ logger = logging.getLogger(__name__)
 
 # https://git.kernel.org/pub/scm/libs/libgpiod/libgpiod.git/tree/bindings/python/examples
 
+
 class IOPort(interface.IOPort):
-	def __init__(self, *args, bias, debounce_us, **kwargs):
-		self.bias = bias
-		self.debounce_us = debounce_us
-		super().__init__(*args, **kwargs)
-	
-	
+    def __init__(self, *args, bias, debounce_us, **kwargs):
+        self.bias = bias
+        self.debounce_us = debounce_us
+        super().__init__(*args, **kwargs)
+
+
 class IOChip(interface.IOChip):
-	__io_port_class = IOPort # you need this line , so it will call the above IOPort class
-	
-	def setup(self, port, direction):
-		"""setup as INPUT: 0/OUTPUT: 1"""
+    __io_port_class = (
+        IOPort  # you need this line , so it will call the above IOPort class
+    )
 
-		# consumer
-		consumer = sys.argv[0]
+    def setup(self, port, direction):
+        """setup as INPUT: 0/OUTPUT: 1"""
 
-		# parse port name:
-		(chip_name, line_number) = port.pin.split(' ', 1)
+        # consumer
+        consumer = sys.argv[0]
 
-		if not chip_name.startswith('/dev/'):
-			chip_name = '/dev/' + chip_name
+        # parse port name:
+        (chip_name, line_number) = port.pin.split(" ", 1)
 
-		# gpiod logic:
-		port.gpiod_chip = gpiod.Chip(chip_name)
-		port.gpiod_line = int(line_number)
+        if not chip_name.startswith("/dev/"):
+            chip_name = "/dev/" + chip_name
 
-		port.has_input = True
+        # gpiod logic:
+        port.gpiod_chip = gpiod.Chip(chip_name)
+        port.gpiod_line = int(line_number)
 
-		if direction == IO.INPUT:
-			port.has_output = False
-			direction = gpiod.line.Direction.INPUT
-	
-		if direction == IO.OUTPUT:
-			port.has_output = True
-			direction = gpiod.line.Direction.OUTPUT
-		
-		# pull_up/pull_down
-		if port.bias == IO.PULL_UP:
-			bias = gpiod.line.Bias.PULL_UP
-		elif port.bias == IO.PULL_DOWN:
-			bias = gpiod.line.Bias.PULL_DOWN			
-		else:
-			bias = gpiod.line.Bias.DISABLED
+        port.has_input = True
 
-		# debounce_period in microseconds.
-		debounce_period=datetime.timedelta(microseconds=port.debounce_us)
-		
-		# saving line_settings kwars for when chaning event_detect lines
-		port.line_settings_kwargs = dict(direction=direction, bias=bias, debounce_period=debounce_period)
-		config = {port.gpiod_line: gpiod.LineSettings(**port.line_settings_kwargs)}
-		logger.debug(f"gpiod config: {port.pin}, {str(config)}")
-		
-		port.gpiod_request = port.gpiod_chip.request_lines(config=config, consumer=consumer)
-		
-	def input(self, port):
-		# do whatever you do to get input value for 'pin':
-		return port.gpiod_request.get_value(port.gpiod_line)
-		
+        if direction == IO.INPUT:
+            port.has_output = False
+            direction = gpiod.line.Direction.INPUT
 
-	def output(self, port, value):
-		# do whatever you do to set output value for 'pin':
-		if value:
-			v = gpiod.line.Value.ACTIVE
-		else:
-			v = gpiod.line.Value.INACTIVE
-		port.gpiod_request.set_value(port.gpiod_line, v)
+        if direction == IO.OUTPUT:
+            port.has_output = True
+            direction = gpiod.line.Direction.OUTPUT
 
-	def add_event_detect(self, port, edge, callback):
-		# get or init GpiodEventDetectBus
-		if not hasattr(port, 'gpiod_events'):
-			port.gpiod_events = GpiodEventDetectBus(port)
-		
-		# events add
-		port.gpiod_events.add(edge, callback)
-		
-	def remove_event_detect(self,port, edge=None, callback=None):
-		# events remove
-		if hasattr(port, 'gpiod_events'):
-			port.gpiod_events.remove(edge, callback)
+        # pull_up/pull_down
+        if port.bias == IO.PULL_UP:
+            bias = gpiod.line.Bias.PULL_UP
+        elif port.bias == IO.PULL_DOWN:
+            bias = gpiod.line.Bias.PULL_DOWN
+        else:
+            bias = gpiod.line.Bias.DISABLED
 
-		
-	def cleanup(self, port=None):
-		if port:
-			# release gpio line.
-			if hasattr(port, 'gpiod_request'):
-				port.gpiod_request.release()
-			if hasattr(port, 'gpiod_chip'):
-				port.gpiod_chip.close()
-			
-			# one specific pin
-			if hasattr(port, 'gpiod_events'):
-				port.gpiod_events.cleanup()
-		
-		if port is None:
-			# all pins:
-			# not solution for this one.
-			pass
-	
+        # debounce_period in microseconds.
+        debounce_period = datetime.timedelta(microseconds=port.debounce_us)
+
+        # saving line_settings kwars for when chaning event_detect lines
+        port.line_settings_kwargs = dict(
+            direction=direction, bias=bias, debounce_period=debounce_period
+        )
+        config = {port.gpiod_line: gpiod.LineSettings(**port.line_settings_kwargs)}
+        logger.debug(f"gpiod config: {port.pin}, {str(config)}")
+
+        port.gpiod_request = port.gpiod_chip.request_lines(
+            config=config, consumer=consumer
+        )
+
+    def input(self, port):
+        # do whatever you do to get input value for 'pin':
+        return port.gpiod_request.get_value(port.gpiod_line)
+
+    def output(self, port, value):
+        # do whatever you do to set output value for 'pin':
+        if value:
+            v = gpiod.line.Value.ACTIVE
+        else:
+            v = gpiod.line.Value.INACTIVE
+        port.gpiod_request.set_value(port.gpiod_line, v)
+
+    def add_event_detect(self, port, edge, callback):
+        # get or init GpiodEventDetectBus
+        if not hasattr(port, "gpiod_events"):
+            port.gpiod_events = GpiodEventDetectBus(port)
+
+        # events add
+        port.gpiod_events.add(edge, callback)
+
+    def remove_event_detect(self, port, edge=None, callback=None):
+        # events remove
+        if hasattr(port, "gpiod_events"):
+            port.gpiod_events.remove(edge, callback)
+
+    def cleanup(self, port=None):
+        if port:
+            # release gpio line.
+            if hasattr(port, "gpiod_request"):
+                port.gpiod_request.release()
+            if hasattr(port, "gpiod_chip"):
+                port.gpiod_chip.close()
+
+            # one specific pin
+            if hasattr(port, "gpiod_events"):
+                port.gpiod_events.cleanup()
+
+        if port is None:
+            # all pins:
+            # not solution for this one.
+            pass
+
+
 class GpiodEventDetect:
-	def __init__(self, bus, edge, callback):
-		self.bus = bus
-		self.edge = edge
-		self.callback = callback
-	
-	def stop(self):
-		'''remove myself from the event detect bus'''
-		self.bus.remove(self.edge, self.callback)
+    def __init__(self, bus, edge, callback):
+        self.bus = bus
+        self.edge = edge
+        self.callback = callback
+
+    def stop(self):
+        """remove myself from the event detect bus"""
+        self.bus.remove(self.edge, self.callback)
+
 
 class GpiodEventDetectBus:
 
-	def __init__(self, port):
-		self.port = port
-		
-		# event bus
-		self.bus_rising = [] 
-		self.bus_falling = []
-	
-		# boolean to stop _run loop
-		self.wait = None
-		
-		# thread
-		self.thread = None
+    def __init__(self, port):
+        self.port = port
 
-		# lock for adding/removeing events
-		self.lock = threading.Lock()
-	
-	def add(self, edge, callback):
-		start_thread = False
-		
-		with self.lock:
-			# add event callback
-			if edge == IO.EDGE_RISING:
-				self.bus_rising.append(callback)
-			elif edge == IO.EDGE_FALLING:
-				self.bus_falling.append(callback)
-			elif edge == IO.EDGE_BOTH:
-				# both
-				self.bus_rising.append(callback)
-				self.bus_falling.append(callback)
-			else:
-				raise ValueError("Unkown edge value.")
-				return None
-		
-			# start thread (if needed)
-			self._start()
-			
-		return GpiodEventDetect(self, edge, callback)	
-			
-	
-				
-				
-	def remove(self, edge=None, callback=None):	
-		with self.lock:
-			# filter matching edge= callbacks= 
-			if callback is None:
-				if edge == IO.EDGE_RISING:
-					self.bus_rising = [] 
-				elif edge == IO.EDGE_FALLING:
-					self.bus_falling = []
-				elif edge == IO.EDGE_BOTH:
-					# get callbacks listed in both
-					for cb in self.bus_rising:
-						if cb in self.bus_falling:
-							self.bus_rising.remove(cb)
-							self.bus_falling.remove(cb)
-				elif edge is None:
-					# cleanup all callbacks
-					self.bus_rising = [] 
-					self.bus_falling = []
-				else:
-					raise ValueError("Unkown edge value.")	
-			else:	
-				# remove event callback
-				if edge == IO.EDGE_RISING:
-					self.bus_rising.remove(callback)
-				elif edge == IO.EDGE_FALLING:
-					self.bus_falling.remove(callback)
-				elif edge == IO.EDGE_BOTH:
-					# both
-					self.bus_rising.remove(callback)
-					self.bus_falling.remove(callback)
-				else:
-					raise ValueError("Unkown edge value.")
+        # event bus
+        self.bus_rising = []
+        self.bus_falling = []
 
-			# stop thread (if needed)
-			if len(self.bus_rising) == 0 and len(self.bus_falling) == 0:
-				# stop the loop 
-				self.wait = False
-		
-			
-	def _start(self):
-		# enable the while loop
-		self.wait = True
-		
-		# start thread when needed:
-		if self.thread is None:
-			# start _run in new thread:
-			self.thread = threading.Thread(target=self._run, daemon=True)
-			self.thread.start()
+        # boolean to stop _run loop
+        self.wait = None
 
-	def _run(self):
-		# consumer
-		consumer = sys.argv[0]
-		
-		# update our gpiod_line:
-		self.port.gpiod_request.release() # release
-		config = {self.port.gpiod_line: gpiod.LineSettings(**self.port.line_settings_kwargs, edge_detection=gpiod.line.Edge.BOTH)}
-		logger.debug(f"gpiod config: {self.port.pin}, {str(config)}")
-		self.port.gpiod_request = self.port.gpiod_chip.request_lines(config=config, consumer=consumer)
-		self.gpiod_request = self.port.gpiod_request # link request from port object.
+        # thread
+        self.thread = None
 
-		logger.debug("event detect loop starting for pin '{}'.".format(self.port.pin))
+        # lock for adding/removeing events
+        self.lock = threading.Lock()
 
-		# run main detect loop 
-		while self.wait:
-			if self.gpiod_request.wait_edge_events(1) and self.wait:
-				(event,) = self.gpiod_request.read_edge_events(max_events=1)
-				
-				if event.event_type == event.Type.RISING_EDGE:
-					 for callback in self.bus_rising:
-						 callback()
+    def add(self, edge, callback):
+        start_thread = False
 
-				if event.event_type == event.Type.FALLING_EDGE:
-					 for callback in self.bus_falling:
-						 callback()
-						 
-				# call callback
-				# print ("DEBUG: call callbacks ", self.port.pin_name, "event=", event)
-			# else:
-				# print("DEBUG: ", self.port.pin, "timeout(1s) ")
+        with self.lock:
+            # add event callback
+            if edge == IO.EDGE_RISING:
+                self.bus_rising.append(callback)
+            elif edge == IO.EDGE_FALLING:
+                self.bus_falling.append(callback)
+            elif edge == IO.EDGE_BOTH:
+                # both
+                self.bus_rising.append(callback)
+                self.bus_falling.append(callback)
+            else:
+                raise ValueError("Unkown edge value.")
+                return None
 
-		logger.debug("event detect loop stoppped for pin '{}'.".format(self.port.pin))
+            # start thread (if needed)
+            self._start()
 
-		with self.lock:
-			self.gpiod_request.release()
+        return GpiodEventDetect(self, edge, callback)
 
-			# do we really need to stop?
-			if self.wait is not True:
-				self.thread = None		
+    def remove(self, edge=None, callback=None):
+        with self.lock:
+            # filter matching edge= callbacks=
+            if callback is None:
+                if edge == IO.EDGE_RISING:
+                    self.bus_rising = []
+                elif edge == IO.EDGE_FALLING:
+                    self.bus_falling = []
+                elif edge == IO.EDGE_BOTH:
+                    # get callbacks listed in both
+                    for cb in self.bus_rising:
+                        if cb in self.bus_falling:
+                            self.bus_rising.remove(cb)
+                            self.bus_falling.remove(cb)
+                elif edge is None:
+                    # cleanup all callbacks
+                    self.bus_rising = []
+                    self.bus_falling = []
+                else:
+                    raise ValueError("Unkown edge value.")
+            else:
+                # remove event callback
+                if edge == IO.EDGE_RISING:
+                    self.bus_rising.remove(callback)
+                elif edge == IO.EDGE_FALLING:
+                    self.bus_falling.remove(callback)
+                elif edge == IO.EDGE_BOTH:
+                    # both
+                    self.bus_rising.remove(callback)
+                    self.bus_falling.remove(callback)
+                else:
+                    raise ValueError("Unkown edge value.")
 
-			else:
-				# aparently a new callback has been added while we got out of the loop, no worries we will restart ourselfs:
-				self._run()
+            # stop thread (if needed)
+            if len(self.bus_rising) == 0 and len(self.bus_falling) == 0:
+                # stop the loop
+                self.wait = False
 
-			
-	def cleanup(self):
-		with self.lock:
-			# event bus
-			self.bus_rising = [] 
-			self.bus_falling = []
-	
-			# boolean to stop _run loop
-			self.wait = False
-		
-		
+    def _start(self):
+        # enable the while loop
+        self.wait = True
+
+        # start thread when needed:
+        if self.thread is None:
+            # start _run in new thread:
+            self.thread = threading.Thread(target=self._run, daemon=True)
+            self.thread.start()
+
+    def _run(self):
+        # consumer
+        consumer = sys.argv[0]
+
+        # update our gpiod_line:
+        self.port.gpiod_request.release()  # release
+        config = {
+            self.port.gpiod_line: gpiod.LineSettings(
+                **self.port.line_settings_kwargs, edge_detection=gpiod.line.Edge.BOTH
+            )
+        }
+        logger.debug(f"gpiod config: {self.port.pin}, {str(config)}")
+        self.port.gpiod_request = self.port.gpiod_chip.request_lines(
+            config=config, consumer=consumer
+        )
+        self.gpiod_request = self.port.gpiod_request  # link request from port object.
+
+        logger.debug("event detect loop starting for pin '{}'.".format(self.port.pin))
+
+        # run main detect loop
+        while self.wait:
+            if self.gpiod_request.wait_edge_events(1) and self.wait:
+                (event,) = self.gpiod_request.read_edge_events(max_events=1)
+
+                if event.event_type == event.Type.RISING_EDGE:
+                    for callback in self.bus_rising:
+                        callback()
+
+                if event.event_type == event.Type.FALLING_EDGE:
+                    for callback in self.bus_falling:
+                        callback()
+
+                # call callback
+                # print ("DEBUG: call callbacks ", self.port.pin_name, "event=", event)
+            # else:
+            # print("DEBUG: ", self.port.pin, "timeout(1s) ")
+
+        logger.debug("event detect loop stoppped for pin '{}'.".format(self.port.pin))
+
+        with self.lock:
+            self.gpiod_request.release()
+
+            # do we really need to stop?
+            if self.wait is not True:
+                self.thread = None
+
+            else:
+                # aparently a new callback has been added while we got out of the loop, no worries we will restart ourselfs:
+                self._run()
+
+    def cleanup(self):
+        with self.lock:
+            # event bus
+            self.bus_rising = []
+            self.bus_falling = []
+
+            # boolean to stop _run loop
+            self.wait = False

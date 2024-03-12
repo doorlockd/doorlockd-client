@@ -4,17 +4,20 @@ from django.db import migrations, models
 import apps.doorlockdb.models
 
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0008_alter_key_description_alter_lock_is_enabled'),
+        ("doorlockdb", "0008_alter_key_description_alter_lock_is_enabled"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='lock',
-            name='token',
-            field=models.CharField(default=apps.doorlockdb.models.random_token, max_length=2000, unique=True),
+            model_name="lock",
+            name="token",
+            field=models.CharField(
+                default=apps.doorlockdb.models.random_token,
+                max_length=2000,
+                unique=True,
+            ),
         ),
     ]

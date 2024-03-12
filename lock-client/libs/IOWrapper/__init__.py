@@ -1,5 +1,4 @@
-
-# Constants:	
+# Constants:
 LOW = 0
 HIGH = 1
 

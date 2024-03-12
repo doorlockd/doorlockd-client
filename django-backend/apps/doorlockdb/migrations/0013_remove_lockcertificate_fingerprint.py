@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0012_lockcertificate_fingerprint'),
+        ("doorlockdb", "0012_lockcertificate_fingerprint"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='lockcertificate',
-            name='fingerprint',
+            model_name="lockcertificate",
+            name="fingerprint",
         ),
     ]

@@ -6,28 +6,30 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0006_remove_persongroup_persons_person_personsgroup_and_more'),
+        ("doorlockdb", "0006_remove_persongroup_persons_person_personsgroup_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='synclockkeys',
-            name='last_log_keys',
+            model_name="synclockkeys",
+            name="last_log_keys",
             field=models.DateTimeField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='synclockkeys',
-            name='last_log_unknownkeys',
+            model_name="synclockkeys",
+            name="last_log_unknownkeys",
             field=models.DateTimeField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='synclockkeys',
-            name='last_sync_keys',
+            model_name="synclockkeys",
+            name="last_sync_keys",
             field=models.DateTimeField(blank=True, default=None, null=True),
         ),
         migrations.AlterField(
-            model_name='person',
-            name='personsgroup',
-            field=models.ManyToManyField(blank=True, related_name='persons', to='doorlockdb.PersonGroup'),
+            model_name="person",
+            name="personsgroup",
+            field=models.ManyToManyField(
+                blank=True, related_name="persons", to="doorlockdb.PersonGroup"
+            ),
         ),
     ]

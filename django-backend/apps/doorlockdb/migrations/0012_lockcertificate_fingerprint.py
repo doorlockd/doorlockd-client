@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0011_lockcertificate_remove_lock_certificate'),
+        ("doorlockdb", "0011_lockcertificate_remove_lock_certificate"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lockcertificate',
-            name='fingerprint',
-            field=models.CharField(default='not set', editable=False, max_length=64),
+            model_name="lockcertificate",
+            name="fingerprint",
+            field=models.CharField(default="not set", editable=False, max_length=64),
             preserve_default=False,
         ),
     ]

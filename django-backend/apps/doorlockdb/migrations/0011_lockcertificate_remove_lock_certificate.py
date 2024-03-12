@@ -7,19 +7,30 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0010_lock_certificate_alter_lock_token'),
+        ("doorlockdb", "0010_lock_certificate_alter_lock_token"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='LockCertificate',
+            name="LockCertificate",
             fields=[
-                ('lock', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='doorlockdb.lock')),
-                ('certificate', models.TextField(blank=True, max_length=2000, unique=True)),
+                (
+                    "lock",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        primary_key=True,
+                        serialize=False,
+                        to="doorlockdb.lock",
+                    ),
+                ),
+                (
+                    "certificate",
+                    models.TextField(blank=True, max_length=2000, unique=True),
+                ),
             ],
         ),
         migrations.RemoveField(
-            model_name='lock',
-            name='certificate',
+            model_name="lock",
+            name="certificate",
         ),
     ]

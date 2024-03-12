@@ -6,22 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0005_alter_accessrule_parent'),
+        ("doorlockdb", "0005_alter_accessrule_parent"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='persongroup',
-            name='persons',
+            model_name="persongroup",
+            name="persons",
         ),
         migrations.AddField(
-            model_name='person',
-            name='personsgroup',
-            field=models.ManyToManyField(blank=True, to='doorlockdb.PersonGroup'),
+            model_name="person",
+            name="personsgroup",
+            field=models.ManyToManyField(blank=True, to="doorlockdb.PersonGroup"),
         ),
         migrations.AlterField(
-            model_name='synclockkeys',
-            name='keys_json',
-            field=models.TextField(default='{}'),
+            model_name="synclockkeys",
+            name="keys_json",
+            field=models.TextField(default="{}"),
         ),
     ]

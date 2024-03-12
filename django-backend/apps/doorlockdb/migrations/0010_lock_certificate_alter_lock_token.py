@@ -7,18 +7,20 @@ import apps.doorlockdb.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('doorlockdb', '0009_alter_lock_token'),
+        ("doorlockdb", "0009_alter_lock_token"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='lock',
-            name='certificate',
+            model_name="lock",
+            name="certificate",
             field=models.TextField(blank=True, max_length=2000),
         ),
         migrations.AlterField(
-            model_name='lock',
-            name='token',
-            field=models.CharField(default=apps.doorlockdb.models.random_token, max_length=200, unique=True),
+            model_name="lock",
+            name="token",
+            field=models.CharField(
+                default=apps.doorlockdb.models.random_token, max_length=200, unique=True
+            ),
         ),
     ]
