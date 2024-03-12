@@ -225,7 +225,6 @@ class BackendApi:
 
     def __init__(
         self,
-        lockname,
         api_url,
         offline_file=None,
         background_sync_method="LOOP",
@@ -235,7 +234,7 @@ class BackendApi:
         server_ssl_fingerprint=None,
         client_ssl_cert=None,
     ):
-        self.lockname = lockname
+        self.lockname = "init not-set"
         self.lock_disabled = True  # None
         self.synchronized = False
         # log unknownkeys
@@ -333,6 +332,10 @@ class BackendApi:
                         raise Exception(
                             f"{self.offline_file}': Configfile Intergity Check failed: api_url,server_ssl_fingerprint or client_ssl doesn't match with config. Need server sync before operation!."
                         )
+
+                    # set lockname:
+                    self.lockname = data.get("lockname", "not-set")
+                    logger.info(f"read keys db for lockname  : '{self.lockname}' ")
 
                     # simply overwrite dict:
                     self.keys = data.get("keys")
@@ -594,7 +597,7 @@ class BackendApi:
     def long_poll_events(self):
 
         long_poll = self.requests.get(
-            f"{self.api_url}/doorlockdb/api/lock/{self.lockname}/long_poll_events",
+            f"{self.api_url}/doorlockdb/api/lock/long_poll_events",
             stream=True,
         )
 
@@ -643,6 +646,14 @@ class BackendApi:
             keys_hash = self.keys_hash()
             resp = self.request_post(f"/api/lock/sync.keys", {"keys_hash": keys_hash})
             logger.debug(f"DEBUG: resp: {resp}")
+            force_write_offlinedb = False
+
+            # set or update lockname:
+            if self.lockname != resp.get("lockname", "not-set"):
+                self.lockname = resp.get("lockname", "not-set")
+                force_write_offlinedb = True
+
+            logger.info(f"sync keys db for lockname  : '{self.lockname}' ")
 
             # show message in logs
             self.lock_disabled = bool(resp.get("disabled", False))
@@ -691,7 +702,7 @@ class BackendApi:
                     raise Exception("Some fatal error, we don't understand:", resp)
 
         # if hash changed, save changes to file
-        if self.keys_hash() != keys_hash:
+        if self.keys_hash() != keys_hash or force_write_offlinedb:
             self.save_to_file()
 
 
@@ -709,9 +720,13 @@ class DjangoBackendRfidAuth:
         # server_ssl_fingerprint=None
         # client_ssl_cert=None
 
-        # lockname, api_url, offline_file=None, background_sync_method='LONGPOLL', log_unknownkeys=True, server_ssl_fingerprint=None, client_ssl_cert=None
+        #  api_url, offline_file=None, background_sync_method='LONGPOLL', log_unknownkeys=True, server_ssl_fingerprint=None, client_ssl_cert=None
         kwargs = config.copy()
         del kwargs["type"]  # delete unwanted argument
+
+        if "lockname" in kwargs:
+            logger.warning(f"DEPRECATED: config option 'lockname' is no longer in use.")
+            del kwargs["lockname"]  # delete unwanted argument
 
         self.conf = kwargs
 
@@ -737,7 +752,9 @@ class DjangoBackendRfidAuth:
         """lookup detected hwid,"""
         # lookup hwid in db
         access, msg = self.api.lookup(hwid_str)
-        logger.debug(f"RFID KEY lookup({hwid_str}: access={access} : {msg}")
+        logger.debug(
+            f"'{self.api.lockname}' RFID KEY lookup({hwid_str}): access={access} : {msg}"
+        )
         return access
 
 

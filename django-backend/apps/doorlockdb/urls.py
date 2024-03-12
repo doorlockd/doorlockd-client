@@ -5,7 +5,7 @@ from . import views
 urlpatterns = [
     # long pull
     path(
-        "api/lock/<str:lock_name>/long_poll_events",
+        "api/lock/long_poll_events",
         views.api_poll_events,
         name="api_poll_events",
     ),

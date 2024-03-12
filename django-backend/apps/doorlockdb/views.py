@@ -84,7 +84,7 @@ def generator_poll_events(lock):
         time.sleep(5)
 
 
-def api_poll_events(request, lock_name):
+def api_poll_events(request):
     try:
         l = Helpers.AuthWithByClientSSL(request)
     except Helpers.ErrorClientSSLCert as e:

@@ -56,6 +56,7 @@ class SyncKeysInputSchema(Schema):
 
 
 class SyncKeysOutputSchema(Schema):
+    lockname: str = None
     keys: dict = None
     synchronised: bool = None
     disabled: bool = None
@@ -70,6 +71,7 @@ def api_lock_sync_keys(request, input_data: SyncKeysInputSchema):
     # keys:           -> client must update key list
     # synchronised:   -> if value is true , client is up to date.
     # disabled:       -> additional bool value, if lock is disabled. (client must show warning in logs on lock)
+    # lockname:       -> lockname to show in logfile
 
     # 401:
     # error:          -> error message.
@@ -77,8 +79,8 @@ def api_lock_sync_keys(request, input_data: SyncKeysInputSchema):
     # get Lock from authentication
     l = request.auth
 
-    # init response dict
-    resp = {}
+    # init response dict with lockname
+    resp = dict(lockname=l.name)
 
     # if lock disabled (client will update to empty keys list):
     if not l.is_enabled:
