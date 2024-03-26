@@ -1,0 +1,34 @@
+{% extends "admin/change_form.html" %}
+
+{% load i18n %}
+
+{# load i18n admin_static admin_modify #}
+{% load i18n admin_list admin_modify %}
+{% block content %}
+  <div id="content-main">
+    <form action="" method="POST">
+      {% csrf_token %}
+      <p>
+        {# This prints an ugly list of users, but it works (and just getting all names and joining them with commas seemed impossible without involving the view, oh well... #}
+        {% blocktrans %}
+        {% endblocktrans %}
+
+		{% if is_add %}
+        Users to <strong>add</strong> to group: {{users}}
+		{% elif is_remove %}
+        Users to <strong>remove</strong> from group: {{users}}
+		{% endif %}
+      </p>
+
+      {{ form  }}
+
+      <div class="submit-row">
+		{% if is_add %}
+        <input class="default" type="submit" value="{% trans 'Add users to group' %}" />
+		{% elif is_remove %}
+        <input class="default" type="submit" value="{% trans 'Remove users from group' %}" />
+		{% endif %}
+      </div>
+    </form>
+  </div>
+{% endblock %}
