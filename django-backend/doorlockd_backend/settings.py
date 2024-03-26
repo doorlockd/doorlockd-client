@@ -29,7 +29,7 @@ SECRET_FILE = normpath(join(BASE_DIR, "run", "SECRET.key"))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-DEBUG = True
+# DEBUG = True
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', '192.168.2.16']
 ALLOWED_HOSTS = ["*"]

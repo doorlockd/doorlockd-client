@@ -179,14 +179,14 @@ class HbwVoordeurLogic:
         #
         if self.io_ui_nachtslotschootnotificatie_open:
             self.state_nachtslotschootdetectie.subscribe(
-                lambda v: self.io_ui_nachtslotschootnotificatie_open.output(v)
+                lambda v: self.io_ui_nachtslotschootnotificatie_open.output(not v)
             )
             logger.info(
                 f"ui_nachtslotschootnotificatie_open enabled on '{self.io_ui_nachtslotschootnotificatie_open_name}'."
             )
         if self.io_ui_nachtslotschootnotificatie_close:
             self.state_nachtslotschootdetectie.subscribe(
-                lambda v: self.io_ui_nachtslotschootnotificatie_close.output(not v)
+                lambda v: self.io_ui_nachtslotschootnotificatie_close.output(v)
             )
             logger.info(
                 f"ui_nachtslotschootnotificatie_close enabled on '{self.io_ui_nachtslotschootnotificatie_close_name}'."
