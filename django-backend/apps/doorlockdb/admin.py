@@ -9,6 +9,9 @@ from django import forms
 from django.db.models import Count
 from django.forms import Textarea
 
+from django.shortcuts import redirect
+from django.urls import path
+from .adminviews import AddUsersToGroupView
 
 # admin.site.register(Person)
 # admin.site.register(PersonGroup)
@@ -58,6 +61,15 @@ class LockAdmin(admin.ModelAdmin):
 #         model = Person
 #         exclude = ["name"]
 
+@admin.action(description="Add person(s) to group")
+def add_person_to_group(self, request, queryset):
+    userids = queryset.values_list('pk', flat=True)
+    return redirect('admin:bulk_person_to_group', ','.join(map(str, userids)), 'add')
+
+@admin.action(description="Remove person(s) from group")
+def remove_person_from_group(self, request, queryset):
+    userids = queryset.values_list('pk', flat=True)
+    return redirect('admin:bulk_person_to_group', ','.join(map(str, userids)), 'remove')
 
 class PersonAdmin(admin.ModelAdmin):
     list_display = (
@@ -79,13 +91,21 @@ class PersonAdmin(admin.ModelAdmin):
     filter_horizontal = ("personsgroup",)
 
     inlines = [KeysInline]
-    actions = (make_is_enabled_true, make_is_enabled_false)
+    actions = (make_is_enabled_true, make_is_enabled_false,add_person_to_group, remove_person_from_group)
 
     def get_queryset(self, request):
         queryset = super(PersonAdmin, self).get_queryset(request)
         return queryset.annotate(key_count=Count("key", distinct=True)).annotate(
             group_count=Count("personsgroup", distinct=True)
         )
+    
+    def get_urls(self):
+            # Prepend new path so it is before the catchall that ModelAdmin adds
+            return [
+                path('<path:userids>/<add_or_remove>/bulk-to-group/',
+                     self.admin_site.admin_view(AddUsersToGroupView.as_view(admin_site=self.admin_site)),
+                     name='bulk_person_to_group'),
+            ] + super().get_urls()
 
     @admin.display(ordering="key_count", description="#keys")
     def key_count(self, obj):
