@@ -7,6 +7,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django import forms
 from django.db.models import Count
+from django.db.models.functions import Lower
 from django.forms import Textarea
 
 from django.shortcuts import redirect
@@ -100,6 +101,9 @@ class PersonAdmin(admin.ModelAdmin):
         add_person_to_group,
         remove_person_from_group,
     )
+
+    def get_ordering(self, request):
+        return (Lower("name"),)
 
     def get_queryset(self, request):
         queryset = super(PersonAdmin, self).get_queryset(request)
