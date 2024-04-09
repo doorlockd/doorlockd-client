@@ -205,6 +205,12 @@ class HbwVoordeurLogic:
                     not v and (not self.solenoid.state_open.value)
                 )
             )
+
+            # Alwaus turn off LED when Solenoid opens:
+            self.solenoid.state_open.subscribe(
+                lambda v: self.io_ui_deuropenknopbacklight.output(IO.LOW) if v else None
+            )
+
             logger.info(
                 f"ui_deuropenknopbacklight enabled on '{self.io_ui_deuropenknopbacklight_name}'."
             )

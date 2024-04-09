@@ -22,6 +22,9 @@ class Solenoid(module.BaseModule):
         self.cancel_event_name = config.get("cancel_event", "cancel_open_solenoid")
 
         self.time_wait = float(config.get("time_wait", 2.4))
+        self.cancel_open_solenoid_delay = float(
+            config.get("cancel_open_solenoid_delay", 0)
+        )
 
         self.state_open = State(value=False)
 
@@ -153,6 +156,14 @@ class Solenoid(module.BaseModule):
         Cancel Open Solenoid.
         """
         # close solenoid or return to permanent state.
+        if self.state_open.value:
+            if self.cancel_open_solenoid_delay != 0:
+                logger.info(
+                    f"cancel open solenoid. cancel_open_solenoid_delay = {self.cancel_open_solenoid_delay}"
+                )
+                # wait time wait. unless solenoid open is closed
+                self.state_open.wait_for(False, self.cancel_open_solenoid_delay)
+
         logger.info(
             f"cancel open solenoid. state_open = {self.state_open.value}, permanent_open_state = {self.permanent_open_state.value}"
         )
