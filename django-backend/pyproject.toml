@@ -10,7 +10,7 @@ python = "^3.8"
 django = "^4.2.7"
 django-tables2 = "^2.6.0"
 django-ninja = "^0.22.2"
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
