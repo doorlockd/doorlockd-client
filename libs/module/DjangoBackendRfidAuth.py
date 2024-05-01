@@ -70,7 +70,11 @@ class LogStats:
             # precision = 0
             t_end = t_now
 
-        return t_now, t_begin, t_end
+        return (
+            datetime.datetime.fromtimestamp(t_now, tz=datetime.timezone.utc),
+            datetime.datetime.fromtimestamp(t_begin, tz=datetime.timezone.utc),
+            datetime.datetime.fromtimestamp(t_end, tz=datetime.timezone.utc),
+        )
 
     def add(self, key, known_key):
         # get privacy friendly timestamps, now , begin, end
@@ -83,7 +87,7 @@ class LogStats:
         # UnknownKey
         if not known_key:
             # set timestamp
-            r["timestamp"] = datetime.datetime.fromtimestamp(t_now).isoformat()
+            r["timestamp"] = t_now.isoformat()
 
             # save:
             with self.lock:
@@ -100,8 +104,8 @@ class LogStats:
 
         # Key -> LastSeen table with obfuscated timestamp
         else:
-            r["timestamp_begin"] = datetime.datetime.fromtimestamp(t_begin).isoformat()
-            r["timestamp_end"] = datetime.datetime.fromtimestamp(t_end).isoformat()
+            r["timestamp_begin"] = t_begin.isoformat()
+            r["timestamp_end"] = t_end.isoformat()
 
             with self.lock:
                 try:
