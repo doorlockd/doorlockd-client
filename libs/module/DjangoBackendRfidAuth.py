@@ -507,8 +507,12 @@ class BackendApi:
         ).hexdigest()
 
     def acl_parse_rule(self, rule):
-        now = datetime.datetime.now()
+        now = datetime.datetime.now().astimezone()
 
+        # Note that after/before are expected to have a timezone
+        # specifier and are interpret as absolute timestamps, while
+        # time_start/time_end are just plain times and are interpreted
+        # in the local timezone (independent of the server timezone).
         after = rule.get("after", None)
         before = rule.get("before", None)
         weekdays = rule.get("weekdays", [])
