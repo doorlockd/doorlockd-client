@@ -165,7 +165,6 @@ class LogStats:
 
     def api_sync_keys_last_seen(self, flush=False):
         keys_last_seen = []
-        t_now = datetime.datetime.now()
 
         # collect entries to sync
         for k in self.table_key_last_seen[: self.limit_post_entries]:
