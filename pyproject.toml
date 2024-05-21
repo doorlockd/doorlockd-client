@@ -12,7 +12,7 @@ pyaml = "^23.9.7"
 simplejson = "^3.19.2"
 toml = "^0.10.2"
 nfcpy = {git = "https://github.com/matthijskooijman/nfcpy.git", rev = "v1.0.4+doorlockd", optional = true}
-requests = "^2.31.0"
+requests = "^2.32.0"
 gpiod = {version = "^2.1.3" , optional = true}
 
 [tool.poetry.extras]
