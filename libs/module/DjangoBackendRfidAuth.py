@@ -76,7 +76,7 @@ class LogStats:
             datetime.datetime.fromtimestamp(t_end, tz=datetime.timezone.utc),
         )
 
-    def add(self, key, known_key):
+    def add(self, key, known_key, meta_data={}):
         # get privacy friendly timestamps, now , begin, end
         t_now, t_begin, t_end = self.get_timestamps_now_begin_end()
 
@@ -98,8 +98,12 @@ class LogStats:
                     )
                     item["count"] += r["count"]
                     item["timestamp"] = r["timestamp"]
+                    item["meta_data_json"] = json.dumps(
+                        {**meta_data, **json.loads(item["meta_data_json"])}
+                    )
                 except:
                     # add new
+                    r["meta_data_json"] = json.dumps(meta_data)
                     self.table_unknown_key.append(r)
 
         # Key -> LastSeen table with obfuscated timestamp
@@ -563,8 +567,9 @@ class BackendApi:
         # no condition return true
         return False, "no condition in ruleset returned true"
 
-    def lookup(self, key):
+    def lookup(self, key, target, nfc_tools, *args, **kwargs):
         key = key.lower()  # lowercase this key
+        meta_data = {}  # placeholder for meta_data
 
         if self.lock_disabled is True:
             msg = "Warning: lock disabled or never synchronised, lookup() and last-seen logging ignored."
@@ -577,13 +582,15 @@ class BackendApi:
         if key not in self.keys:
             has_access, msg = False, "Not found"
             known_key = False
+            meta_data = nfc_tools.collect_meta()
+            logger.info(f"card meta info: {meta_data}")
         else:
             has_access, msg = self.acl_has_access(key)
             known_key = True
 
         # keep last_seen list
         if known_key or (not known_key and self.log_unknownkeys):
-            self.log_stats.add(key, known_key)
+            self.log_stats.add(key, known_key, meta_data)
         else:
             logger.debug("Logging is disabled by log_unknownkeys.")
 
@@ -755,10 +762,10 @@ class DjangoBackendRfidAuth:
     def teardown(self):
         self.api.cleanup()
 
-    def has_access(self, hwid_str):
+    def has_access(self, hwid_str, target, nfc_tools, *args, **kwargs):
         """lookup detected hwid,"""
         # lookup hwid in db
-        access, msg = self.api.lookup(hwid_str)
+        access, msg = self.api.lookup(hwid_str, target, nfc_tools, *args, **kwargs)
         logger.debug(
             f"'{self.api.lockname}' RFID KEY lookup({hwid_str}): access={access} : {msg}"
         )

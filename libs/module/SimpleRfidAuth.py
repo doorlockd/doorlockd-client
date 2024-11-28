@@ -36,7 +36,7 @@ class SimpleRfidAuth:
     def teardown(self):
         pass
 
-    def has_access(self, hwid_str):
+    def has_access(self, hwid_str, *args, **kwargs):
         """lookup detected hwid,"""
         # lookup hwid in db
         access = hwid_str in self.access_list
