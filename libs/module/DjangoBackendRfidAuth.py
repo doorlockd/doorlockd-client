@@ -583,6 +583,15 @@ class BackendApi:
             meta_data = nfc_tools.collect_meta()
             logger.info(f"card meta info: {meta_data}")
         else:
+            # need meta data?
+            if self.keys[key].get("need_meta_data", False):
+                logger.info(f"key ('{key}') need_meta_data")
+                meta_data = nfc_tools.collect_meta()
+                # when succeeded:
+                if self.api_key_merge_meta_data_json(key, json.dumps(meta_data)):
+                    del self.keys[key]["need_meta_data"]
+
+            # has access comform access rule?
             has_access, msg = self.acl_has_access(key)
             known_key = True
 
@@ -605,6 +614,25 @@ class BackendApi:
             raise ApiError("POST {}/ {}".format(url, resp.status_code), resp)
 
         return resp.json()
+
+    def api_key_merge_meta_data_json(self, key, meta_data_json="{}"):
+        """
+        api request to merge meta_data_json with key.
+        returns boolean True on succes, False or None on error.
+        """
+        try:
+            resp = self.request_post(
+                f"/api/key/merge.meta_data_json",
+                {"key": key, "meta_data_json": meta_data_json},
+            )
+            logger.debug(f"DEBUG: resp: {resp}")
+            # api should return saved=True | saved=False
+            return resp.get("saved", None)
+        except Exception as e:
+            logger.warning(
+                f"Unexpected Exception during api_key_merge_meta_data_json. {e}",
+                exc_info=e,
+            )
 
     def long_poll_events(self):
 
