@@ -573,9 +573,7 @@ class BackendApi:
 
         if self.lock_disabled is True:
             msg = "Warning: lock disabled or never synchronised, lookup() and last-seen logging ignored."
-            logger.warning(
-                "Warning: lock disabled or never synchronised, lookup() and last-seen logging ignored."
-            )
+            logger.warning(msg)
             return False, msg
 
         # lookup key in access list:

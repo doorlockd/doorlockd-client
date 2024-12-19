@@ -144,6 +144,15 @@ class UILed4(module.BaseModule):
                 events.subscribe("rfid_comm_ready", lambda data: self.led2.blink())
             )
             self.s.append(
+                events.subscribe(
+                    "rfid_comm_error",
+                    lambda data: self.led3.blink()
+                    or self.led2.blink()
+                    or self.led3.blink()
+                    or self.led2.blink(),
+                )
+            )
+            self.s.append(
                 events.subscribe("rfid_access_denied", lambda data: self.led3.on())
             )
             self.s.append(

@@ -165,7 +165,14 @@ class RfidReader:
 
         try:
             has_access = dc.rfid_auth.has_access(
-                hwid_str, target=target, nfc_tools=NfcTools(target)
+                hwid_str,
+                target=target,
+                nfc_tools=NfcTools(
+                    target,
+                    callback_rfid_comm=lambda: self.event_bus.raise_event(
+                        "rfid_comm_pulse"
+                    ),
+                ),
             )
         except TargetGoneWhileReadingError:
             has_access = None
@@ -194,7 +201,10 @@ class RfidReader:
         else:
             # has_access is None or anythng else
             logger.info("hwid ({:s}) gone while reading.".format(hwid_str))
-            time.sleep(2)
+            # show 3 times rfid_comm_error (aprox 0.6 seconds)
+            self.event_bus.raise_event("rfid_comm_error", wait=True)
+            self.event_bus.raise_event("rfid_comm_error", wait=True)
+            self.event_bus.raise_event("rfid_comm_error", wait=True)
 
     def start_thread(self):
         if not (self.thread and self.thread.is_alive()):
@@ -223,8 +233,9 @@ class RfidReader:
 class NfcTools:
     """Set of tools to communicate with nfc tags or collect various tag data."""
 
-    def __init__(self, target):
+    def __init__(self, target, callback_rfid_comm=lambda: None):
         self.target = target
+        self.callback_rfid_comm = callback_rfid_comm
 
     def _authenticate(
         self, secret=bytearray([0x0, 0x0, 0x0, 0x0, 0x0, 0x0]), page=0, timeout=0.005
@@ -234,6 +245,9 @@ class NfcTools:
         # only for target.type Type2Tag
         if self.target.type != "Type2Tag":
             raise Exception("authenticate only for for type Type2Tag")
+
+        # show UI feeedback
+        self.callback_rfid_comm()
 
         # type2tag uses 0x60 for authentication.
         send = bytearray([0x60, page]) + secret + self.target._nfcid
@@ -246,6 +260,10 @@ class NfcTools:
         """wrapper for target.read(page), but then with retries for timeout
         Type2TagCommandError(nfc.tag.TIMEOUT_ERROR)
         """
+
+        # show UI feeedback
+        self.callback_rfid_comm()
+
         n = 0
         while n != max_retries:
             n = n + 1
