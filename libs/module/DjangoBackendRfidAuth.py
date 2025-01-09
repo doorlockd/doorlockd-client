@@ -160,7 +160,13 @@ class LogStats:
             )
             return
 
-        logger.info(f"unknownkeys synchronized: {len(resp.get('saved'))}")
+        logger.info(
+            f"unknownkeys synchronized: {len(resp.get('saved'))}/{len(unknownkeys)}, errors: {len(resp.get('err_msgs', []))}"
+        )
+
+        # log err_msgs in our error log:
+        for err_msg in resp.get("err_msgs", []):
+            logger.error(f"unknownkeys err_msg[]: {err_msg}")
 
         # remove saved items from our list
         for item in resp.get("saved"):
@@ -187,7 +193,13 @@ class LogStats:
                 )
                 return
 
-            logger.info(f"keys_last_seen synchronized: {len(resp.get('saved'))}")
+            logger.info(
+                f"keys_last_seen synchronized: {len(resp.get('saved'))}/{len(keys_last_seen)}, errors: {len(resp.get('err_msgs', []))}"
+            )
+
+            # log err_msgs in our error log:
+            for err_msg in resp.get("err_msgs", []):
+                logger.error(f"keys_last_seen err_msg[]: {err_msg}")
 
             # remove saved items from our list
             for item in resp.get("saved"):
@@ -591,7 +603,7 @@ class BackendApi:
                     # read meta data
                     meta_data = nfc_tools.collect_meta()
                     # post meta_data to backend
-                    self.api_key_merge_meta_data_json(key, json.dumps(meta_data)):
+                    self.api_key_merge_meta_data_json(key, json.dumps(meta_data))
                     # all succeeded: del 'need_meta_data':
                     del self.keys[key]["need_meta_data"]
 

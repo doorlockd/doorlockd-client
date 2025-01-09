@@ -341,7 +341,7 @@ class NfcTools:
             # OV-chipkaart uses all-zeroes keys for its first few blocks/pages/whatever they are called)
             self._authenticate()
         except Exception as e:
-            logger.debug(e, exc_info=True)
+            logger.debug(f"exception during authenticate {e}", exc_info=True)
             return {}
 
         # is OV Chip kaart, match page2 vs known string.
