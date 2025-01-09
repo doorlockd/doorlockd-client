@@ -586,10 +586,27 @@ class BackendApi:
             # need meta data?
             if self.keys[key].get("need_meta_data", False):
                 logger.info(f"key ('{key}') need_meta_data")
-                meta_data = nfc_tools.collect_meta()
-                # when succeeded:
-                if self.api_key_merge_meta_data_json(key, json.dumps(meta_data)):
+
+                try:
+                    # read meta data
+                    meta_data = nfc_tools.collect_meta()
+                    # post meta_data to backend
+                    self.api_key_merge_meta_data_json(key, json.dumps(meta_data)):
+                    # all succeeded: del 'need_meta_data':
                     del self.keys[key]["need_meta_data"]
+
+                except Exception as e:
+                    # Soft failing: collect_meta().
+                    # since we haven't fully tested our collect_meta() feature, and we never want
+                    # to lockout users who have access. we "soft fail" when reading of meta_data
+                    # failed.
+                    #
+                    # Ideally when this works perfect, we don't want to supress the exceptions, so
+                    # that for example TargetGoneWhileReadingError will fail access and notify the
+                    # end user to prompt their NFC key again to the reader.
+                    #
+                    # raise(e) # comment/uncomment to enable/disable softfail
+                    logger.info(f"Soft failed: nfc_tools.collect_meta: {e}", exc_info=e)
 
             # has access comform access rule?
             has_access, msg = self.acl_has_access(key)

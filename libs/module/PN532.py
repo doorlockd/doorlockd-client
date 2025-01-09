@@ -278,7 +278,7 @@ class NfcTools:
                 ):
                     raise (e)
                 else:
-                    logger.debug(
+                    logger.info(
                         f"TIMEOUT_ERROR while read({page}), attemp ({n}/{max_retries})"
                     )
 
