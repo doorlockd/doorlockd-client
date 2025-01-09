@@ -32,9 +32,7 @@ except FileNotFoundError:
 # create logger with 'doorlockd'
 #
 logger = logging.getLogger()
-logger.setLevel(dc.config.get("doorlockd", {}).get("log_level", "NOTSET"))
 # create formatter and add it to the handlers
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 formatter = logging.Formatter("%(asctime)s - %(module)s - %(levelname)s - %(message)s")
 
 # console output on stderr
@@ -57,6 +55,14 @@ if dc.config.get("doorlockd", {}).get("logfile_name"):
     fh.setFormatter(formatter)
     logger.addHandler(fh)
 
+
+# set logger level to lowest needed by our handlers:
+logger.setLevel(min([h.level for h in logger.handlers]))
+if dc.config.get("doorlockd", {}).get("log_level"):
+    logger.warning(
+        f"deprecated config used and will be ignored: doorlockd.log_level = {dc.config.get('doorlockd', {}).get('log_level')}"
+    )
+logger.debug(f"loglevels set: logger: {logger.level}, handlers: {logger.handlers}")
 
 dc.logger = logger
 dc.logger.info("doorlockd starting up...")
