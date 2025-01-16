@@ -279,7 +279,7 @@ class BackendApi:
         self.api_url = api_url
 
         self.requests = requests.Session()
-        self.requests.headers.update({"User-Agent": "DoorLockClient"})
+        self.requests.headers.update({"User-Agent": dc.app_name_ver})
 
         if server_ssl_fingerprint is None:
             raise Exception(

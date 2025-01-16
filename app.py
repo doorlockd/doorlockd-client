@@ -16,6 +16,31 @@ dc.io_port = {}  # dc.io_port
 # ?dc.e: events object
 # ?dc.hw: hardware dict
 
+
+def get_git_version():
+    """Get git hash rev of current HEAD, add suffix '-changed' when any tracked file is changed."""
+    import subprocess
+
+    try:
+        # get unique version id: tag/HEAD, branch, steps away, hash  and dirty or not.
+        version = (
+            subprocess.check_output(["git", "describe", "--all", "--long", "--dirty"])
+            .decode("ascii")
+            .strip()
+        )
+
+    except Exception as e:
+        version = "version-unknown"
+        print(f"Warning: Could not read version from git: ({e})")
+
+    return version
+
+
+# set app name and version in envirement:
+dc.app_name = "doorlockd-client"
+dc.app_ver = get_git_version()
+dc.app_name_ver = f"{dc.app_name}({dc.app_ver})"
+
 import toml
 import logging
 
@@ -65,7 +90,7 @@ if dc.config.get("doorlockd", {}).get("log_level"):
 logger.debug(f"loglevels set: logger: {logger.level}, handlers: {logger.handlers}")
 
 dc.logger = logger
-dc.logger.info("doorlockd starting up...")
+dc.logger.info(f"{dc.app_name_ver} starting up...")
 
 
 #
@@ -112,7 +137,6 @@ signal.signal(
 # main loop
 #
 def main():
-
     if dc.config.get("doorlockd", {}).get("enable_modules", True):
         try:
             # initialize all modules
