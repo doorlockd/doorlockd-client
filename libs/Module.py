@@ -54,6 +54,7 @@ class ModuleManager:
     modules = {}
     _base_path = "libs.module."
     abort_event = threading.Event()
+    app_startup_complete = False
 
     def load_all(self, configs):
         t = []  # list of threads
@@ -129,12 +130,33 @@ class ModuleManager:
         if self.abort_event.is_set() and task not in ("disable", "teardown"):
             raise Exception(f"abort_event is set, exception occured during {task}.")
 
-    def abort(self, mesg, exception=None):
-        if exception:
-            logger.warning(f"abort(): {mesg} exception={exception}", exc_info=exception)
-        else:
-            logger.warning(f"abort(): {mesg}")
+    def main_loop(self):
+        """main loop when app is started, wait for shutdown proces"""
+        self.app_startup_complete = True
 
+        # we are up and running
+        logger.info(f"{dc.app_name_ver} started.")
+
+        # emit start success event: app_startup_complete
+        dc.e.raise_event("app_startup_complete")
+
+        # wait for abort_event
+        self.abort_event.wait()
+
+    def abort(self, mesg, exception=None):
+        logger.warning(f"abort(): {mesg} exception={exception}", exc_info=exception)
+        # emit event 'app_abort' with data:(mesg, exception)
+        dc.e.raise_event("app_abort", {"mesg": mesg, "exception": exception})
+
+        # end main loop
+        self.abort_event.set()
+
+    def exit(self, mesg):
+        logger.warning(f"exit(): {mesg}")
+        # emit event 'app_exit' with data:(mesg, exception)
+        dc.e.raise_event("app_exit", {"mesg": mesg})
+
+        # end main loop
         self.abort_event.set()
 
     # def setup_all(self):

@@ -41,6 +41,7 @@ dc.app_name = "doorlockd-client"
 dc.app_ver = get_git_version()
 dc.app_name_ver = f"{dc.app_name}({dc.app_ver})"
 
+
 import toml
 import logging
 
@@ -125,12 +126,10 @@ import threading
 threading.excepthook = handle_excepthook
 
 #
-# exit -> abort()
+# exit -> dc.module.exit()
 #
-signal.signal(signal.SIGINT, lambda signal, frame: dc.module.abort("Exit: got sigint"))
-signal.signal(
-    signal.SIGTERM, lambda signal, frame: dc.module.abort("Exit: got sigterm")
-)
+signal.signal(signal.SIGINT, lambda signal, frame: dc.module.exit("Exit: got sigint"))
+signal.signal(signal.SIGTERM, lambda signal, frame: dc.module.exit("Exit: got sigterm"))
 
 
 #
@@ -148,11 +147,8 @@ def main():
             # enable all loaded modules
             dc.module.do_all("enable")
 
-            # we are up and running
-            logger.info("doorlockd started.")
-
-            # wait for abort_event
-            dc.module.abort_event.wait()
+            # call main_loop, this will wait until exit/abort
+            dc.module.main_loop()
 
         except Exception as e:
             logger.warning(e)

@@ -417,15 +417,24 @@ class BackendApi:
                 try:
                     # sync keys
                     self.api_sync()
+                    # emit event sucess
+                    dc.e.raise_event("sync_success")
 
+                except Exception as e:
+                    mesg = f"exception occured during background keys sync. (exception ignored)"
+                    logger.warning(mesg, exc_info=e)
+                    # emit event fail/log
+                    dc.e.raise_event("sync_fail_log", {"mesg": mesg, "exception": e})
+
+                try:
                     # try sync last_seen and unknown_keys
                     self.log_stats.try_sync()
 
                 except Exception as e:
-                    logger.warning(
-                        f"exception occured during background sync. (exception ignored)",
-                        exc_info=e,
-                    )
+                    mesg = f"exception occured during background log_stats sync. (exception ignored)"
+                    logger.warning(mesg, exc_info=e)
+                    # emit event fail/log
+                    dc.e.raise_event("sync_fail_log", {"mesg": mesg, "exception": e})
 
                 # sleep until next auto_sync_loop
                 event.wait(
