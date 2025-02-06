@@ -11,7 +11,12 @@ from libs.data_container import data_container as dc
 
 # dc.config: config dict
 # dc.module:
-dc.io_port = {}  # dc.io_port
+
+# dc.io_port = {}  # dc.io_port
+from libs.IOWrapper.ioHelpers import IoPortsShelf
+
+dc.io_port = IoPortsShelf()
+
 # ?dc.logging: logging object
 # ?dc.e: events object
 # ?dc.hw: hardware dict
