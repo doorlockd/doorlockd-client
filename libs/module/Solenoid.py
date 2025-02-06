@@ -90,15 +90,11 @@ class Solenoid(module.BaseModule):
 
     def disable(self):
         # disable module
-        # cancel event
-        if self.event_open:
-            self.event_open.cancel()
 
-        if self.event_cancel_open:
-            self.event_cancel_open.cancel()
-
-        if self.event_toggle_permanent_open:
-            self.event_toggle_permanent_open.cancel()
+        # cancel event if exists
+        for event in ["event_open", "event_cancel_open", "event_toggle_permanent_open"]:
+            if hasattr(self, event) and getattr(self, event):
+                getattr(self, event).cancel()
 
         # set output low
         self.state_open.value = False
