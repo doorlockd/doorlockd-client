@@ -19,7 +19,8 @@ class MockGPIO(MagicMock):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.value = 0
+        self.value = int(bool(kwargs.get("value", 0)))
+        self.events = {1: [], 0: []}
 
     def setup(self, direction, *args, **kwargs):
         # direction
@@ -36,6 +37,30 @@ class MockGPIO(MagicMock):
     def output(self, value, *args, **kwargs):
         self.value = int(bool(value))  # make all value 1/0
         super().__getattr__("output")(self.value, *args, **kwargs)
+
+    def mock_change_input(self, *args, **kwargs):
+        """Change IO value and raise edge event."""
+        for value in args:
+            value = int(bool(value))
+            if value != self.value:
+                self.value = value  # make all value 1/0
+                # exec callbacks
+                for callback_fn in self.events[self.value]:
+                    callback_fn()
+
+        super().__getattr__("mock_change_input")(*args, **kwargs)
+
+    def add_event_detect(self, edge, callback_fn, *args, **kwargs):
+        # EDGE_RISING = 1
+        # EDGE_FALLING = 0
+        # EDGE_BOTH = 2
+        if edge == 1 or edge == 2:
+            self.events[1].append(callback_fn)
+
+        if edge == 0 or edge == 2:
+            self.events[0].append(callback_fn)
+
+        super().__getattr__("add_event_detect")(edge, "callback_fn", *args, **kwargs)
 
 
 def reset_data_container():
