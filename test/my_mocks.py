@@ -1,13 +1,30 @@
 import unittest
 
-# mock dc.logger
 from libs.data_container import data_container as dc
 from unittest.mock import MagicMock, Mock, call
 
+
+#
+# setup app.py data-container 'dc' envirement
+#
 dc.logger = MagicMock()
 from libs.Events import Events
 
 
+def reset_data_container():
+    # app dc. envirment:
+    dc.logger = MagicMock()
+    dc.io_port = {}
+    # dc.e = MagicMock() # Events
+    dc.e = Events()
+
+
+reset_data_container()
+
+
+#
+# IOWrapper.IOPort Mock
+#
 class MockGPIO(MagicMock):
     """
     IOWrapper.IOPort Mock.
@@ -63,12 +80,28 @@ class MockGPIO(MagicMock):
         super().__getattr__("add_event_detect")(edge, "callback_fn", *args, **kwargs)
 
 
-def reset_data_container():
-    # app dc. envirment:
-    dc.logger = MagicMock()
-    dc.io_port = {}
-    # dc.e = MagicMock() # Events
-    dc.e = Events()
+#
+# Delta Time testing : AssertDeltaTime()
+#
+import time
 
 
-reset_data_container()
+class AssertDeltaTime:
+    def __init__(self):
+        self.t_start = time.monotonic()
+
+    def end_timer(self):
+        time_end = time.monotonic()
+        if hasattr(self, "delta_t"):
+            raise Exception("delta_t already set, timer_end() can only be called once.")
+
+        self.delta_t = time_end - self.t_start
+
+    def assertDeltaTime(self, expected_delta_t, msg, tolerance=0.01):
+        if (
+            self.delta_t < expected_delta_t
+            or self.delta_t > expected_delta_t + tolerance
+        ):
+            raise AssertionError(
+                f"delta time {self.delta_t} != {expected_delta_t} (+tollerance of {tolerance}):{msg}"
+            )
