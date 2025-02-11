@@ -377,14 +377,17 @@ class NfcTools:
             }
         )
 
+        def to_hex(v):
+            return v.hex() if v is not None else None
+
         # add nfc.clf.RemoteTarget: sel_res, sens_res,  sdd_res and brty
         meta.update(
             {
                 "target": {
                     "brty": self.target.clf.target.brty,
-                    "sdd_res": self.target.clf.target.sdd_res.hex(),
-                    "sel_res": self.target.clf.target.sel_res.hex(),
-                    "sens_res": self.target.clf.target.sens_res.hex(),
+                    "sdd_res": to_hex(self.target.clf.target.sdd_res),
+                    "sel_res": to_hex(self.target.clf.target.sel_res),
+                    "sens_res": to_hex(self.target.clf.target.sens_res),
                 }
             }
         )
