@@ -10,6 +10,30 @@ from .my_mocks import AssertDeltaTime
 
 
 class TestSolenoid(unittest.TestCase):
+    """
+    tested functions
+    - open solenoid
+    - cancel open solenoid
+    - permanent open solenoid
+
+    state var:
+    - state_open
+    - permanent_open_state
+
+    config options:
+    - io_output
+    - time_wait
+    - allow_permanent_open
+    - io_output_permanent_open_ui_led
+
+    not tested (TODO):
+    config options:
+    - event
+    - cancel_event
+    - cancel_open_solenoid_delay
+    - event_toggle_permanent_open
+
+    """
 
     def setUp(self):
         # reset dc.e / dc.logger mocks
@@ -42,19 +66,18 @@ class TestSolenoid(unittest.TestCase):
         s1.setup()
         s1.enable()
 
-        # t_open start DeltaTime monitor
-        t_open = AssertDeltaTime()
-        dc.e.raise_event("open_solenoid")
+        with AssertDeltaTime(time_wait, "Solenoid open took to long or short"):
+            dc.e.raise_event("open_solenoid")
 
-        self.assertEqual(s1.state_open.value, True, "open_state should be True")
-        self.mockIO01.assert_has_calls([call.setup(1), call.input(), call.output(1)])
-        self.mockIO02.assert_has_calls([call.setup(1), call.output(0)])
+            self.assertEqual(s1.state_open.value, True, "open_state should be True")
+            self.mockIO01.assert_has_calls(
+                [call.setup(1), call.input(), call.output(1)]
+            )
+            self.mockIO02.assert_has_calls([call.setup(1), call.output(0)])
 
-        # wait for solenoid close:
-        s1.state_open.wait_for(False)
-        t_open.end_timer()
+            # wait for solenoid close:
+            s1.state_open.wait_for(False)
 
-        t_open.assertDeltaTime(time_wait, "Solenoid open took to long or short")
         self.assertEqual(s1.state_open.value, False, "open_state should be False")
         self.mockIO01.assert_has_calls(
             [call.setup(1), call.input(), call.output(1), call.output(0)]
@@ -81,21 +104,20 @@ class TestSolenoid(unittest.TestCase):
         s1.setup()
         s1.enable()
 
-        # t_start = time.monotonic()
-        t_open = AssertDeltaTime()
-        dc.e.raise_event("open_solenoid")
-
-        self.assertEqual(s1.state_open.value, True, "open_state should be True")
-        self.mockIO01.assert_has_calls([call.setup(1), call.input(), call.output(1)])
-        self.mockIO02.assert_has_calls([call.setup(1), call.output(0)])
-
-        # close solenoid using event 'cancel_open_solenoid':
-        dc.e.raise_event("cancel_open_solenoid")
-        t_open.end_timer()
-
-        t_open.assertDeltaTime(
+        with AssertDeltaTime(
             0, "imidiate cancel_open_solenoid open took to long or short"
-        )
+        ):
+            dc.e.raise_event("open_solenoid")
+
+            self.assertEqual(s1.state_open.value, True, "open_state should be True")
+            self.mockIO01.assert_has_calls(
+                [call.setup(1), call.input(), call.output(1)]
+            )
+            self.mockIO02.assert_has_calls([call.setup(1), call.output(0)])
+
+            # close solenoid using event 'cancel_open_solenoid':
+            dc.e.raise_event("cancel_open_solenoid")
+
         self.assertEqual(s1.state_open.value, False, "open_state should be False")
         self.mockIO01.assert_has_calls(
             [call.setup(1), call.input(), call.output(1), call.output(0)]

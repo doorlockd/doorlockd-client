@@ -87,21 +87,32 @@ import time
 
 
 class AssertDeltaTime:
-    def __init__(self):
+    """
+    useage:
+    with AssertDeltaTime(0.8, "may not take more or less than 0.8 ~ 0.81 seconds"):
+        ....
+
+    # change tolerance:
+    with AssertDeltaTime(0.8, "may not take more or less than 0.8 ~ 1 seconds", 0.2):
+        ....
+
+    """
+
+    def __init__(self, expected_delta_t, msg, tolerance=0.01):
+        self.expected_delta_t = expected_delta_t
+        self.msg = msg
+        self.tolerance = tolerance
+
+    def __enter__(self):
         self.t_start = time.monotonic()
 
-    def end_timer(self):
-        time_end = time.monotonic()
-        if hasattr(self, "delta_t"):
-            raise Exception("delta_t already set, timer_end() can only be called once.")
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        delta_t = time.monotonic() - self.t_start
 
-        self.delta_t = time_end - self.t_start
-
-    def assertDeltaTime(self, expected_delta_t, msg, tolerance=0.01):
         if (
-            self.delta_t < expected_delta_t
-            or self.delta_t > expected_delta_t + tolerance
+            delta_t < self.expected_delta_t
+            or delta_t > self.expected_delta_t + self.tolerance
         ):
             raise AssertionError(
-                f"delta time {self.delta_t} != {expected_delta_t} (+tollerance of {tolerance}):{msg}"
+                f"delta time {delta_t} != {self.expected_delta_t} (+tollerance of {self.tolerance}):{self.msg}"
             )
