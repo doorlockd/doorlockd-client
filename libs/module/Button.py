@@ -5,9 +5,7 @@ from libs.Events import State, Events
 import libs.Module as module
 
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 class Button(module.BaseModule):

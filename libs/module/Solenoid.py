@@ -3,9 +3,7 @@ import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 from libs.Events import State
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 class Solenoid(module.BaseModule):
@@ -61,7 +59,7 @@ class Solenoid(module.BaseModule):
         if self.io_output.input():
             # note, some GPIO libs will pull value LOW on setup. this message is here just incase we catch this:
             self.io_output.output(IO.LOW)
-            logger.warning(
+            dc.logger.warning(
                 "!!! Solenoid was open on startup (this might show up by error)) !!!, io_output=%s",
                 self.io_output_name,
             )
@@ -125,21 +123,21 @@ class Solenoid(module.BaseModule):
         Open Solenoid for self.time_wait seconds.
         """
         if self.permanent_open_state.value:
-            logger.info("open solenoid ignored: (permanent open)")
+            dc.logger.info("open solenoid ignored: (permanent open)")
             self.state_open.wait_for(
                 False, self.time_wait
             )  # block this thread for x seconds or when solenoid is closed
             return
 
         if self.state_open.value:
-            logger.info("open solenoid ignored: (already open)")
+            dc.logger.info("open solenoid ignored: (already open)")
             self.state_open.wait_for(
                 False
             )  # block this thread until solenoid is closed
             return
 
         # Open solenoid for x seconds:
-        logger.info("open solenoid (time_wait: %.2f seconds)", self.time_wait)
+        dc.logger.info("open solenoid (time_wait: %.2f seconds)", self.time_wait)
         # open solenoid
         self.state_open.value = True
         # wait time wait. or when solenoid open is canceled
@@ -154,13 +152,13 @@ class Solenoid(module.BaseModule):
         # close solenoid or return to permanent state.
         if self.state_open.value:
             if self.cancel_open_solenoid_delay != 0:
-                logger.info(
+                dc.logger.info(
                     f"cancel open solenoid. cancel_open_solenoid_delay = {self.cancel_open_solenoid_delay}"
                 )
                 # wait time wait. unless solenoid open is closed
                 self.state_open.wait_for(False, self.cancel_open_solenoid_delay)
 
-        logger.info(
+        dc.logger.info(
             f"cancel open solenoid. state_open = {self.state_open.value}, permanent_open_state = {self.permanent_open_state.value}"
         )
         if self.state_open.value:
@@ -169,14 +167,14 @@ class Solenoid(module.BaseModule):
     def toggle_permament_open_callback(self, data={}):
         # only switch config setting on if your hardware supports pemanent_open:
         if not self.allow_permanent_open:
-            logger.warn(
+            dc.logger.warn(
                 "allow_permanent_open disabled: toggle permanent open/close is disabled."
             )
             return
 
         # switch state:
         self.permanent_open_state.value = not self.permanent_open_state.value
-        logger.info(
+        dc.logger.info(
             f"permanent_open_state switched to {self.permanent_open_state.value}."
         )
 
@@ -189,4 +187,6 @@ class Solenoid(module.BaseModule):
 
         # sync hardware:
         self.state_open.value = self.permanent_open_state.value
-        logger.info(f"hardware synced to new permanent_state {self.state_open.value}.")
+        dc.logger.info(
+            f"hardware synced to new permanent_state {self.state_open.value}."
+        )

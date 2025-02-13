@@ -2,7 +2,7 @@ import libs.Module as module
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-logger = dc.logger
+# logger = dc.logger
 
 
 import libs.IOWrapper.gpiod
@@ -21,7 +21,7 @@ class GPIOD(module.BaseModule):
         #
         #
         for k in config["io_export"].keys():
-            logger.info(
+            dc.logger.info(
                 "export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s, bias=%s, debounce_us=%s)",
                 k,
                 config["io_export"][k]["port"],

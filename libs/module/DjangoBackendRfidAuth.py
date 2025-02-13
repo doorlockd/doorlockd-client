@@ -6,12 +6,10 @@ import time
 import hashlib
 import os
 
-# import logging
-# logger = logging.getLogger(__name__)
 
 from libs.data_container import data_container as dc
 
-logger = dc.logger
+# logger = dc.logger
 
 
 class ApiError(Exception):
@@ -153,24 +151,24 @@ class LogStats:
             resp = self.parent.request_post(
                 f"/api/lock/log.unknownkeys", {"unknownkeys": unknownkeys}
             )
-            logger.debug(f"DEBUG: resp: {resp}")
+            dc.logger.debug(f"DEBUG: resp: {resp}")
         except Exception as e:
-            logger.warning(
+            dc.logger.warning(
                 f"Network down?: api_sync_unknownkeys failed: {e.__class__.__name__}: {e}"
             )
             return
 
-        logger.info(
+        dc.logger.info(
             f"unknownkeys synchronized: {len(resp.get('saved'))}/{len(unknownkeys)}, errors: {len(resp.get('err_msgs', []))}"
         )
 
         # log err_msgs in our error log:
         for err_msg in resp.get("err_msgs", []):
-            logger.error(f"unknownkeys err_msg[]: {err_msg}")
+            dc.logger.error(f"unknownkeys err_msg[]: {err_msg}")
 
         # remove saved items from our list
         for item in resp.get("saved"):
-            logger.debug(f"remove item: {item}")
+            dc.logger.debug(f"remove item: {item}")
             self.table_unknown_key.remove(item)
 
     def api_sync_keys_last_seen(self, flush=False):
@@ -186,24 +184,24 @@ class LogStats:
                 resp = self.parent.request_post(
                     f"/api/lock/log.keys_last_seen", {"keys_last_seen": keys_last_seen}
                 )
-                logger.debug(f"DEBUG: resp: {resp}")
+                dc.logger.debug(f"DEBUG: resp: {resp}")
             except Exception as e:
-                logger.warning(
+                dc.logger.warning(
                     f"Network down?: api_sync_keys_last_seen failed: {e.__class__.__name__}: {e}"
                 )
                 return
 
-            logger.info(
+            dc.logger.info(
                 f"keys_last_seen synchronized: {len(resp.get('saved'))}/{len(keys_last_seen)}, errors: {len(resp.get('err_msgs', []))}"
             )
 
             # log err_msgs in our error log:
             for err_msg in resp.get("err_msgs", []):
-                logger.error(f"keys_last_seen err_msg[]: {err_msg}")
+                dc.logger.error(f"keys_last_seen err_msg[]: {err_msg}")
 
             # remove saved items from our list
             for item in resp.get("saved"):
-                logger.debug(f"remove item: {item}")
+                dc.logger.debug(f"remove item: {item}")
                 self.table_key_last_seen.remove(item)
 
     def dump(self):
@@ -286,7 +284,7 @@ class BackendApi:
                 f"server_ssl_fingerprint is not configured!, config the backend SSL fingerprint (you can find it in the backend admin.)"
             )
 
-        # logger.warn("!!!! _FingerprintAdapter is disabled")
+        # dc.logger.warn("!!!! _FingerprintAdapter is disabled")
         self.requests.mount(self.api_url, _FingerprintAdapter(server_ssl_fingerprint))
         self.requests_kwargs = {}  # = {'verify': False, 'cert': client_ssl_cert}
         self.requests.verify = False
@@ -312,8 +310,8 @@ class BackendApi:
         try:
             self.load_from_file()
         except Exception as e:
-            logger.warning(f"couldn't read offline_file: {e}")
-            logger.info(f"trying to sync with server to resolve this issue.")
+            dc.logger.warning(f"couldn't read offline_file: {e}")
+            dc.logger.info(f"trying to sync with server to resolve this issue.")
             self.api_sync()
 
         # start back_ground_sync [None, LOOP, LONGPOLL ]
@@ -340,7 +338,7 @@ class BackendApi:
     def load_from_file(self):
         if self.offline_file is not None:
             with self.lock:
-                logger.info(f"read keys database from file: '{self.offline_file}';")
+                dc.logger.info(f"read keys database from file: '{self.offline_file}';")
                 # open json file
                 with open(self.offline_file, "r") as json_file:
                     # Reading from file
@@ -354,25 +352,27 @@ class BackendApi:
 
                     # set lockname:
                     self.lockname = data.get("lockname", "not-set")
-                    logger.info(f"read keys db for lockname  : '{self.lockname}' ")
+                    dc.logger.info(f"read keys db for lockname  : '{self.lockname}' ")
 
                     # simply overwrite dict:
                     self.keys = data.get("keys")
-                    logger.info(
+                    dc.logger.info(
                         f"read keys database, entries: '{len(self.keys)}' keys loaded."
                     )
-                    logger.info(f"read keys database, hash   : '{self.keys_hash()}' ")
+                    dc.logger.info(
+                        f"read keys database, hash   : '{self.keys_hash()}' "
+                    )
 
                     # lock_disabled, or if missing guess the answer on the numer of keys.
                     self.lock_disabled = data.get(
                         "lock_disabled", not bool(len(self.keys))
                     )
-                    logger.info(f"read lock disabled: {self.lock_disabled}.")
+                    dc.logger.info(f"read lock disabled: {self.lock_disabled}.")
 
     def save_to_file(self):
         if self.offline_file is not None:
             with self.lock:
-                logger.info(f"write keys database to file {self.offline_file}_tmp")
+                dc.logger.info(f"write keys database to file {self.offline_file}_tmp")
                 data = {}
                 data["lockname"] = self.lockname
                 data["keys"] = self.keys
@@ -391,11 +391,13 @@ class BackendApi:
 
                 os.rename(self.offline_file + "_tmp", self.offline_file)
 
-                logger.info(f"written keys database to file : '{self.offline_file}';")
-                logger.info(
+                dc.logger.info(
+                    f"written keys database to file : '{self.offline_file}';"
+                )
+                dc.logger.info(
                     f"written keys database, entries: '{len(self.keys)}' keys loaded."
                 )
-                logger.info(f"written keys database, hash   : '{self.keys_hash()}' ")
+                dc.logger.info(f"written keys database, hash   : '{self.keys_hash()}' ")
 
     def start_background_sync(self):
         """
@@ -403,7 +405,7 @@ class BackendApi:
         """
 
         if not self.background_sync_method:
-            logger.info(f"background_sync is disabled. ")
+            dc.logger.info(f"background_sync is disabled. ")
             return
 
         # self.auto_sync_thread = threading.Thread(target=auto_sync_target, args=(self,))
@@ -412,7 +414,7 @@ class BackendApi:
         def auto_sync_target(self, event):
             """threading target"""
 
-            logger.info("LOOP: start auto_sync_target")
+            dc.logger.info("LOOP: start auto_sync_target")
             while not event.is_set():
                 try:
                     # sync keys
@@ -422,7 +424,7 @@ class BackendApi:
 
                 except Exception as e:
                     mesg = f"exception occured during background keys sync. (exception ignored)"
-                    logger.warning(mesg, exc_info=e)
+                    dc.logger.warning(mesg, exc_info=e)
                     # emit event fail/log
                     dc.e.raise_event("sync_fail_log", {"mesg": mesg, "exception": e})
 
@@ -432,7 +434,7 @@ class BackendApi:
 
                 except Exception as e:
                     mesg = f"exception occured during background log_stats sync. (exception ignored)"
-                    logger.warning(mesg, exc_info=e)
+                    dc.logger.warning(mesg, exc_info=e)
                     # emit event fail/log
                     dc.e.raise_event("sync_fail_log", {"mesg": mesg, "exception": e})
 
@@ -440,23 +442,23 @@ class BackendApi:
                 event.wait(
                     timeout=self.auto_sync_secs
                 )  # use event.wait instead of time.sleep.
-                logger.debug(
+                dc.logger.debug(
                     f"auto sync loop sleeps for {self.auto_sync_secs} seconds."
                 )
 
-            logger.info("LOOP: auto_sync_target stopped!")
+            dc.logger.info("LOOP: auto_sync_target stopped!")
 
         def auto_long_poll_sync_target(self, event):
             """threading target"""
 
-            logger.info("LONGPOLL: start auto_long_poll_sync_target")
+            dc.logger.info("LONGPOLL: start auto_long_poll_sync_target")
             while not event.is_set():
                 # do an initial sync when needed :
                 if not self.synchronized:
                     try:
                         self.api_sync()
                     except Exception as e:
-                        logger.warning(
+                        dc.logger.warning(
                             f"exception occured during background sync. (exception ignored)",
                             exc_info=e,
                         )
@@ -465,10 +467,10 @@ class BackendApi:
                 try:
                     self.long_poll_events()
                 except Exception as e:
-                    logger.info(f"long poll suspended for 60seconds  due to {e}")
+                    dc.logger.info(f"long poll suspended for 60seconds  due to {e}")
                     event.wait(timeout=60)  # use event.wait instead of time.sleep.
 
-            logger.info("LONGPOLL: auto_long_poll_sync_target stopped!")
+            dc.logger.info("LONGPOLL: auto_long_poll_sync_target stopped!")
 
         methods = {}
         methods["LONGPOLL"] = auto_long_poll_sync_target
@@ -497,14 +499,14 @@ class BackendApi:
     def stop_background_sync(self, join=False):
         with self.lock:
             if not self.auto_sync_event.is_set():
-                logger.debug(
+                dc.logger.debug(
                     f"DEBUG: auto_sync will stop... {self.auto_sync_event.is_set()}"
                 )
                 # print("self.auto_sync", self, self.auto_sync)
                 self.auto_sync_event.set()
 
         if join:
-            logger.debug(
+            dc.logger.debug(
                 f"DEBUG: join thread... {getattr(self, 'auto_sync_thread', 'not-set')}"
             )
             if hasattr(self, "auto_sync_thread"):
@@ -523,7 +525,7 @@ class BackendApi:
         self.stop_background_sync(join=True)
 
     def __del__(self):
-        logger.debug(f"DEBUG: '{self}.__del__()' called!")
+        dc.logger.debug(f"DEBUG: '{self}.__del__()' called!")
         self.cleanup()
 
     def keys_hash(self):
@@ -580,7 +582,7 @@ class BackendApi:
         ruleset = self.keys[hwid]["ruleset"]
 
         for rule in ruleset:
-            logger.debug(f"DEBUG: { len(ruleset) },  {rule}")
+            dc.logger.debug(f"DEBUG: { len(ruleset) },  {rule}")
             (acces, reason) = self.acl_parse_rule(rule)
             if acces is True:
                 return (acces, reason)
@@ -594,7 +596,7 @@ class BackendApi:
 
         if self.lock_disabled is True:
             msg = "Warning: lock disabled or never synchronised, lookup() and last-seen logging ignored."
-            logger.warning(msg)
+            dc.logger.warning(msg)
             return False, msg
 
         # lookup key in access list:
@@ -602,11 +604,11 @@ class BackendApi:
             has_access, msg = False, "Not found"
             known_key = False
             meta_data = nfc_tools.collect_meta()
-            logger.info(f"card meta info: {meta_data}")
+            dc.logger.info(f"card meta info: {meta_data}")
         else:
             # need meta data?
             if self.keys[key].get("need_meta_data", False):
-                logger.info(f"key ('{key}') need_meta_data")
+                dc.logger.info(f"key ('{key}') need_meta_data")
 
                 try:
                     # read meta data
@@ -627,7 +629,9 @@ class BackendApi:
                     # end user to prompt their NFC key again to the reader.
                     #
                     # raise(e) # comment/uncomment to enable/disable softfail
-                    logger.info(f"Soft failed: nfc_tools.collect_meta: {e}", exc_info=e)
+                    dc.logger.info(
+                        f"Soft failed: nfc_tools.collect_meta: {e}", exc_info=e
+                    )
 
             # has access comform access rule?
             has_access, msg = self.acl_has_access(key)
@@ -637,14 +641,14 @@ class BackendApi:
         if known_key or (not known_key and self.log_unknownkeys):
             self.log_stats.add(key, known_key, meta_data)
         else:
-            logger.debug("Logging is disabled by log_unknownkeys.")
+            dc.logger.debug("Logging is disabled by log_unknownkeys.")
 
         return has_access, msg
 
     def request_post(self, path, data={}):
         url = self.api_url + path
 
-        logger.debug(f"DEBUG POST:  {data}")
+        dc.logger.debug(f"DEBUG POST:  {data}")
         resp = self.requests.post(url, json=data)
 
         if resp.status_code != 200:
@@ -663,11 +667,11 @@ class BackendApi:
                 f"/api/key/merge.meta_data_json",
                 {"key": key, "meta_data_json": meta_data_json},
             )
-            logger.debug(f"DEBUG: resp: {resp}")
+            dc.logger.debug(f"DEBUG: resp: {resp}")
             # api should return saved=True | saved=False
             return resp.get("saved", None)
         except Exception as e:
-            logger.warning(
+            dc.logger.warning(
                 f"Unexpected Exception during api_key_merge_meta_data_json. {e}",
                 exc_info=e,
             )
@@ -680,13 +684,13 @@ class BackendApi:
         )
 
         for event_line in long_poll.iter_lines(chunk_size=1):
-            logger.debug(
+            dc.logger.debug(
                 f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} event_line: {event_line}"
             )
 
             # check self.auto_sync for exit:
             if self.auto_sync_event.is_set():
-                logger.debug(
+                dc.logger.debug(
                     f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} -- STOP AUTO_SYNC --"
                 )
                 return
@@ -708,7 +712,7 @@ class BackendApi:
             if not self.synchronized:
                 self.api_sync()
 
-        logger.debug(
+        dc.logger.debug(
             f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} -- DISCONNECTED --"
         )
 
@@ -723,7 +727,7 @@ class BackendApi:
             #
             keys_hash = self.keys_hash()
             resp = self.request_post(f"/api/lock/sync.keys", {"keys_hash": keys_hash})
-            logger.debug(f"DEBUG: resp: {resp}")
+            dc.logger.debug(f"DEBUG: resp: {resp}")
             force_write_offlinedb = False
 
             # set or update lockname:
@@ -731,22 +735,22 @@ class BackendApi:
                 self.lockname = resp.get("lockname", "not-set")
                 force_write_offlinedb = True
 
-            logger.info(f"sync keys db for lockname  : '{self.lockname}' ")
+            dc.logger.info(f"sync keys db for lockname  : '{self.lockname}' ")
 
             # show message in logs
             self.lock_disabled = bool(resp.get("disabled", False))
             if self.lock_disabled == True:
-                logger.warning("Warning: lock is disabled")
+                dc.logger.warning("Warning: lock is disabled")
 
             # keys: -> update
             # while 'keys' in resp:
             self.synchronized = bool(resp.get("synchronised", False))
             while self.synchronized is not True:
                 if max_loop <= 0:
-                    logger.warning(
+                    dc.logger.warning(
                         "max loop detected, aborting sync action for now... and oppperate like nothing happend"
                     )
-                    logger.debug("info keys:", self.keys)
+                    dc.logger.debug("info keys:", self.keys)
                     return ()
 
                 # simply overwrite dict:
@@ -755,7 +759,7 @@ class BackendApi:
                 resp = self.request_post(
                     f"/api/lock/sync.keys", {"keys_hash": self.keys_hash()}
                 )
-                logger.debug(f"DEBUG: resp: {resp}")
+                dc.logger.debug(f"DEBUG: resp: {resp}")
 
                 # update synchronized
                 self.synchronized = bool(resp.get("synchronised", False))
@@ -763,13 +767,15 @@ class BackendApi:
                 # show message in logs
                 self.lock_disabled = resp.get("disabled", False)
                 if self.lock_disabled == True:
-                    logger.warning("Warning: lock is disabled")
+                    dc.logger.warning("Warning: lock is disabled")
 
                 max_loop = max_loop - 1  # decrement our loop counter
 
             # synchronized
             if self.synchronized is True:
-                logger.info(f"Info: we are synchronized. (hash: '{self.keys_hash()}')")
+                dc.logger.info(
+                    f"Info: we are synchronized. (hash: '{self.keys_hash()}')"
+                )
             else:
                 # some error
                 if "error" in resp:
@@ -803,7 +809,9 @@ class DjangoBackendRfidAuth:
         del kwargs["type"]  # delete unwanted argument
 
         if "lockname" in kwargs:
-            logger.warning(f"DEPRECATED: config option 'lockname' is no longer in use.")
+            dc.logger.warning(
+                f"DEPRECATED: config option 'lockname' is no longer in use."
+            )
             del kwargs["lockname"]  # delete unwanted argument
 
         self.conf = kwargs
@@ -830,7 +838,7 @@ class DjangoBackendRfidAuth:
         """lookup detected hwid,"""
         # lookup hwid in db
         access, msg = self.api.lookup(hwid_str, target, nfc_tools, *args, **kwargs)
-        logger.debug(
+        dc.logger.debug(
             f"'{self.api.lockname}' RFID KEY lookup({hwid_str}): access={access} : {msg}"
         )
         return access

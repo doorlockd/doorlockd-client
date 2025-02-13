@@ -2,9 +2,7 @@ import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 from libs.Events import State
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 #
@@ -56,10 +54,10 @@ class HbwVoordeurLogic:
         self.state_nachtslotschootdetectie = State()
 
         self.state_dagslotschootdetectie.subscribe(
-            lambda v: logger.info(f"state_dagslotschootdetectie = {v}")
+            lambda v: dc.logger.info(f"state_dagslotschootdetectie = {v}")
         )
         self.state_nachtslotschootdetectie.subscribe(
-            lambda v: logger.info(f"state_nachtslotschootdetectie = {v}")
+            lambda v: dc.logger.info(f"state_nachtslotschootdetectie = {v}")
         )
 
         # solenoid name
@@ -126,7 +124,7 @@ class HbwVoordeurLogic:
                 IO.EDGE_FALLING, lambda: dc.e.raise_event(self.event_door_opened_name)
             )
             # self.io_nachtslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : dc.e.raise_event(self.event_door_closed_name) )
-            logger.info(
+            dc.logger.info(
                 f"nachtslotschootdetectie on '{self.io_nachtslotschootdetectie_name}' enabled, emiting event '{self.event_door_opened_name}'/'{self.event_door_closed_name}'"
             )
             self.io_nachtslotschootdetectie.add_event_detect(
@@ -136,7 +134,7 @@ class HbwVoordeurLogic:
                 IO.EDGE_FALLING, lambda: self.state_nachtslotschootdetectie.set(False)
             )
             # self.state_nachtslotschootdetectie.set(self.io_nachtslotschootdetectie.input()) # RequestReleasedError()
-            logger.info(
+            dc.logger.info(
                 f"nachtslotschootdetectie on '{self.io_nachtslotschootdetectie_name}' enabled, On self.state_nachtslotschootdetectie"
             )
 
@@ -151,7 +149,7 @@ class HbwVoordeurLogic:
 
             # self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_RISING,  lambda : dc.e.raise_event(self.event_doorhandle_opened_name) )
             # self.io_dagslotschootdetectie.add_event_detect(IO.EDGE_FALLING, lambda : dc.e.raise_event(self.event_doorhandle_closed_name) )
-            # logger.info(f"dagslotschootdetectie on '{self.io_dagslotschootdetectie_name}' enabled, emiting events '{self.event_doorhandle_opened_name}'/'{self.event_doorhandle_closed_name}'")
+            # dc.logger.info(f"dagslotschootdetectie on '{self.io_dagslotschootdetectie_name}' enabled, emiting events '{self.event_doorhandle_opened_name}'/'{self.event_doorhandle_closed_name}'")
 
             self.io_dagslotschootdetectie.add_event_detect(
                 IO.EDGE_RISING, lambda: self.state_dagslotschootdetectie.set(True)
@@ -160,7 +158,7 @@ class HbwVoordeurLogic:
                 IO.EDGE_FALLING, lambda: self.state_dagslotschootdetectie.set(False)
             )
             # self.state_dagslotschootdetectie.set(self.io_dagslotschootdetectie.input()) # RequestReleasedError()
-            logger.info(
+            dc.logger.info(
                 f"dagslotschootdetectie on '{self.io_dagslotschootdetectie_name}' enabled, On self.state_dagslotschootdetectie"
             )
 
@@ -181,14 +179,14 @@ class HbwVoordeurLogic:
             self.state_nachtslotschootdetectie.subscribe(
                 lambda v: self.io_ui_nachtslotschootnotificatie_open.output(not v)
             )
-            logger.info(
+            dc.logger.info(
                 f"ui_nachtslotschootnotificatie_open enabled on '{self.io_ui_nachtslotschootnotificatie_open_name}'."
             )
         if self.io_ui_nachtslotschootnotificatie_close:
             self.state_nachtslotschootdetectie.subscribe(
                 lambda v: self.io_ui_nachtslotschootnotificatie_close.output(v)
             )
-            logger.info(
+            dc.logger.info(
                 f"ui_nachtslotschootnotificatie_close enabled on '{self.io_ui_nachtslotschootnotificatie_close_name}'."
             )
 
@@ -211,7 +209,7 @@ class HbwVoordeurLogic:
                 lambda v: self.io_ui_deuropenknopbacklight.output(IO.LOW) if v else None
             )
 
-            logger.info(
+            dc.logger.info(
                 f"ui_deuropenknopbacklight enabled on '{self.io_ui_deuropenknopbacklight_name}'."
             )
 
@@ -224,7 +222,7 @@ class HbwVoordeurLogic:
                 self.event_door_opened_name,
                 lambda d: dc.e.raise_event(self.event_cancel_open_solenoid),
             )
-            logger.info(f"cancel_open_solenoid on door_opened enabled.")
+            dc.logger.info(f"cancel_open_solenoid on door_opened enabled.")
 
     def disable(self):
         # disable module

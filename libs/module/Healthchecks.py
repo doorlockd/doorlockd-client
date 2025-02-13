@@ -3,7 +3,7 @@ from libs.data_container import data_container as dc
 import requests
 import traceback
 
-logger = dc.logger
+# logger = dc.logger
 
 
 class Healthchecks(module.BaseModule):
@@ -21,19 +21,19 @@ class Healthchecks(module.BaseModule):
         self.endpoint = config.get("endpoint", [])
 
         if not self.url:
-            logger.warning(f"Heathcheck failed: no url configured.")
+            dc.logger.warning(f"Heathcheck failed: no url configured.")
             return
 
         #
         # setup/enable, we setup all logic here, since we want to be available right from the start.
         #
-        logger.info(f"Heathcheck with url: '{self.url}'")
+        dc.logger.info(f"Heathcheck with url: '{self.url}'")
 
         #
         # connect event to our callback
         #
         if not self.endpoint:
-            logger.warning(
+            dc.logger.warning(
                 f"Heathcheck has no endpoints configured! (for url '{self.url}')"
             )
 
@@ -47,12 +47,12 @@ class Healthchecks(module.BaseModule):
                 callback_fn = lambda data, signal=signal: self.healthcheck(signal, data)
                 for event in self.endpoint[signal]:
                     dc.e.subscribe(event, callback_fn)
-                    logger.info(
+                    dc.logger.info(
                         f"Heathcheck connected event: '{event}' to  signal: '{signal}'"
                     )
 
             else:
-                logger.warning(
+                dc.logger.warning(
                     f"Heathcheck 'endpoint.{signal}' has no events configured! (for url '{self.url}')"
                 )
 
@@ -90,7 +90,7 @@ class Healthchecks(module.BaseModule):
         if signal == "":
             if not dc.module.app_startup_complete:
                 # app is not opperating proper, ignore this ping.
-                logger.info(
+                dc.logger.info(
                     f"Heathcheck ping ignored: app_startup_complete hasn't completed or abort/exit has started."
                 )
                 return
@@ -117,7 +117,7 @@ class Healthchecks(module.BaseModule):
             requests.post(
                 url, msg_body, headers={"User-Agent": dc.app_name_ver}, timeout=10
             )
-            logger.debug(f"Heathcheck call: '{signal}', '{data}'")
+            dc.logger.debug(f"Heathcheck call: '{signal}', '{data}'")
 
         except requests.RequestException as e:
-            logger.warning(f"Heathcheck failed ({url}, '{data}'): {e}")
+            dc.logger.warning(f"Heathcheck failed ({url}, '{data}'): {e}")

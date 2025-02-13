@@ -5,7 +5,7 @@ from libs.Events import State
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-logger = dc.logger
+# logger = dc.logger
 
 
 import nfc
@@ -58,7 +58,7 @@ class PN532(module.BaseModule):
         # io_export.teo_in  	= { port = "p72", limit_direction = "INPUT", active_low = false }
 
         for k in config["io_export"].keys():
-            logger.info(
+            dc.logger.info(
                 "export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s)",
                 k,
                 config["io_export"][k]["port"],
@@ -118,7 +118,7 @@ class RfidReader:
 
         self.state_reader_ready = State()
         self.state_reader_ready.subscribe(
-            lambda data: logger.debug(
+            lambda data: dc.logger.debug(
                 "PN532.rfid.state_reader_ready: %s|%s",
                 str(data),
                 str(self.state_reader_ready.value),
@@ -127,7 +127,7 @@ class RfidReader:
 
     def run(self):
         """threading run()"""
-        logger.info("run detect loop started ({:s}).".format("PN532 RFiD Reader"))
+        dc.logger.info("run detect loop started ({:s}).".format("PN532 RFiD Reader"))
         self.stop_loop = False
 
         while not self.stop_loop:
@@ -145,7 +145,7 @@ class RfidReader:
         )
         if target is False:
             # let's see how often this happens:
-            # logger.info("clf.connect returned False, maybe lost connection.")
+            # dc.logger.info("clf.connect returned False, maybe lost connection.")
             raise Exception("clf.connect returned False, maybe lost connection.")
         elif target is not None:
             self.event_bus.raise_event(
@@ -154,7 +154,7 @@ class RfidReader:
             self.event_bus.raise_event(
                 "rfid_comm_ready"
             )  # when there is any RFID communication
-            logger.debug("HWID: " + str(target))
+            dc.logger.debug("HWID: " + str(target))
 
             self.callback_tag_detected(target)
 
@@ -178,7 +178,7 @@ class RfidReader:
             has_access = None
 
         if has_access is True:
-            logger.info("hwid ({:s}) access alowed.".format(hwid_str))
+            dc.logger.info("hwid ({:s}) access alowed.".format(hwid_str))
             self.event_bus.raise_event(
                 "rfid_access_allowed"
             )  # raise when rfid is access_allowed
@@ -189,7 +189,7 @@ class RfidReader:
             )  # raise configured trigger_action for rfid_action
 
         elif has_access is False:
-            logger.info("hwid ({:s}) access denied.".format(hwid_str))
+            dc.logger.info("hwid ({:s}) access denied.".format(hwid_str))
             self.event_bus.raise_event(
                 "rfid_access_denied"
             )  # raise when rfid is access_denied, will folow by ..._fin in x seconds
@@ -200,7 +200,7 @@ class RfidReader:
 
         else:
             # has_access is None or anythng else
-            logger.info("hwid ({:s}) gone while reading.".format(hwid_str))
+            dc.logger.info("hwid ({:s}) gone while reading.".format(hwid_str))
             # show 3 times rfid_comm_error (aprox 0.6 seconds)
             self.event_bus.raise_event("rfid_comm_error", wait=True)
             self.event_bus.raise_event("rfid_comm_error", wait=True)
@@ -211,10 +211,10 @@ class RfidReader:
             self.thread = threading.Thread(target=self.run, args=())
             self.thread.daemon = True  # Daemonize thread
             self.thread.start()  # Start the execution
-            logger.info("start_thread {:s}".format("PN532 RFiD Reader"))
+            dc.logger.info("start_thread {:s}".format("PN532 RFiD Reader"))
 
         else:
-            logger.info(
+            dc.logger.info(
                 "notice: {:s}: start_thread, thread is already running ".format(
                     "PN532 RFiD Reader"
                 )
@@ -223,7 +223,7 @@ class RfidReader:
     def stop_thread(self):
         # stop the loop
         self.stop_loop = True
-        logger.info("stop_thread {:s}".format("PN532 RFiD Reader"))
+        dc.logger.info("stop_thread {:s}".format("PN532 RFiD Reader"))
 
         # join thread to wait for stop:
         if self.thread:
@@ -251,7 +251,9 @@ class NfcTools:
 
         # type2tag uses 0x60 for authentication.
         send = bytearray([0x60, page]) + secret + self.target._nfcid
-        logger.debug(f"authenticate using: target.transceive({send.hex()}, {timeout})")
+        dc.logger.debug(
+            f"authenticate using: target.transceive({send.hex()}, {timeout})"
+        )
         # target.transceive(send, timeout)
         with self.target.clf.lock:
             return self.target.clf.device.chipset.in_data_exchange(send, timeout)
@@ -268,7 +270,7 @@ class NfcTools:
         while n != max_retries:
             n = n + 1
             try:
-                logger.debug(
+                dc.logger.debug(
                     f"attemp..... while read({page}), attemp ({n}/{max_retries})"
                 )
                 return self.target.read(page)
@@ -278,7 +280,7 @@ class NfcTools:
                 ):
                     raise (e)
                 else:
-                    logger.info(
+                    dc.logger.info(
                         f"TIMEOUT_ERROR while read({page}), attemp ({n}/{max_retries})"
                     )
 
@@ -320,10 +322,10 @@ class NfcTools:
         validuntil = datetime.date(1997, 1, 1)
         validuntil += datetime.timedelta(validuntildays)
 
-        logger.debug(f"RAW DATA: {data.hex()}")
+        dc.logger.debug(f"RAW DATA: {data.hex()}")
 
         s = "OV-Chipkaart id %d, %s, valid until %s" % (cardid, cardtype, validuntil)
-        logger.info(s)
+        dc.logger.info(s)
 
         # return {'cardid': cardid, 'cardtype': cardtype, 'validuntil': str(validuntil)}
         return {"validuntil": str(validuntil)}
@@ -331,7 +333,7 @@ class NfcTools:
     def collect_ovchipkaart(self):
         # OV chipcards use Mifare Classic (SAK == 0x18), looks like we can check this on .clf.target.sen_sel
         if self.target.clf.target.sel_res != b"\x18":
-            logger.debug(
+            dc.logger.debug(
                 f"No OV Chipkaart, No Mifare classic 4k. SAK (.clf.target.sel_res ({self.target.clf.target.sel_res})) is not b'\x18'"
             )
             return {}
@@ -341,7 +343,7 @@ class NfcTools:
             # OV-chipkaart uses all-zeroes keys for its first few blocks/pages/whatever they are called)
             self._authenticate()
         except Exception as e:
-            logger.debug(f"exception during authenticate {e}", exc_info=True)
+            dc.logger.debug(f"exception during authenticate {e}", exc_info=True)
             return {}
 
         # is OV Chip kaart, match page2 vs known string.
@@ -351,7 +353,7 @@ class NfcTools:
         data[1] = self._read(1)
         # data[1] = self.target.read(1)
         if data[1][0:11] != bytearray.fromhex("840000000603a00013aee4"):
-            logger.debug("collect_ovchipkaart: Not an OV Chipkaart.")
+            dc.logger.debug("collect_ovchipkaart: Not an OV Chipkaart.")
             return {}
 
         # read other pages

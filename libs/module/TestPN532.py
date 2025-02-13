@@ -1,7 +1,7 @@
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-logger = dc.logger
+# logger = dc.logger
 
 
 import nfc
@@ -24,7 +24,7 @@ class TestPN532:
 
         # dc.io_port['p71'] = io_pn532.Port('p71')
         for k in config["io_export"].keys():
-            logger.info(
+            dc.logger.info(
                 "export io name: '%s', port: '%s' (limit_direction=%s, active_low=%s)",
                 k,
                 config["io_export"][k]["port"],

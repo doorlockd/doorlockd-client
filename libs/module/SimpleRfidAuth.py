@@ -1,8 +1,6 @@
 from libs.data_container import data_container as dc
 
-# import logging
-# logger = logging.getLogger(__name__)
-logger = dc.logger
+# logger = dc.logger
 
 
 class SimpleRfidAuth:

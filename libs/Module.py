@@ -6,7 +6,7 @@ import threading
 import importlib
 
 
-logger = dc.logger
+# logger = dc.logger
 
 
 class BaseModule:
@@ -19,7 +19,7 @@ class BaseModule:
     def __init__(self, config={}):
         # initialize myself
         self.events = Events()
-        # logger.info("init super BaseModule")
+        # dc.logger.info("init super BaseModule")
 
     def setup(self):
         # first stage of setup
@@ -67,7 +67,9 @@ class ModuleManager:
             mod_type = mod_config["type"]  # set mod_type
 
             if not mod_config.get("skip", False):
-                logger.info("initializing module {} {}...".format(mod_type, mod_name))
+                dc.logger.info(
+                    "initializing module {} {}...".format(mod_type, mod_name)
+                )
 
                 # spawn: self.load_mod(mod_name, mod_type, mod_config)
                 t.append(
@@ -83,7 +85,7 @@ class ModuleManager:
 
     def load_mod(self, mod_name, mod_type, mod_config):
         """load module by 'mod_name' (reference name), 'mod_type' (python module filename), 'mod_config' (config dictionary)"""
-        logger.info("initializing module {} {}...".format(mod_name, mod_type))
+        dc.logger.info("initializing module {} {}...".format(mod_name, mod_type))
 
         # import python module file
         mod = importlib.import_module(self._base_path + mod_type)
@@ -100,7 +102,7 @@ class ModuleManager:
 
     def do(self, module, task):
         """module: index key of self.module[] , task: setup/enable/disable/teardown"""
-        logger.info(
+        dc.logger.info(
             "{} module {} {}...".format(
                 task, self.modules[module].__class__.__name__, module
             )
@@ -135,7 +137,7 @@ class ModuleManager:
         self.app_startup_complete = True
 
         # we are up and running
-        logger.info(f"{dc.app_name_ver} started.")
+        dc.logger.info(f"{dc.app_name_ver} started.")
 
         # emit start success event: app_startup_complete
         dc.e.raise_event("app_startup_complete")
@@ -144,7 +146,7 @@ class ModuleManager:
         self.abort_event.wait()
 
     def abort(self, mesg, exception=None):
-        logger.warning(f"abort(): {mesg} exception={exception}", exc_info=exception)
+        dc.logger.warning(f"abort(): {mesg} exception={exception}", exc_info=exception)
         # emit event 'app_abort' with data:(mesg, exception)
         dc.e.raise_event("app_abort", {"mesg": mesg, "exception": exception})
 
@@ -152,7 +154,7 @@ class ModuleManager:
         self.abort_event.set()
 
     def exit(self, mesg):
-        logger.warning(f"exit(): {mesg}")
+        dc.logger.warning(f"exit(): {mesg}")
         # emit event 'app_exit' with data:(mesg, exception)
         dc.e.raise_event("app_exit", {"mesg": mesg})
 
@@ -161,20 +163,20 @@ class ModuleManager:
 
     # def setup_all(self):
     # 	for module in self.modules:
-    # 		logger.info('setup module {} {}...'.format(self.modules[module].__class__.__name__, module))
+    # 		dc.logger.info('setup module {} {}...'.format(self.modules[module].__class__.__name__, module))
     # 		self.modules[module].setup()
     #
     # def enable_all(self):
     # 	for module in self.modules:
-    # 		logger.info('enable module {} {}...'.format(self.modules[module].__class__.__name__, module))
+    # 		dc.logger.info('enable module {} {}...'.format(self.modules[module].__class__.__name__, module))
     # 		self.modules[module].enable()
     #
     # def disable_all(self):
     # 	for module in self.modules:
-    # 		logger.info('disable module {} {}...'.format(self.modules[module].__class__.__name__, module))
+    # 		dc.logger.info('disable module {} {}...'.format(self.modules[module].__class__.__name__, module))
     # 		self.modules[module].disable()
     #
     # def teardown_all(self):
     # 	for module in self.modules:
-    # 		logger.info('teardown module {} {}...'.format(self.modules[module].__class__.__name__, module))
+    # 		dc.logger.info('teardown module {} {}...'.format(self.modules[module].__class__.__name__, module))
     # 		self.modules[module].teardown()

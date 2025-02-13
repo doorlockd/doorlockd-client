@@ -1,9 +1,7 @@
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 class TestOutput:
@@ -34,10 +32,10 @@ class TestOutput:
         )
 
         self.io_input.add_event_detect(
-            IO.EDGE_FALLING, lambda: logger.info("TEO: IO.EDGE_FALLING")
+            IO.EDGE_FALLING, lambda: dc.logger.info("TEO: IO.EDGE_FALLING")
         )
         self.io_input.add_event_detect(
-            IO.EDGE_RISING, lambda: logger.info("TEO: IO.EDGE_RISING")
+            IO.EDGE_RISING, lambda: dc.logger.info("TEO: IO.EDGE_RISING")
         )
 
         # connect event to our callback
@@ -66,7 +64,7 @@ class TestOutput:
         self.io_output.output(not self.io_output.input())
 
         # log
-        logger.info(
+        dc.logger.info(
             "TEO: action input={}, output={}".format(
                 self.io_input.input(), self.io_output.input()
             )

@@ -1,7 +1,7 @@
 import threading
 from libs.data_container import data_container as dc
 
-logger = dc.logger
+# logger = dc.logger
 
 
 class EventSubscription:
@@ -35,7 +35,7 @@ class Events:
 
     def subscribe(self, event_id, f_action):
         """subscribe to an event by 'event_id', and callback f_action."""
-        logger.debug("subscribe event '{}', f '{}'.".format(event_id, f_action))
+        dc.logger.debug("subscribe event '{}', f '{}'.".format(event_id, f_action))
 
         #  avoid duplicates,  check if already exists:
         with self.lock:
@@ -67,7 +67,7 @@ class Events:
 
     def raise_event(self, event_id, data={}, wait=False):
         """raise an event by event_id, and pass any data to the callback functions."""
-        logger.debug("raise_event '{}'.".format(event_id))
+        dc.logger.debug("raise_event '{}'.".format(event_id))
         t = []  # list of threads
 
         with self.lock:
@@ -163,7 +163,7 @@ class State:
 
     def subscribe(self, f_action):
         """subscribe to state changes of the value of this object."""
-        logger.debug("subscribe State, f '{}'.".format(f_action))
+        dc.logger.debug("subscribe State, f '{}'.".format(f_action))
 
         #  avoid duplicates,  only add when not exist:
         with self.lock:

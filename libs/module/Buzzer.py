@@ -4,9 +4,7 @@ from libs.data_container import data_container as dc
 import time
 import threading
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 class Buzzer(module.BaseModule):
@@ -57,14 +55,14 @@ class Buzzer(module.BaseModule):
     def action_callback(self, data={}):
         # get lock
         if not self.lock.acquire(False):
-            logger.info("buzz buzzer ignored: (already buzzy)")
+            dc.logger.info("buzz buzzer ignored: (already buzzy)")
 
             ## wait
             # self.lock.acquire() and self.lock.release()
             return
         try:
             # log
-            logger.info("buzz buzzer (melody: '%s')", self.melody)
+            dc.logger.info("buzz buzzer (melody: '%s')", self.melody)
 
             # play notes:
             #  '.' = short

@@ -5,9 +5,7 @@ import time
 
 from libs.Events import State, Events
 
-logger = dc.logger
-# import logging
-# logger = logging.getLogger(__name__)
+# logger = dc.logger
 
 
 class LedMethods:
@@ -168,7 +166,7 @@ class UILed4(module.BaseModule):
                 ), "[ui4led] {}: configured module is not compatible. (events)".format(
                     btn
                 )
-                logger.info("UILed4 blink on button {} {}".format(btn, mod))
+                dc.logger.info("UILed4 blink on button {} {}".format(btn, mod))
                 self.s.append(
                     mod.events.subscribe("pressed", lambda data: self.led2.blink())
                 )

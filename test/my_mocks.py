@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, Mock, call
 #
 # setup app.py data-container 'dc' envirement
 #
-dc.logger = MagicMock()
 from libs.Events import Events
 
 
@@ -17,9 +16,6 @@ def reset_data_container():
     dc.io_port = {}
     # dc.e = MagicMock() # Events
     dc.e = Events()
-
-
-reset_data_container()
 
 
 #
