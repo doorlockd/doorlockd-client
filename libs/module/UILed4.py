@@ -99,7 +99,16 @@ class UILed4(module.BaseModule):
         self.led3.off()
         self.led4.off()
 
+        #
         # do some logic:
+        #
+
+        # for led3/red led = access denied and lock_disabled (if available)
+        # overwrite off value with value of dc.rfid_auth.api.lock_disabled.value
+        if hasattr(dc.rfid_auth, "api") and hasattr(dc.rfid_auth.api, "lock_disabled"):
+            get_default_value_for_led3 = lambda: dc.rfid_auth.api.lock_disabled.value
+        else:
+            get_default_value_for_led3 = lambda: false
 
         # solenoid
         if self.mod_solenoid is not None:
@@ -121,7 +130,10 @@ class UILed4(module.BaseModule):
             ), "[ui4led] rfid: configured module is not compatible. (.rfid)"
             assert hasattr(self.mod_rfid.rfid, "state_reader_ready") and isinstance(
                 self.mod_rfid.rfid.state_reader_ready, State
-            ), "[ui4led] rfid: configured module is not compatible. (state)"
+            ), "[ui4led] rfid: configured module is not compatible. (rfid.state_reader_ready)"
+            # assert hasattr(self.mod_rfid.rfid, "state_reader_ready") and isinstance(
+            #     self.mod_rfid.rfid.api.lock_disabled, State
+            # ), "[ui4led] rfid: configured module is not compatible. (rfid.api.lock_disabled)"
             assert hasattr(self.mod_rfid, "events") and isinstance(
                 self.mod_rfid.events, Events
             ), "[ui4led] rfid: configured module is not compatible. (events)"
@@ -134,6 +146,18 @@ class UILed4(module.BaseModule):
                     lambda v: self.io_led1.output(v)
                 )
             )
+
+            # api.lock_disabled: led3/red led on
+            if hasattr(dc.rfid_auth, "api") and hasattr(
+                dc.rfid_auth.api, "lock_disabled"
+            ):
+                self.s.append(
+                    dc.rfid_auth.api.lock_disabled.subscribe(
+                        lambda v: self.io_led3.output(
+                            dc.rfid_auth.api.lock_disabled.value
+                        )
+                    )
+                )
 
             self.s.append(
                 events.subscribe("rfid_comm_pulse", lambda data: self.led2.blink())
@@ -154,7 +178,12 @@ class UILed4(module.BaseModule):
                 events.subscribe("rfid_access_denied", lambda data: self.led3.on())
             )
             self.s.append(
-                events.subscribe("rfid_access_denied_fin", lambda data: self.led3.off())
+                # events.subscribe("rfid_access_denied_fin", lambda data: self.led3.off())
+                # revert red led to default value == lock_disabled
+                events.subscribe(
+                    "rfid_access_denied_fin",
+                    lambda v: self.io_led3.output(get_default_value_for_led3()),
+                )
             )
 
         # blink_on_buttons
@@ -170,14 +199,6 @@ class UILed4(module.BaseModule):
                 self.s.append(
                     mod.events.subscribe("pressed", lambda data: self.led2.blink())
                 )
-
-        # # OLD RFID
-        # self.s.append(dc.e.subscribe('rfid_ready', lambda data: self.led1.on()))
-        # self.s.append(dc.e.subscribe('rfid_stopped', lambda data: self.led1.off()))
-        # self.s.append(dc.e.subscribe('rfid_comm_pulse', lambda data: self.led2.blink()))
-        # self.s.append(dc.e.subscribe('rfid_comm_ready', lambda data: self.led2.blink()))
-        # self.s.append(dc.e.subscribe('rfid_access_denied', lambda data: self.led3.on()))
-        # self.s.append(dc.e.subscribe('rfid_access_denied_fin', lambda data: self.led3.off()))
 
     def disable(self):
         # disable module
