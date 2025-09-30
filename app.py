@@ -123,7 +123,9 @@ dc.module = ModuleManager()
 # set handle_excepthook to handle all uncaught exceptions in threads
 #
 def handle_excepthook(argv):
-    dc.module.abort(f"Uncought exception caught with excepthook.", argv.exc_value)
+    dc.module.abort(
+        f"Uncought exception caught with excepthook {argv.exc_value}.", argv.exc_value
+    )
 
 
 import threading
@@ -168,7 +170,12 @@ def main():
         dc.module.do_all("teardown")
 
         # done
-        dc.logger.info("exit after proper shutdown.")
+        if dc.module.abort_msg:
+            dc.logger.info(f"proces ended due to abort: {dc.module.abort_msg}.")
+        elif dc.module.exit_msg:
+            dc.logger.info(f"proces ended due to abort: {dc.module.exit_msg}.")
+        else:
+            dc.logger.info("proces ended.")
 
 
 if __name__ == "__main__":
