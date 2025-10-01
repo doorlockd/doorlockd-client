@@ -171,11 +171,11 @@ def main():
 
         # done
         if dc.module.abort_msg:
-            dc.logger.info(f"proces ended due to abort: {dc.module.abort_msg}.")
+            dc.logger.info(f"process ended due to abort: {dc.module.abort_msg}.")
         elif dc.module.exit_msg:
-            dc.logger.info(f"proces ended due to abort: {dc.module.exit_msg}.")
+            dc.logger.info(f"process ended due to abort: {dc.module.exit_msg}.")
         else:
-            dc.logger.info("proces ended.")
+            dc.logger.info("process ended.")
 
 
 if __name__ == "__main__":
