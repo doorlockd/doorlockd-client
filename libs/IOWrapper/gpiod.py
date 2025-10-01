@@ -6,8 +6,6 @@ import datetime
 import sys
 import threading
 
-
-# logger = dc.logger
 import logging
 
 logger = logging.getLogger(__name__)

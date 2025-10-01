@@ -6,9 +6,6 @@ import threading
 import importlib
 
 
-# logger = dc.logger
-
-
 class BaseModule:
     # __init__(config={}): 	initialize myself
     # setup():				setup module:  (grab io_port from dc.io_port)
@@ -178,23 +175,3 @@ class ModuleManager:
 
         # end main loop
         self.abort_event.set()
-
-    # def setup_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('setup module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].setup()
-    #
-    # def enable_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('enable module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].enable()
-    #
-    # def disable_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('disable module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].disable()
-    #
-    # def teardown_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('teardown module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].teardown()

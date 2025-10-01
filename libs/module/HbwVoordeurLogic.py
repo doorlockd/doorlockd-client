@@ -2,8 +2,6 @@ import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 from libs.Events import State
 
-# logger = dc.logger
-
 
 #
 # functie 1: Warschuwings LED op nachtslot schootdetectie.

@@ -10,8 +10,6 @@ from libs.Events import State
 
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
 
 class ApiError(Exception):
 

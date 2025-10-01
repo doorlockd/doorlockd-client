@@ -5,12 +5,7 @@ from libs.Events import State
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
-
 import nfc
-
-# from nfc.clf import RemoteTarget
 
 import libs.IOWrapper.PN532
 from libs.pn532gpio import pn532Gpio

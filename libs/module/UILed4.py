@@ -5,8 +5,6 @@ import time
 
 from libs.Events import State, Events
 
-# logger = dc.logger
-
 
 class LedMethods:
     def __init__(self, io_port):
@@ -50,7 +48,6 @@ class LedMethods:
 class UILed4(module.BaseModule):
 
     def __init__(self, config={}):
-        # print("DEBUG: config", config)
         super().__init__(config)
 
         # initialize myself
@@ -65,7 +62,6 @@ class UILed4(module.BaseModule):
 
         # subscriptions to events/States
         self.s = []
-        # self.state.subscribe(lambda v: print("New Solenoid State value: ", v))
 
     def setup(self):
         # grab io_port from dc.io_port
@@ -120,8 +116,6 @@ class UILed4(module.BaseModule):
                     lambda value: self.io_led4.output(value)
                 )
             )
-            # test:
-            # self.s.append(self.mod_solenoid.state_open.subscribe(lambda value: print("(state event uiled4) new solenoid value:", value, self.mod_solenoid.state.value)))
 
         # RFID
         if self.mod_rfid is not None:
@@ -139,8 +133,6 @@ class UILed4(module.BaseModule):
             ), "[ui4led] rfid: configured module is not compatible. (events)"
 
             events = self.mod_rfid.events
-            # self.s.append(events.subscribe('rfid_ready', lambda data: self.led1.on()))
-            # self.s.append(events.subscribe('rfid_stopped', lambda data: self.led1.off()))
             self.s.append(
                 self.mod_rfid.rfid.state_reader_ready.subscribe(
                     lambda v: self.io_led1.output(v)
