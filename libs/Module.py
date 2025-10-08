@@ -165,8 +165,8 @@ class ModuleManager:
         self.abort_event.set()
 
     def exit(self, mesg):
-        # only remember first
-        if not self.exit_msg:
+        # only remember first and ignore when abort_msg is already set.
+        if not self.abort_msg and not self.exit_msg:
             self.exit_msg = mesg
 
         dc.logger.warning(f"exit(): {mesg}")
@@ -175,3 +175,16 @@ class ModuleManager:
 
         # end main loop
         self.abort_event.set()
+
+    def get_exit_val_and_msg(self):
+        if self.exit_msg and not self.abort_msg:
+            return 0, f"process ended due to exit: {self.exit_msg}."
+        elif not self.exit_msg and self.abort_msg:
+            return 1, f"process ended due to abort: {self.abort_msg}."
+        elif self.exit_msg and self.abort_msg:
+            return (
+                2,
+                f"process ended due to exit: {self.exit_msg}, meanwhile an abort was called: {self.abort_msg}.",
+            )
+        else:
+            return 127, "process ended. (abort and exit messagage are missing)"

@@ -169,13 +169,10 @@ def main():
         # teardown all loaded modules
         dc.module.do_all("teardown")
 
-        # done
-        if dc.module.abort_msg:
-            dc.logger.info(f"process ended due to abort: {dc.module.abort_msg}.")
-        elif dc.module.exit_msg:
-            dc.logger.info(f"process ended due to abort: {dc.module.exit_msg}.")
-        else:
-            dc.logger.info("process ended.")
+        # done, log our last message and return exit value
+        exit_val_and_msg = dc.module.get_exit_val_and_msg()
+        dc.logger.info(exit_val_and_msg[1])
+        sys.exit(exit_val_and_msg[0])
 
 
 if __name__ == "__main__":
