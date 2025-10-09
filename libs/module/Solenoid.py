@@ -3,8 +3,6 @@ import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 from libs.Events import State
 
-# logger = dc.logger
-
 
 class Solenoid(module.BaseModule):
     state_vars = ["state_open"]
@@ -35,9 +33,6 @@ class Solenoid(module.BaseModule):
         self.io_output_name_permanent_open_ui_led = config.get(
             "io_output_permanent_open_ui_led", None
         )
-
-        # # TEST:
-        # self.state_open.subscribe(lambda v: print("New Solenoid State value: ", v))
 
         self.event = None
         self.event_toggle_permanent_open = None

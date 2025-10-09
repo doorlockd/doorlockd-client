@@ -5,12 +5,7 @@ from libs.Events import State
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
-
 import nfc
-
-# from nfc.clf import RemoteTarget
 
 import libs.IOWrapper.PN532
 from libs.pn532gpio import pn532Gpio
@@ -35,7 +30,15 @@ class PN532(module.BaseModule):
         # initilialize pn532
         # config path + device
         # usb[:vendor[:product]] / usb[:bus[:device]] / tty:port:driver / com:port:driver / udp[:host][:port]
-        self.clf = nfc.ContactlessFrontend(config.get("path", "ttyS2:pn532"))
+        try:
+            self.clf = nfc.ContactlessFrontend(config.get("path", "ttyS2:pn532"))
+        except Exception as e:
+            # print ("do we get here?", e)
+            dc.module.abort(
+                f"Could not connect with PN532 over '{config.get('path', 'ttyS2:pn532')}': {e}",
+                e,
+            )
+            return
 
         # RFID
         if config.get("rfid_enabled", False):
@@ -96,16 +99,20 @@ class PN532(module.BaseModule):
 
     def disable(self):
         # disable module
-        self.rfid.stop_thread()
+        if hasattr(self, "rfid"):
+            self.rfid.stop_thread()
 
     def teardown(self):
         # #de-setup module
         # # disable pn532 gpio
         # self._gpio.debug_event_detect()
         # self._gpio.debug_info()
-        self._gpio.hw_exit()
+        if hasattr(self, "_gpio"):
+            self._gpio.hw_exit()
+
         # # remove pn532
-        self.clf.close()
+        if hasattr(self, "clf"):
+            self.clf.close()
         pass
 
 

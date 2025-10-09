@@ -1,8 +1,6 @@
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
 
 class TestOutput:
 
@@ -16,8 +14,6 @@ class TestOutput:
 
     def setup(self):
         # grab io_port from dc.io_port
-        # self.io_output = dc.io_port.get(self.io_output_name)
-        # self.io_input  = dc.io_port.get(self.io_input_name)
         self.io_output = dc.io_port[self.io_output_name]
         self.io_input = dc.io_port[self.io_input_name]
 

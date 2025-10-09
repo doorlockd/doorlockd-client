@@ -5,9 +5,6 @@ from libs.Events import State, Events
 import libs.Module as module
 
 
-# logger = dc.logger
-
-
 class Button(module.BaseModule):
 
     def __init__(self, config={}):
@@ -20,9 +17,6 @@ class Button(module.BaseModule):
 
         # event
         self.event_name = config.get("event", "button_pressed")
-
-        # # id
-        # self.button_id = "button_" + config.get('id')
 
     def setup(self):
         # grab io_port from dc.io_port

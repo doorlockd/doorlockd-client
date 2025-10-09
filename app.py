@@ -63,8 +63,45 @@ except FileNotFoundError:
 # create logger with 'doorlockd'
 #
 logger = logging.getLogger()
+
+#
+# logging filter to hide hwid's
+#
+import re
+
+
+class NoHWIDFilteringFormatter(logging.Formatter):
+    """
+    Filter out anything what looks like an HWID:
+
+    any word consisting of an hex string of 8-14 characters: 12345678 ... 1234567890abcd
+    any word consisting of a 2 digit collon separated string of 4-7 pairs: 12:34:56:78 ... 12:34:56:78:90:ab:cd
+
+    """
+
+    regex = [
+        re.compile(r"\b([0-9a-fA-F]){8,14}\b"),
+        re.compile(r"\b([0-9a-fA-F][0-9a-fA-F]:){3,6}[0-9a-fA-F][0-9a-fA-F]\b"),
+    ]
+    replacement = "**FILTERED**"
+
+    def format(self, record):
+        formatted = super().format(record)
+
+        for regex in self.regex:
+            formatted = regex.sub(self.replacement, formatted)
+        return formatted
+
+
 # create formatter and add it to the handlers
-formatter = logging.Formatter("%(asctime)s - %(module)s - %(levelname)s - %(message)s")
+if dc.config.get("doorlockd", {}).get("log_filter_hwid", False):
+    formatter = NoHWIDFilteringFormatter(
+        "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+    )
+else:
+    formatter = logging.Formatter(
+        "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+    )
 
 # console output on stderr
 ch = logging.StreamHandler()
@@ -95,6 +132,15 @@ if dc.config.get("doorlockd", {}).get("log_level"):
     )
 logger.debug(f"loglevels set: logger: {logger.level}, handlers: {logger.handlers}")
 
+
+# log_filter_hwid
+if dc.config.get("doorlockd", {}).get("log_filter_hwid", False):
+    logger.info("Log Filtering HWID enabled.")
+    logger.debug(
+        f"NoHWIDFilteringFormatter: regex={NoHWIDFilteringFormatter.regex}, replacement={NoHWIDFilteringFormatter.replacement}"
+    )
+
+
 dc.logger = logger
 dc.logger.info(f"{dc.app_name_ver} starting up...")
 
@@ -123,7 +169,9 @@ dc.module = ModuleManager()
 # set handle_excepthook to handle all uncaught exceptions in threads
 #
 def handle_excepthook(argv):
-    dc.module.abort(f"Uncought exception caught with excepthook.", argv.exc_value)
+    dc.module.abort(
+        f"Uncought exception caught with excepthook {argv.exc_value}.", argv.exc_value
+    )
 
 
 import threading
@@ -167,8 +215,10 @@ def main():
         # teardown all loaded modules
         dc.module.do_all("teardown")
 
-        # done
-        dc.logger.info("exit after proper shutdown.")
+        # done, log our last message and return exit value
+        exit_val_and_msg = dc.module.get_exit_val_and_msg()
+        dc.logger.info(exit_val_and_msg[1])
+        sys.exit(exit_val_and_msg[0])
 
 
 if __name__ == "__main__":

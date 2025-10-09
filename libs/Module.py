@@ -6,9 +6,6 @@ import threading
 import importlib
 
 
-# logger = dc.logger
-
-
 class BaseModule:
     # __init__(config={}): 	initialize myself
     # setup():				setup module:  (grab io_port from dc.io_port)
@@ -55,6 +52,8 @@ class ModuleManager:
     _base_path = "libs.module."
     abort_event = threading.Event()
     app_startup_complete = False
+    exit_msg = False
+    abort_msg = False
 
     def load_all(self, configs):
         t = []  # list of threads
@@ -83,6 +82,12 @@ class ModuleManager:
             for thread in t:
                 thread.join()
 
+            # abort_event is_set, some exception(s) occured, raise exception
+            if self.abort_event.is_set():
+                raise Exception(
+                    f"abort_event is set, exception occured during initializing modules."
+                )
+
     def load_mod(self, mod_name, mod_type, mod_config):
         """load module by 'mod_name' (reference name), 'mod_type' (python module filename), 'mod_config' (config dictionary)"""
         dc.logger.info("initializing module {} {}...".format(mod_name, mod_type))
@@ -110,7 +115,9 @@ class ModuleManager:
         try:
             getattr(self.modules[module], task)()  # call method on module
         except Exception as e:
-            self.abort(f"Uncaught exception in {module} during {task}", exception=e)
+            self.abort(
+                f"Uncaught exception in {module} during {task} ({e})", exception=e
+            )
 
     def do_all(self, task):
         """task: setup/enable/disable/teardown"""
@@ -146,6 +153,10 @@ class ModuleManager:
         self.abort_event.wait()
 
     def abort(self, mesg, exception=None):
+        # only remember first
+        if not self.abort_msg:
+            self.abort_msg = mesg
+
         dc.logger.warning(f"abort(): {mesg} exception={exception}", exc_info=exception)
         # emit event 'app_abort' with data:(mesg, exception)
         dc.e.raise_event("app_abort", {"mesg": mesg, "exception": exception})
@@ -154,6 +165,10 @@ class ModuleManager:
         self.abort_event.set()
 
     def exit(self, mesg):
+        # only remember first and ignore when abort_msg is already set.
+        if not self.abort_msg and not self.exit_msg:
+            self.exit_msg = mesg
+
         dc.logger.warning(f"exit(): {mesg}")
         # emit event 'app_exit' with data:(mesg, exception)
         dc.e.raise_event("app_exit", {"mesg": mesg})
@@ -161,22 +176,15 @@ class ModuleManager:
         # end main loop
         self.abort_event.set()
 
-    # def setup_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('setup module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].setup()
-    #
-    # def enable_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('enable module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].enable()
-    #
-    # def disable_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('disable module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].disable()
-    #
-    # def teardown_all(self):
-    # 	for module in self.modules:
-    # 		dc.logger.info('teardown module {} {}...'.format(self.modules[module].__class__.__name__, module))
-    # 		self.modules[module].teardown()
+    def get_exit_val_and_msg(self):
+        if self.exit_msg and not self.abort_msg:
+            return 0, f"process ended due to exit: {self.exit_msg}."
+        elif not self.exit_msg and self.abort_msg:
+            return 1, f"process ended due to abort: {self.abort_msg}."
+        elif self.exit_msg and self.abort_msg:
+            return (
+                2,
+                f"process ended due to exit: {self.exit_msg}, meanwhile an abort was called: {self.abort_msg}.",
+            )
+        else:
+            return 127, "process ended. (abort and exit messagage are missing)"
