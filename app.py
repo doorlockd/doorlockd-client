@@ -63,8 +63,45 @@ except FileNotFoundError:
 # create logger with 'doorlockd'
 #
 logger = logging.getLogger()
+
+#
+# logging filter to hide hwid's
+#
+import re
+
+
+class NoHWIDFilteringFormatter(logging.Formatter):
+    """
+    Filter out anything what looks like an HWID:
+
+    any word consisting of an hex string of 8-14 characters: 12345678 ... 1234567890abcd
+    any word consisting of a 2 digit collon separated string of 4-7 pairs: 12:34:56:78 ... 12:34:56:78:90:ab:cd
+
+    """
+
+    regex = [
+        re.compile(r"\b([0-9a-fA-F]){8,14}\b"),
+        re.compile(r"\b([0-9a-fA-F][0-9a-fA-F]:){3,6}[0-9a-fA-F][0-9a-fA-F]\b"),
+    ]
+    replacement = "**FILTERED**"
+
+    def format(self, record):
+        formatted = super().format(record)
+
+        for regex in self.regex:
+            formatted = regex.sub(self.replacement, formatted)
+        return formatted
+
+
 # create formatter and add it to the handlers
-formatter = logging.Formatter("%(asctime)s - %(module)s - %(levelname)s - %(message)s")
+if dc.config.get("doorlockd", {}).get("log_filter_hwid", False):
+    formatter = NoHWIDFilteringFormatter(
+        "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+    )
+else:
+    formatter = logging.Formatter(
+        "%(asctime)s - %(module)s - %(levelname)s - %(message)s"
+    )
 
 # console output on stderr
 ch = logging.StreamHandler()
@@ -94,6 +131,15 @@ if dc.config.get("doorlockd", {}).get("log_level"):
         f"deprecated config used and will be ignored: doorlockd.log_level = {dc.config.get('doorlockd', {}).get('log_level')}"
     )
 logger.debug(f"loglevels set: logger: {logger.level}, handlers: {logger.handlers}")
+
+
+# log_filter_hwid
+if dc.config.get("doorlockd", {}).get("log_filter_hwid", False):
+    logger.info("Log Filtering HWID enabled.")
+    logger.debug(
+        f"NoHWIDFilteringFormatter: regex={NoHWIDFilteringFormatter.regex}, replacement={NoHWIDFilteringFormatter.replacement}"
+    )
+
 
 dc.logger = logger
 dc.logger.info(f"{dc.app_name_ver} starting up...")
