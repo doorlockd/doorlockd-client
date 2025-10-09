@@ -1,7 +1,5 @@
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
 
 class SimpleRfidAuth:
     """rfid_auth using a plain list of hardware ids"""

@@ -6,10 +6,9 @@ import time
 import hashlib
 import os
 
+from libs.Events import State
 
 from libs.data_container import data_container as dc
-
-# logger = dc.logger
 
 
 class ApiError(Exception):
@@ -252,7 +251,8 @@ class BackendApi:
         client_ssl_cert=None,
     ):
         self.lockname = "init not-set"
-        self.lock_disabled = True  # None
+        self.lock_disabled = State(value=True)
+
         self.synchronized = False
         # log unknownkeys
         self.log_unknownkeys = log_unknownkeys
@@ -307,6 +307,20 @@ class BackendApi:
         # if offline_file
         self.offline_file = offline_file
 
+        #  back_ground_sync [None, LOOP, LONGPOLL ]
+        self.background_sync_method = background_sync_method
+
+    def setup(self):
+        # startup procedure for loading offline_file and syncing with backend:
+        #
+        # if offline_file is defined:
+        #   - try to read file, if we fail we must sync before starting up.
+        #   (this way we know for sure the backend settings are configured right)
+        #   - after reading succesful we immediate try to sync. (but will not abort on temp failure, since backend settings are configured right).
+        # if offline_file is false: (no keys are kept on storage)
+        #   - we will try to sync, but if failed we keep running but stay in "lock_disabled" mode.
+        #
+
         try:
             self.load_from_file()
         except Exception as e:
@@ -314,9 +328,22 @@ class BackendApi:
             dc.logger.info(f"trying to sync with server to resolve this issue.")
             self.api_sync()
 
-        # start back_ground_sync [None, LOOP, LONGPOLL ]
-        self.background_sync_method = background_sync_method
-        self.start_background_sync()
+        if not self.offline_file:
+            dc.logger.info(f"offline keys db is disabled (offline_file).")
+            dc.logger.info(
+                f"we must to download keys in memmory before we can enabled..."
+            )
+
+            try:
+                self.api_sync()
+            except Exception as e:
+                dc.logger.warning(f"couldn't sync/download keys: {e}")
+
+        if not self.synchronized:
+            dc.logger.warning(f"Starting up without keys db: lock is in disabled mode!")
+
+        # self.start_background_sync()
+        # background sync will be started by DjangoBackendRfidAuth.enable()
 
     def dump(self):
         for k in self.keys.keys():
@@ -336,68 +363,70 @@ class BackendApi:
         return str(cic)
 
     def load_from_file(self):
-        if self.offline_file is not None:
-            with self.lock:
-                dc.logger.info(f"read keys database from file: '{self.offline_file}';")
-                # open json file
-                with open(self.offline_file, "r") as json_file:
-                    # Reading from file
-                    data = json.load(json_file)
+        if self.offline_file is False:
+            dc.logger.info(f"offline_file is disabled (keys not loading from file).")
+            return
 
-                    # validate cic (Configfile Intergity Check)
-                    if data.get("cic") != self.cic:
-                        raise Exception(
-                            f"{self.offline_file}': Configfile Intergity Check failed: api_url,server_ssl_fingerprint or client_ssl doesn't match with config. Need server sync before operation!."
-                        )
+        with self.lock:
+            dc.logger.info(f"read keys database from file: '{self.offline_file}';")
+            # open json file
+            with open(self.offline_file, "r") as json_file:
+                # Reading from file
+                data = json.load(json_file)
 
-                    # set lockname:
-                    self.lockname = data.get("lockname", "not-set")
-                    dc.logger.info(f"read keys db for lockname  : '{self.lockname}' ")
-
-                    # simply overwrite dict:
-                    self.keys = data.get("keys")
-                    dc.logger.info(
-                        f"read keys database, entries: '{len(self.keys)}' keys loaded."
-                    )
-                    dc.logger.info(
-                        f"read keys database, hash   : '{self.keys_hash()}' "
+                # validate cic (Configfile Intergity Check)
+                if data.get("cic") != self.cic:
+                    raise Exception(
+                        f"{self.offline_file}': Configfile Intergity Check failed: api_url,server_ssl_fingerprint or client_ssl doesn't match with config. Need server sync before operation!."
                     )
 
-                    # lock_disabled, or if missing guess the answer on the numer of keys.
-                    self.lock_disabled = data.get(
-                        "lock_disabled", not bool(len(self.keys))
-                    )
-                    dc.logger.info(f"read lock disabled: {self.lock_disabled}.")
+                # set lockname:
+                self.lockname = data.get("lockname", "not-set")
+                dc.logger.info(f"read keys db for lockname  : '{self.lockname}' ")
+
+                # simply overwrite dict:
+                self.keys = data.get("keys")
+                dc.logger.info(
+                    f"read keys database, entries: '{len(self.keys)}' keys loaded."
+                )
+                dc.logger.info(f"read keys database, hash   : '{self.keys_hash()}' ")
+
+                # lock_disabled, or if missing guess the answer on the numer of keys.
+                self.lock_disabled.value = data.get(
+                    "lock_disabled", not bool(len(self.keys))
+                )
+                dc.logger.info(f"read lock disabled: {self.lock_disabled.value}.")
 
     def save_to_file(self):
-        if self.offline_file is not None:
-            with self.lock:
-                dc.logger.info(f"write keys database to file {self.offline_file}_tmp")
-                data = {}
-                data["lockname"] = self.lockname
-                data["keys"] = self.keys
-                data["lock_disabled"] = self.lock_disabled
+        if self.offline_file is False:
+            dc.logger.debug(f"offline_file is disabled (not saving to file).")
+            return
 
-                # add cic (Configfile Intergity Check)
-                data["cic"] = self.cic
+        with self.lock:
+            dc.logger.info(f"write keys database to file {self.offline_file}_tmp")
+            data = {}
+            data["lockname"] = self.lockname
+            data["keys"] = self.keys
+            data["lock_disabled"] = self.lock_disabled.value
 
-                # write to tmp file
-                with open(self.offline_file + "_tmp", "w") as json_file:
-                    json.dump(data, json_file)
+            # add cic (Configfile Intergity Check)
+            data["cic"] = self.cic
 
-                # rename tmp file
-                if os.path.isfile(self.offline_file):
-                    os.remove(self.offline_file)
+            # write to tmp file
+            with open(self.offline_file + "_tmp", "w") as json_file:
+                json.dump(data, json_file)
 
-                os.rename(self.offline_file + "_tmp", self.offline_file)
+            # rename tmp file
+            if os.path.isfile(self.offline_file):
+                os.remove(self.offline_file)
 
-                dc.logger.info(
-                    f"written keys database to file : '{self.offline_file}';"
-                )
-                dc.logger.info(
-                    f"written keys database, entries: '{len(self.keys)}' keys loaded."
-                )
-                dc.logger.info(f"written keys database, hash   : '{self.keys_hash()}' ")
+            os.rename(self.offline_file + "_tmp", self.offline_file)
+
+            dc.logger.info(f"written keys database to file : '{self.offline_file}';")
+            dc.logger.info(
+                f"written keys database, entries: '{len(self.keys)}' keys loaded."
+            )
+            dc.logger.info(f"written keys database, hash   : '{self.keys_hash()}' ")
 
     def start_background_sync(self):
         """
@@ -594,7 +623,7 @@ class BackendApi:
         key = key.lower()  # lowercase this key
         meta_data = {}  # placeholder for meta_data
 
-        if self.lock_disabled is True:
+        if self.lock_disabled.value is True:
             msg = "Warning: lock disabled or never synchronised, lookup() and last-seen logging ignored."
             dc.logger.warning(msg)
             return False, msg
@@ -738,8 +767,8 @@ class BackendApi:
             dc.logger.info(f"sync keys db for lockname  : '{self.lockname}' ")
 
             # show message in logs
-            self.lock_disabled = bool(resp.get("disabled", False))
-            if self.lock_disabled == True:
+            self.lock_disabled.value = bool(resp.get("disabled", False))
+            if self.lock_disabled.value == True:
                 dc.logger.warning("Warning: lock is disabled")
 
             # keys: -> update
@@ -765,8 +794,8 @@ class BackendApi:
                 self.synchronized = bool(resp.get("synchronised", False))
 
                 # show message in logs
-                self.lock_disabled = resp.get("disabled", False)
-                if self.lock_disabled == True:
+                self.lock_disabled.value = resp.get("disabled", False)
+                if self.lock_disabled.value == True:
                     dc.logger.warning("Warning: lock is disabled")
 
                 max_loop = max_loop - 1  # decrement our loop counter
@@ -822,8 +851,7 @@ class DjangoBackendRfidAuth:
         dc.rfid_auth = self
 
     def setup(self):
-        # self.api.setup()
-        pass
+        self.api.setup()
 
     def enable(self):
         self.api.start_background_sync()

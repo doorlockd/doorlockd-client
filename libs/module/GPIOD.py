@@ -2,8 +2,6 @@ import libs.Module as module
 import libs.IOWrapper as IO
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
 
 import libs.IOWrapper.gpiod
 

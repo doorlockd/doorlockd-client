@@ -4,8 +4,6 @@ from libs.data_container import data_container as dc
 import time
 import threading
 
-# logger = dc.logger
-
 
 class Buzzer(module.BaseModule):
 

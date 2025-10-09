@@ -3,8 +3,6 @@ from libs.data_container import data_container as dc
 import requests
 import traceback
 
-# logger = dc.logger
-
 
 class Healthchecks(module.BaseModule):
     """

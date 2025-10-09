@@ -1,8 +1,6 @@
 import threading
 from libs.data_container import data_container as dc
 
-# logger = dc.logger
-
 
 class EventSubscription:
     def __init__(self, e, i, f):
@@ -205,7 +203,3 @@ class State:
 
         # cleanup subscription callback
         e.cancel()
-
-        # cleanup lock
-        # lock.locked() and lock.release()
-        # del(lock)
