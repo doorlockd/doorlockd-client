@@ -11,7 +11,7 @@ python = ">=3.9,<4.0"
 simplejson = "^3.19.2"
 toml = "^0.10.2"
 nfcpy = {git = "https://github.com/doorlockd/nfcpy.git", rev = "v1.0.4+doorlockd", optional = true}
-requests = "^2.32.3"
+requests = "^2.32.4"
 gpiod = {version = "^2.3.0",  optional = true}
 
 [tool.poetry.extras]
