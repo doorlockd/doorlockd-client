@@ -34,6 +34,9 @@ class Solenoid(module.BaseModule):
             "io_output_permanent_open_ui_led", None
         )
 
+        # set exit state of solenoid
+        self.exit_state = bool(config.get("exit_state", False))
+
         self.event = None
         self.event_toggle_permanent_open = None
 
@@ -96,7 +99,8 @@ class Solenoid(module.BaseModule):
         self.state_open.set_logic(None)
 
         if hasattr(self, "io_output") and self.io_output.has_output:
-            self.io_output.output(IO.LOW)
+            self.io_output.output(self.exit_state)
+            dc.logger.info(f"set solenoid exit state ({self.exit_state})")
 
         if (
             hasattr(self, "io_output_permanent_open_ui_led")
@@ -106,6 +110,7 @@ class Solenoid(module.BaseModule):
 
     def teardown(self):
         # de-setup module
+
         # cleanup ports
         if hasattr(self, "io_output"):
             self.io_output.cleanup()
