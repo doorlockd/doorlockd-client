@@ -183,6 +183,7 @@ threading.excepthook = handle_excepthook
 #
 signal.signal(signal.SIGINT, lambda signal, frame: dc.module.exit("Exit: got sigint"))
 signal.signal(signal.SIGTERM, lambda signal, frame: dc.module.exit("Exit: got sigterm"))
+signal.signal(signal.SIGHUP, lambda signal, frame: dc.e.raise_event("app.sighup"))
 
 
 #

@@ -267,7 +267,10 @@ class BackendApi:
         self.log_stats = LogStats(self, log_stats_precision, log_sync_interval)
 
         self.auto_sync_secs = 60
-        self.auto_sync_event = threading.Event()
+        # set to break loop (force reload, start shutdown).
+        self.auto_sync_loop_event = threading.Event()
+        # set to stop loop from restarting.
+        self.auto_sync_stop_event = threading.Event()
 
         # SSL things:
         # self.server_ssl_fingerprint = server_ssl_fingerprint
@@ -307,7 +310,7 @@ class BackendApi:
         # if offline_file
         self.offline_file = offline_file
 
-        #  back_ground_sync [None, LOOP, LONGPOLL ]
+        #  back_ground_sync [None, LOOP ]
         self.background_sync_method = background_sync_method
 
     def setup(self):
@@ -437,14 +440,11 @@ class BackendApi:
             dc.logger.info(f"background_sync is disabled. ")
             return
 
-        # self.auto_sync_thread = threading.Thread(target=auto_sync_target, args=(self,))
-        # self.auto_sync_thread.start()
-
-        def auto_sync_target(self, event):
+        def auto_sync_target(self):
             """threading target"""
 
             dc.logger.info("LOOP: start auto_sync_target")
-            while not event.is_set():
+            while not self.auto_sync_stop_event.is_set():
                 try:
                     # sync keys
                     self.api_sync()
@@ -468,41 +468,20 @@ class BackendApi:
                     dc.e.raise_event("sync_fail_log", {"mesg": mesg, "exception": e})
 
                 # sleep until next auto_sync_loop
-                event.wait(
-                    timeout=self.auto_sync_secs
-                )  # use event.wait instead of time.sleep.
                 dc.logger.debug(
                     f"auto sync loop sleeps for {self.auto_sync_secs} seconds."
                 )
 
+                self.auto_sync_loop_event.wait(
+                    timeout=self.auto_sync_secs
+                )  # use event.wait instead of time.sleep.
+
+                # make sure the loop event is cleared
+                self.auto_sync_loop_event.clear()
+
             dc.logger.info("LOOP: auto_sync_target stopped!")
 
-        def auto_long_poll_sync_target(self, event):
-            """threading target"""
-
-            dc.logger.info("LONGPOLL: start auto_long_poll_sync_target")
-            while not event.is_set():
-                # do an initial sync when needed :
-                if not self.synchronized:
-                    try:
-                        self.api_sync()
-                    except Exception as e:
-                        dc.logger.warning(
-                            f"exception occured during background sync. (exception ignored)",
-                            exc_info=e,
-                        )
-
-                # resume long_poll_events
-                try:
-                    self.long_poll_events()
-                except Exception as e:
-                    dc.logger.info(f"long poll suspended for 60seconds  due to {e}")
-                    event.wait(timeout=60)  # use event.wait instead of time.sleep.
-
-            dc.logger.info("LONGPOLL: auto_long_poll_sync_target stopped!")
-
         methods = {}
-        methods["LONGPOLL"] = auto_long_poll_sync_target
         methods["LOOP"] = auto_sync_target
 
         try:
@@ -517,9 +496,9 @@ class BackendApi:
             if hasattr(self, "auto_sync_thread") and self.auto_sync_thread.is_alive():
                 return self.auto_sync_thread
 
-            self.auto_sync_event.clear()
+            self.auto_sync_stop_event.clear()
             self.auto_sync_thread = threading.Thread(
-                target=target_method_def, args=(self, self.auto_sync_event)
+                target=target_method_def, args=(self,)
             )
             self.auto_sync_thread.start()
 
@@ -527,12 +506,14 @@ class BackendApi:
 
     def stop_background_sync(self, join=False):
         with self.lock:
-            if not self.auto_sync_event.is_set():
+            if not self.auto_sync_stop_event.is_set():
                 dc.logger.debug(
-                    f"DEBUG: auto_sync will stop... {self.auto_sync_event.is_set()}"
+                    f"DEBUG: auto_sync will stop... {self.auto_sync_stop_event.is_set()}"
                 )
-                # print("self.auto_sync", self, self.auto_sync)
-                self.auto_sync_event.set()
+                # stop the loop from restarting
+                self.auto_sync_stop_event.set()
+                # stop this loop
+                self.auto_sync_loop_event.set()
 
         if join:
             dc.logger.debug(
@@ -543,9 +524,19 @@ class BackendApi:
 
         # self.auto_sync_thread
 
+    def force_reload(self):
+        with self.lock:
+            if not self.auto_sync_stop_event.is_set():
+                dc.logger.debug("force reload sync")
+                # set event to restart the loop
+                self.auto_sync_loop_event.set()
+
+            else:
+                dc.logger.info("force_reload ignored, background sync not running.")
+
     def cleanup(self):
         # order background thread to stop
-        self.stop_background_sync()
+        self.stop_background_sync(join=False)
 
         # try sync last_seen and unknown_keys
         self.log_stats.try_sync(flush=True)
@@ -705,46 +696,6 @@ class BackendApi:
                 exc_info=e,
             )
 
-    def long_poll_events(self):
-
-        long_poll = self.requests.get(
-            f"{self.api_url}/doorlockdb/api/lock/long_poll_events",
-            stream=True,
-        )
-
-        for event_line in long_poll.iter_lines(chunk_size=1):
-            dc.logger.debug(
-                f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} event_line: {event_line}"
-            )
-
-            # check self.auto_sync for exit:
-            if self.auto_sync_event.is_set():
-                dc.logger.debug(
-                    f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} -- STOP AUTO_SYNC --"
-                )
-                return
-
-            # remove empty line
-            if event_line == b"":
-                continue
-
-            line = json.loads(event_line)
-            # we have an event:
-            if line.get("event") == "sync":
-                # sync keys:
-                self.api_sync()
-
-            # try sync last_seen and unknown_keys
-            self.log_stats.try_sync()
-
-            # initial sync: incase we havn't synchronized (when the client is just started.):
-            if not self.synchronized:
-                self.api_sync()
-
-        dc.logger.debug(
-            f"EVENT: {datetime.datetime.isoformat(datetime.datetime.now())} -- DISCONNECTED --"
-        )
-
     def api_sync(self):
         """sync with backend."""
 
@@ -820,7 +771,7 @@ class BackendApi:
 
 
 class DjangoBackendRfidAuth:
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
 
         # init BackendApi with config:
         #
@@ -828,12 +779,12 @@ class DjangoBackendRfidAuth:
         # type = "DjangoBackendRfidAuth"
         # api_url=
         # offline_file=None
-        # background_sync_method='LONGPOLL'
+        # background_sync_method='LOOP'
         # log_unknownkeys=True
         # server_ssl_fingerprint=None
         # client_ssl_cert=None
 
-        #  api_url, offline_file=None, background_sync_method='LONGPOLL', log_unknownkeys=True, server_ssl_fingerprint=None, client_ssl_cert=None
+        #  api_url, offline_file=None, background_sync_method='LOOP', log_unknownkeys=True, server_ssl_fingerprint=None, client_ssl_cert=None
         kwargs = config.copy()
         del kwargs["type"]  # delete unwanted argument
 
@@ -850,6 +801,17 @@ class DjangoBackendRfidAuth:
         # set rfid_auth in global data container, so that self.has_access is available.
         dc.rfid_auth = self
 
+        # my event subscriptions, to cleanup on teardown.
+        self.subscriptions = set()
+
+        # add force_reload event.
+        self.subscriptions.add(
+            dc.e.subscribe("force_reload", dc.rfid_auth.force_reload)
+        )
+
+        # add kill -HUP support:
+        self.subscriptions.add(dc.e.subscribe("app.sighup", self.force_reload))
+
     def setup(self):
         self.api.setup()
 
@@ -857,10 +819,17 @@ class DjangoBackendRfidAuth:
         self.api.start_background_sync()
 
     def disable(self):
-        self.api.stop_background_sync()
+        self.api.stop_background_sync(join=True)
 
     def teardown(self):
+        # clearnup subscriptions:
+        for subscription in self.subscriptions:
+            subscription.cancel()
+
         self.api.cleanup()
+
+    def force_reload(self, data={}):
+        self.api.force_reload()
 
     def has_access(self, hwid_str, target, nfc_tools, *args, **kwargs):
         """lookup detected hwid,"""
