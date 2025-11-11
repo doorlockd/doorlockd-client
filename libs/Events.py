@@ -63,8 +63,10 @@ class Events:
             if event_id in self._events:
                 self._events[event_id].remove(f_action)
 
-    def raise_event(self, event_id, data={}, wait=False):
+    def raise_event(self, event_id, data: dict = None, wait=False):
         """raise an event by event_id, and pass any data to the callback functions."""
+        data = {} if data is None else data
+
         dc.logger.debug("raise_event '{}'.".format(event_id))
         t = []  # list of threads
 
@@ -92,12 +94,14 @@ class Events:
         with self.lock:
             for event_id in self._events:
                 print(
-                    "DEBUG event_id: '{}', number of subscribers:".format(
+                    "DEBUG event_id: '{}', number of subscribers: {}".format(
                         event_id, len(self._events[event_id])
                     )
                 )
                 for f_action in self._events[event_id]:
-                    print(" .. event:'{}', action:'{}'".format(event_id, f_action))
+                    print(f"      event :'{event_id}'")
+                    print(f"      action:'{f_action}{f_action.__doc__}'")
+                    print("")
 
 
 class StateSubscription:

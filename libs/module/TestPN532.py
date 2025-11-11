@@ -11,7 +11,7 @@ from libs.pn532gpio import pn532Gpio
 
 class TestPN532:
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # initialize myself
         #
         # initilialize pn532

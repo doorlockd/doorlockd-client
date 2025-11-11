@@ -7,7 +7,7 @@ import libs.Module as module
 
 class Button(module.BaseModule):
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # init module.BaseModule
         super().__init__(config)
         # self.events = Events()

@@ -4,7 +4,7 @@ from libs.data_container import data_container as dc
 class SimpleRfidAuth:
     """rfid_auth using a plain list of hardware ids"""
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
 
         # init BackendApi with config:
         #

@@ -73,8 +73,10 @@ class LogStats:
             datetime.datetime.fromtimestamp(t_end, tz=datetime.timezone.utc),
         )
 
-    def add(self, key, known_key, meta_data={}):
+    def add(self, key, known_key, meta_data: dict = None):
         # get privacy friendly timestamps, now , begin, end
+        meta_data = {} if meta_data is None else meta_data
+
         t_now, t_begin, t_end = self.get_timestamps_now_begin_end()
 
         r = {}
@@ -665,7 +667,7 @@ class BackendApi:
 
         return has_access, msg
 
-    def request_post(self, path, data={}):
+    def request_post(self, path, data: dict):
         url = self.api_url + path
 
         dc.logger.debug(f"DEBUG POST:  {data}")
@@ -828,7 +830,7 @@ class DjangoBackendRfidAuth:
 
         self.api.cleanup()
 
-    def force_reload(self, data={}):
+    def force_reload(self, data: dict):
         self.api.force_reload()
 
     def has_access(self, hwid_str, target, nfc_tools, *args, **kwargs):

@@ -47,7 +47,7 @@ class LedMethods:
 
 class UILed4(module.BaseModule):
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         super().__init__(config)
 
         # initialize myself

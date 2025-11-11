@@ -23,7 +23,7 @@ from libs.Events import State
 class HbwVoordeurLogic:
     state_vars = ["state_dagslotschootdetectie", "state_nachtslotschootdetectie"]
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # initialize myself
         self.io_dagslotschootdetectie_name = config.get(
             "io_dagslotschootdetectie", False

@@ -13,7 +13,7 @@ class BaseModule:
     # disable():			disable module: (io ports.output(IO.LOW) / cancel events)
     # teardown():			de-setup module: cleanup ports
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # initialize myself
         self.events = Events()
         # dc.logger.info("init super BaseModule")

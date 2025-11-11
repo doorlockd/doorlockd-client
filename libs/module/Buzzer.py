@@ -7,7 +7,7 @@ import threading
 
 class Buzzer(module.BaseModule):
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         super().__init__(config)
 
         # initialize myself
@@ -50,7 +50,7 @@ class Buzzer(module.BaseModule):
         if hasattr(self, "io_output"):
             self.io_output.cleanup()
 
-    def action_callback(self, data={}):
+    def action_callback(self, data: dict):
         # get lock
         if not self.lock.acquire(False):
             dc.logger.info("buzz buzzer ignored: (already buzzy)")

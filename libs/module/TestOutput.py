@@ -4,7 +4,7 @@ from libs.data_container import data_container as dc
 
 class TestOutput:
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # initialize myself
         self.io_output_name = config["io_output"]
         self.io_input_name = config["io_input"]
@@ -54,7 +54,8 @@ class TestOutput:
         self.io_input.cleanup()
         self.io_output.cleanup()
 
-    def action_callback(self, data={}):
+    def action_callback(self, data: dict = None):
+        data = {} if data is None else data
 
         # invert output
         self.io_output.output(not self.io_output.input())

@@ -9,7 +9,7 @@ class Healthchecks(module.BaseModule):
     https://healthchecks.io based monitoring.
     """
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         super().__init__(config)
 
         # event
@@ -66,7 +66,7 @@ class Healthchecks(module.BaseModule):
     def teardown(self):
         pass
 
-    def healthcheck(self, signal="ping", data={}):
+    def healthcheck(self, signal="ping", data: dict = None):
         """
         Send ping or other signal with data.
         - signal 'ping' means no specific signal
@@ -79,8 +79,8 @@ class Healthchecks(module.BaseModule):
         """
 
         # we also accept 'ping' as empty signal name , so it doesn't look ugly in our toml config
-        if signal == "ping":
-            signal = ""
+        signal = "" if signal == "ping" else signal
+        data = {} if data is None else data
 
         #
         # send ping, only if dc.module.app_startup_complete is True.

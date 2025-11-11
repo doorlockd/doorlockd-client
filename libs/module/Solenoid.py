@@ -7,7 +7,7 @@ from libs.Events import State
 class Solenoid(module.BaseModule):
     state_vars = ["state_open"]
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         super().__init__(config)
 
         # initialize myself
@@ -118,7 +118,7 @@ class Solenoid(module.BaseModule):
         if hasattr(self, "io_output_permanent_open_ui_led"):
             self.io_output_permanent_open_ui_led.cleanup()
 
-    def action_open_callback(self, data={}):
+    def action_open_callback(self, data: dict):
         """
         Open Solenoid for self.time_wait seconds.
         """
@@ -145,7 +145,7 @@ class Solenoid(module.BaseModule):
         # close solenoid or return to permanent state.
         self.state_open.value = self.permanent_open_state.value
 
-    def action_cancel_open_callback(self, data={}):
+    def action_cancel_open_callback(self, data: dict):
         """
         Cancel Open Solenoid.
         """
@@ -164,7 +164,10 @@ class Solenoid(module.BaseModule):
         if self.state_open.value:
             self.state_open.value = self.permanent_open_state.value
 
-    def toggle_permament_open_callback(self, data={}):
+    def toggle_permament_open_callback(self, data: dict):
+        """
+        Toggle permanent open Solenoid, only if 'allow_permanent_open' is True.
+        """
         # only switch config setting on if your hardware supports pemanent_open:
         if not self.allow_permanent_open:
             dc.logger.warn(

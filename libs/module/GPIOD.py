@@ -8,7 +8,7 @@ import libs.IOWrapper.gpiod
 
 class GPIOD(module.BaseModule):
 
-    def __init__(self, config={}):
+    def __init__(self, config: dict):
         # initialize myself
         super().__init__(config)
 
